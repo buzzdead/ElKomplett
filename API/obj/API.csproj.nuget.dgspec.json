@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ben\\Documents\\Restore\\API\\API.csproj": {}
+    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ben\\Documents\\Restore\\API\\API.csproj": {
+    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ben\\Documents\\Restore\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\Ben\\Documents\\Restore\\API\\API.csproj",
-        "packagesPath": "C:\\Users\\Ben\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ben\\Documents\\Restore\\API\\obj\\",
+        "projectPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\sigmu\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Ben\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\sigmu\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -59,10 +59,29 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.12, 6.0.12]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.12, 6.0.12]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.12, 6.0.12]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.12, 6.0.12]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -71,7 +90,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }
