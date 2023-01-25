@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { IProduct } from "../../app/models/product";
 import ProductList from "./ProductList";
+import React from 'react'
 
 export default function Catalog() {
     const [products, setProducts] = useState<IProduct[]>([])
