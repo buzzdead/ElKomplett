@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "e3/NTQsbWiUhp3CCtcPJSgdEHqisHsBtbxNd2AhLV5hSynU/FHjEJ2M29ySk0uYviAXuImh01oh7uyDJORZ5iQ==",
+  "dgSpecHash": "5MBq1HcssB96QyiKYuSI8F5NqmyPj3YaIaR7mxTzz5hrSFPhtkKvz7r82C9XHTR9LVecV8GxeMIdmrEerwHrUw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\sigmu\\restorte\\Restore\\api\\API.csproj",
+  "projectFilePath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sigmu\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\sigmu\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.7\\microsoft.data.sqlite.core.6.0.7.nupkg.sha512",
