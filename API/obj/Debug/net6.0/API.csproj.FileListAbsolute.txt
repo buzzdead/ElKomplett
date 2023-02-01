@@ -111,3 +111,11 @@ C:\Users\sigmu\restorte\Restore\api\obj\Debug\net6.0\refint\API.dll
 C:\Users\sigmu\restorte\Restore\api\obj\Debug\net6.0\API.pdb
 C:\Users\sigmu\restorte\Restore\api\obj\Debug\net6.0\API.genruntimeconfig.cache
 C:\Users\sigmu\restorte\Restore\api\obj\Debug\net6.0\ref\API.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\sigmu\restorte\Restore\api\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
