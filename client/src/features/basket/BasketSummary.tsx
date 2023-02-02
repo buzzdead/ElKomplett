@@ -10,11 +10,15 @@ import React from 'react'
 import { useAppSelector } from '../../app/store/configureStore'
 import { currencyFormat } from '../../app/util/util'
 
-export default function BasketSummary() {
+interface props {
+  subtotal?: number
+}
+
+export default function BasketSummary({subtotal}: props) {
   const { basket } = useAppSelector(state => state.basket)
-  const subTotal =
-    (basket && basket.items.reduce((sum, item) => sum + item.quantity * item.price, 0)) || 0
-  const deliveryFee = subTotal > 10000 ? 0 : 500
+  if (subtotal === null || subtotal === undefined)
+    subtotal = basket?.items.reduce((sum, item) => sum + item.quantity * item.price, 0) ?? 0
+  const deliveryFee = subtotal > 10000 ? 0 : 500
 
   return (
     <>
@@ -23,7 +27,7 @@ export default function BasketSummary() {
           <TableBody>
             <TableRow>
               <TableCell colSpan={2}>Subtotal</TableCell>
-              <TableCell align='right'>{currencyFormat(subTotal)}</TableCell>
+              <TableCell align='right'>{currencyFormat(subtotal)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>Delivery fee*</TableCell>
@@ -31,7 +35,7 @@ export default function BasketSummary() {
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>Total</TableCell>
-              <TableCell align='right'>{currencyFormat(subTotal + deliveryFee)}</TableCell>
+              <TableCell align='right'>{currencyFormat(subtotal + deliveryFee)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
