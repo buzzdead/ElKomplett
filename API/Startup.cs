@@ -8,23 +8,22 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using API.Middleware;
 using API.Entities;
-using Microsoft.AspNetCore.Identity;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Collections.Generic;
+using System;
 
 namespace API
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,7 +34,8 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
                 // Swagger boilerplate
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme{
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
                     Description = "Jwt auth header",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
@@ -60,17 +60,51 @@ namespace API
                     }
                 });
             });
+            
+
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            string connStr;
+
+            if (env == "Development")
+            {
+                // Use connection string from file.
+                connStr = _configuration.GetConnectionString("DefaultConnection");
+            }
+            else
+            {
+                // Use connection string provided at runtime by Heroku.
+                var connUrl = "postgres://buzzstore:EhYjQmfjBO4H35q@top2.nearest.of.buzzstore-db.internal:5432/buzzstore?sslmode=disable";
+
+                // Parse connection URL to connection string for Npgsql
+                connUrl = connUrl.Replace("postgres://", string.Empty);
+                var pgUserPass = connUrl.Split("@")[0];
+                var pgHostPortDb = connUrl.Split("@")[1];
+                var pgHostPort = pgHostPortDb.Split("/")[0];
+                var pgDb = pgHostPortDb.Split("/")[1];
+                var pgUser = pgUserPass.Split(":")[0];
+                var pgPass = pgUserPass.Split(":")[1];
+                var pgHost = pgHostPort.Split(":")[0];
+                var pgPort = pgHostPort.Split(":")[1];
+
+                connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};SSL Mode=Require;Trust Server Certificate=true";
+            }
+
+            // Whether the connection string came from the local development configuration file
+            // or from the environment variable from Heroku, use it to set up your DbContext.
+
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(connStr);
             });
             services.AddCors();
-            services.AddIdentityCore<User>(opt => {
+            services.AddIdentityCore<User>(opt =>
+            {
             })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<StoreContext>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt => 
+                .AddJwtBearer(opt =>
                 {
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -78,7 +112,7 @@ namespace API
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:TokenKey"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTSettings:TokenKey"]))
                     };
                 }
                 );
@@ -93,7 +127,7 @@ namespace API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<ExceptionMiddleware>();
-            
+
             if (env.IsDevelopment())
             {
                 //app.UseDeveloperExceptionPage();
@@ -108,7 +142,8 @@ namespace API
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseCors(opt => {
+            app.UseCors(opt =>
+            {
                 opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000", "http://localhost:3001");
             });
             app.UseAuthentication();
