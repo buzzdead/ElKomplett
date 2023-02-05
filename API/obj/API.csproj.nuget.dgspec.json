@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {}
+    "C:\\Users\\sigmu\\restorte\\Restore\\api\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {
+    "C:\\Users\\sigmu\\restorte\\Restore\\api\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\sigmu\\restorte\\Restore\\api\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+        "projectPath": "C:\\Users\\sigmu\\restorte\\Restore\\api\\API.csproj",
         "packagesPath": "C:\\Users\\sigmu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\obj\\",
+        "outputPath": "C:\\Users\\sigmu\\restorte\\Restore\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sigmu\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -55,6 +55,14 @@
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
               "version": "[6.0.7, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[6.0.8, )"
+            },
+            "Stripe.net": {
+              "target": "Package",
+              "version": "[41.5.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

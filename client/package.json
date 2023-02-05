@@ -10,6 +10,8 @@
     "@mui/lab": "^5.0.0-alpha.117",
     "@mui/material": "^5.11.6",
     "@reduxjs/toolkit": "^1.9.1",
+    "@stripe/react-stripe-js": "^1.16.4",
+    "@stripe/stripe-js": "^1.46.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -19,6 +21,7 @@
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@types/react-router-dom": "^5.1.8",
+    "@types/react-slick": "^0.23.10",
     "acorn": "^6.4.2",
     "axios": "^1.2.4",
     "history": "^4.10.1",
@@ -28,8 +31,10 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.3.0",
+    "react-slick": "^0.29.0",
     "react-toastify": "^8.0.0",
     "redux": "^4.2.0",
+    "slick-carousel": "^1.8.1",
     "typescript": "^4.9.4",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"
@@ -37,6 +42,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "move build ../API/wwwroot",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
