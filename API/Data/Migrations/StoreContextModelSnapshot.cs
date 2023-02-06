@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace API.Data.Migrations
+namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
     partial class StoreContextModelSnapshot : ModelSnapshot
@@ -148,6 +148,9 @@ namespace API.Data.Migrations
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("integer");
 
@@ -191,14 +194,14 @@ namespace API.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "fd18136a-bcf8-4d73-81c7-f82b32c3dda4",
+                            ConcurrencyStamp = "ab8e64bc-0701-42fd-aeb6-c014e3e013ed",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "c27bd86d-9d92-46b6-a7ef-cdeb3cab73ac",
+                            ConcurrencyStamp = "aecdd7b4-52d1-4abc-85bd-a50690e78e7f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

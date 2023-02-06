@@ -4,9 +4,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace API.Data.Migrations
+namespace API.data.Migrations
 {
-    public partial class PostGresInitial : Migration
+    public partial class PostgresInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -103,7 +103,8 @@ namespace API.Data.Migrations
                     PictureUrl = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<string>(type: "text", nullable: true),
                     Brand = table.Column<string>(type: "text", nullable: true),
-                    QuantityInStock = table.Column<int>(type: "integer", nullable: false)
+                    QuantityInStock = table.Column<int>(type: "integer", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -295,8 +296,8 @@ namespace API.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "fd18136a-bcf8-4d73-81c7-f82b32c3dda4", "Member", "MEMBER" },
-                    { 2, "c27bd86d-9d92-46b6-a7ef-cdeb3cab73ac", "Admin", "ADMIN" }
+                    { 1, "ab8e64bc-0701-42fd-aeb6-c014e3e013ed", "Member", "MEMBER" },
+                    { 2, "aecdd7b4-52d1-4abc-85bd-a50690e78e7f", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
