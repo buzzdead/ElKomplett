@@ -1,6 +1,6 @@
-# fly.toml file generated for buzzstore on 2023-02-05T21:59:46+01:00
+# fly.toml file generated for nettbutikk on 2023-02-06T15:52:13+01:00
 
-app = "buzzstore"
+app = "nettbutikk"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
