@@ -1,4 +1,4 @@
-# fly.toml file generated for nettbutikk on 2023-02-06T15:52:13+01:00
+# fly.toml file generated for nettbutikk on 2023-02-06T23:30:40+01:00
 
 app = "nettbutikk"
 kill_signal = "SIGINT"
@@ -11,6 +11,8 @@ processes = []
 [env]
   ASPNETCORE_URLS="http://+:8080"
   StripeSettings__PublishableKey="pk_test_51MX6rJEP2FAJR8soQgZo57KS7wklWRNaBzluWWud8XybhTJsgI0pL69OYAoXCCVwEe1H9UrEvg5Tp1MCm0XdBtCf00CaWltWtJ"
+  Cloudinary__CloudName="dkoll9vi1"
+  
 
 [experimental]
   auto_rollback = true
