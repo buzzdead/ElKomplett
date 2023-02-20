@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import AppTextInput from '../../app/components/AppTextInput'
-import AppCheckBox from '../../app/components/AppCheckBox'
+import AppCheckBox from '../../app/components/AppCheckBox/AppCheckBox'
 
 export default function AddressForm() {
   const { control, formState } = useFormContext()

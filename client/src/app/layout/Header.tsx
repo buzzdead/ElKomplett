@@ -12,7 +12,9 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import useView from '../hooks/useView'
 import { useAppSelector } from '../store/configureStore'
+import Render from './Render'
 import SignedInMenu from './SignedInMenu'
 
 interface Props {
@@ -61,8 +63,8 @@ const navStyles = {
 export default function Header({ darkMode, handleThemeChange }: Props) {
   const { basket } = useAppSelector((state) => state.basket)
   const { user } = useAppSelector((state) => state.account)
+  const { view } = useView()
   const itemCount = basket && basket.items.reduce((sum, item) => sum + item.quantity, 0)
-
   return (
     <AppBar position='static'>
       <Toolbar
@@ -79,16 +81,18 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
           <Switch checked={darkMode} onChange={handleThemeChange} />
         </Box>
         <List sx={{ display: 'flex' }}>
-          {midLinks.map(({ title, path }) => (
-            <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
-              {title.toUpperCase()}
-            </ListItem>
-          ))}
-          {user && user.roles?.includes('Admin') && (
+          <Render condition={!view.ipad} ignoreTernary>
+            {midLinks.map(({ title, path }) => (
+              <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
+                {title.toUpperCase()}
+              </ListItem>
+            ))}
+          </Render>
+          <Render condition={!view.ipad && user && user.roles?.includes('Admin')}>
             <ListItem component={NavLink} to={'/inventory'} sx={navStyles}>
               INVENTORY
             </ListItem>
-          )}
+          </Render>
         </List>
         <Box display='flex' alignItems='center'>
           <IconButton component={Link} to='/basket' size='large' sx={{ color: 'inherit' }}>
@@ -96,9 +100,8 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               <ShoppingCart />
             </Badge>
           </IconButton>
-          {user ? (
+          <Render condition={user !== null}>
             <SignedInMenu />
-          ) : (
             <List sx={{ display: 'flex' }}>
               {rightLinks.map(({ title, path }) => (
                 <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
@@ -106,7 +109,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                 </ListItem>
               ))}
             </List>
-          )}
+          </Render>
         </Box>
       </Toolbar>
     </AppBar>

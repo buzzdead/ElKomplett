@@ -23,6 +23,7 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const { status } = useAppSelector(state => state.basket)
   const dispatch = useAppDispatch()
+  if(product.name === 'asdf') console.log(product)
 
   return (
     <Card>

@@ -8,11 +8,6 @@ interface BasketState {
   status: string
 }
 
-const initialState: BasketState = {
-  basket: null,
-  status: 'idle',
-}
-
 export const fetchBasketAsync = createAsyncThunk<Basket>(
   'basket/fetchBasketAsync',
   async (_, thunkAPI) => {
@@ -50,6 +45,11 @@ export const removeBasketItemAsync = createAsyncThunk<
     return thunkAPI.rejectWithValue({ error: error.data })
   }
 })
+
+const initialState: BasketState = {
+  basket: null,
+  status: 'idle',
+}
 
 export const basketSlice = createSlice({
   name: 'basket',

@@ -90,6 +90,7 @@ export const catalogSlice = createSlice({
     }),
     reducers: {
         setProductParams: (state, action) => {
+            console.log(action.payload)
             state.productsLoaded = false
             state.productParams = {...state.productParams, ...action.payload, pageNumber: 1}
         },
