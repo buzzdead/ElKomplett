@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, Paper, TextField, Typography } from '@mui/material'
+import { Box, Divider, Grid, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
@@ -17,7 +17,7 @@ export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
   const { id } = useParams<{ id: string }>()
-  const product = useAppSelector((state) => productSelectors.selectById(state, id))
+  const product = useAppSelector((state) => productSelectors.selectById(state, id!))
   const { status: productStatus } = useAppSelector((state) => state.catalog)
   const [newQuantity, setNewQuantity] = useState(0)
   const [config, setConfig] = useState('')
@@ -30,7 +30,7 @@ export default function ProductDetails() {
     if (basketItem && basketItem.quantity !== newQuantity) {
       setNewQuantity(basketItem.quantity)
     }
-    if (!product) dispatch(fetchProductAsync(parseInt(id)))
+    if (!product) dispatch(fetchProductAsync(parseInt(id!)))
   }, [id, basketItem, dispatch, product, newQuantity])
 
   function handleInputChange(event: any) {
