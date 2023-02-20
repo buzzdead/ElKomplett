@@ -9,5 +9,6 @@ namespace API.DTOs
         public string Brand { get; set; }
         public string Type { get; set; }
         public int Quantity { get; set; }
+        public List<Config> Configurables { get; set; }
     }
 }

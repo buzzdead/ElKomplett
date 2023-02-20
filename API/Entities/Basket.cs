@@ -16,15 +16,18 @@ namespace API.Entities
         public string PaymentIntentId { get; set; }
         public string ClientSecret { get; set; }
 
-        public void AddItem(Product product, int quantity) 
+        public void AddItem(Product product, int quantity, int configId) 
         {
             if (Items.All(item => item.ProductId != product.Id))
             {
-                Items.Add(new BasketItem{Product = product, Quantity = quantity});
+                Items.Add(new BasketItem{Product = product, Quantity = quantity, ConfigId = configId});
             }
 
+            else {
             var existingItem = Items.FirstOrDefault(item => item.ProductId == product.Id);
-            if (existingItem != null) existingItem.Quantity += quantity;
+            if(existingItem != null && existingItem.ConfigId != configId) Items.Add(new BasketItem{Product = product, Quantity = quantity, ConfigId = configId});
+            else existingItem.Quantity += quantity;
+            }
         }
 
         public void RemoveItem(int productId, int quantity) 

@@ -23,7 +23,8 @@ namespace API.Extensions
                     PictureUrl = item.Product.PictureUrl,
                     Type = item.Product.Type,
                     Brand = item.Product.Brand,
-                    Quantity = item.Quantity
+                    Quantity = item.Quantity,
+                    Configurables = item.Product.Configurables
                 }).ToList()
             };
         }

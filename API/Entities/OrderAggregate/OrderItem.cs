@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace API.Entities.OrderAggregate
 {
     public class OrderItem
@@ -11,5 +6,6 @@ namespace API.Entities.OrderAggregate
         public ProductItemOrdered ItemOrdered { get; set; }
         public long Price { get; set; }
         public int Quantity { get; set; }
+        public int? ConfigId { get; set; }
     }
 }

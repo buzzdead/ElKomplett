@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace API.Entities
 {
     public class Product
@@ -11,5 +13,24 @@ namespace API.Entities
         public string Brand { get; set; }
         public int QuantityInStock { get; set; }
         public string PublicId { get; set; }
+        public bool? Configurable { get; set; }
+        public List<Config> Configurables { get; set; } = new ();
+
+        public void AddItem(Config config) 
+        {
+            Configurables.Add(new Config{
+                ProductId = Id,
+                QuantityInStock = config.QuantityInStock,
+                Price = config.Price,
+                Key = config.Key,
+                Value = config.Value,
+                defaultProduct = config.defaultProduct
+            });
+        }
+
+        public void RemoveItem(Config config) 
+        {
+            Configurables.Remove(config);
+        }
     }
 }
