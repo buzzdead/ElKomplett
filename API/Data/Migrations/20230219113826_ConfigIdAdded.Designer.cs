@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20230219113826_ConfigIdAdded")]
+    partial class ConfigIdAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,9 +88,6 @@ namespace API.data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BasketId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ConfigId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
@@ -236,14 +235,14 @@ namespace API.data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "af585d61-130d-4640-bdee-783415f0dc49",
+                            ConcurrencyStamp = "2f105ef1-9a19-46ce-9e60-9b86637ec40d",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5b3eac21-10d2-40c3-8967-fbd4093728cb",
+                            ConcurrencyStamp = "dda3fc39-3f3d-4d19-80e5-d8f357406f3e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

@@ -104,7 +104,8 @@ namespace API.data.Migrations
                     Type = table.Column<string>(type: "text", nullable: true),
                     Brand = table.Column<string>(type: "text", nullable: true),
                     QuantityInStock = table.Column<int>(type: "integer", nullable: false),
-                    PublicId = table.Column<string>(type: "text", nullable: true)
+                    PublicId = table.Column<string>(type: "text", nullable: true),
+                    Configurable = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -291,13 +292,36 @@ namespace API.data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Config",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Price = table.Column<long>(type: "bigint", nullable: false),
+                    QuantityInStock = table.Column<int>(type: "integer", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: true),
+                    defaultProduct = table.Column<bool>(type: "boolean", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Config", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Config_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "ab8e64bc-0701-42fd-aeb6-c014e3e013ed", "Member", "MEMBER" },
-                    { 2, "aecdd7b4-52d1-4abc-85bd-a50690e78e7f", "Admin", "ADMIN" }
+                    { 1, "a5bf79b6-1646-426d-b4ef-96b2e6475a96", "Member", "MEMBER" },
+                    { 2, "0d037af0-3514-43b0-8acd-3cdc7ca38b79", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -348,6 +372,11 @@ namespace API.data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Config_ProductId",
+                table: "Config",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderId",
                 table: "OrderItem",
                 column: "OrderId");
@@ -372,6 +401,9 @@ namespace API.data.Migrations
 
             migrationBuilder.DropTable(
                 name: "BasketItems");
+
+            migrationBuilder.DropTable(
+                name: "Config");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");

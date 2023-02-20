@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230206182907_PostgresInitial")]
-    partial class PostgresInitial
+    [Migration("20230219195840_ConfigId2Added")]
+    partial class ConfigId2Added
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,39 @@ namespace API.data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("API.DTOs.Config", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityInStock")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("defaultProduct")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Config");
+                });
 
             modelBuilder.Entity("API.Entities.Basket", b =>
                 {
@@ -55,6 +88,9 @@ namespace API.data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BasketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ConfigId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
@@ -111,6 +147,9 @@ namespace API.data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ConfigId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("OrderId")
                         .HasColumnType("integer");
 
@@ -137,6 +176,9 @@ namespace API.data.Migrations
 
                     b.Property<string>("Brand")
                         .HasColumnType("text");
+
+                    b.Property<bool?>("Configurable")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -196,14 +238,14 @@ namespace API.data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "ab8e64bc-0701-42fd-aeb6-c014e3e013ed",
+                            ConcurrencyStamp = "c4a1eb9c-67d6-4fc1-af2f-c75146498e37",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "aecdd7b4-52d1-4abc-85bd-a50690e78e7f",
+                            ConcurrencyStamp = "c9e18f04-f1a1-4e59-86d2-cafd31964db5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -410,6 +452,13 @@ namespace API.data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("API.DTOs.Config", b =>
+                {
+                    b.HasOne("API.Entities.Product", null)
+                        .WithMany("Configurables")
+                        .HasForeignKey("ProductId");
+                });
+
             modelBuilder.Entity("API.Entities.BasketItem", b =>
                 {
                     b.HasOne("API.Entities.Basket", "Basket")
@@ -465,7 +514,8 @@ namespace API.data.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.Navigation("ShippingAddress");
+                    b.Navigation("ShippingAddress")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("API.Entities.OrderAggregate.OrderItem", b =>
@@ -477,6 +527,9 @@ namespace API.data.Migrations
                     b.OwnsOne("API.Entities.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
                         {
                             b1.Property<int>("OrderItemId")
+                                .HasColumnType("integer");
+
+                            b1.Property<int?>("ConfigId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Name")
@@ -567,6 +620,11 @@ namespace API.data.Migrations
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("API.Entities.Product", b =>
+                {
+                    b.Navigation("Configurables");
                 });
 
             modelBuilder.Entity("API.Entities.User", b =>

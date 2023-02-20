@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20230218133951_PostgresInitial")]
+    partial class PostgresInitial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,9 +90,6 @@ namespace API.data.Migrations
                     b.Property<int>("BasketId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ConfigId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
@@ -144,9 +143,6 @@ namespace API.data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ConfigId")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("OrderId")
                         .HasColumnType("integer");
@@ -236,14 +232,14 @@ namespace API.data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "af585d61-130d-4640-bdee-783415f0dc49",
+                            ConcurrencyStamp = "a5bf79b6-1646-426d-b4ef-96b2e6475a96",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5b3eac21-10d2-40c3-8967-fbd4093728cb",
+                            ConcurrencyStamp = "0d037af0-3514-43b0-8acd-3cdc7ca38b79",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -525,9 +521,6 @@ namespace API.data.Migrations
                     b.OwnsOne("API.Entities.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
                         {
                             b1.Property<int>("OrderItemId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int?>("ConfigId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Name")
