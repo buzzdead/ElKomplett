@@ -12,14 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230219195840_ConfigId2Added")]
-    partial class ConfigId2Added
+    [Migration("20230220155146_PostgresInitial")]
+    partial class PostgresInitial
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -33,6 +34,9 @@ namespace API.data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PictureUrl")
                         .HasColumnType("text");
 
                     b.Property<long>("Price")
@@ -238,14 +242,12 @@ namespace API.data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "c4a1eb9c-67d6-4fc1-af2f-c75146498e37",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "c9e18f04-f1a1-4e59-86d2-cafd31964db5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

@@ -4,10 +4,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace API.data.Migrations
 {
+    /// <inheritdoc />
     public partial class PostgresInitial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -251,8 +255,10 @@ namespace API.data.Migrations
                     ItemOrdered_ProductId = table.Column<int>(type: "integer", nullable: true),
                     ItemOrdered_Name = table.Column<string>(type: "text", nullable: true),
                     ItemOrdered_PictureUrl = table.Column<string>(type: "text", nullable: true),
+                    ItemOrdered_ConfigId = table.Column<int>(type: "integer", nullable: true),
                     Price = table.Column<long>(type: "bigint", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
+                    ConfigId = table.Column<int>(type: "integer", nullable: true),
                     OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -273,6 +279,7 @@ namespace API.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ConfigId = table.Column<int>(type: "integer", nullable: false),
                     BasketId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -302,6 +309,7 @@ namespace API.data.Migrations
                     QuantityInStock = table.Column<int>(type: "integer", nullable: false),
                     Key = table.Column<string>(type: "text", nullable: true),
                     Value = table.Column<string>(type: "text", nullable: true),
+                    PictureUrl = table.Column<string>(type: "text", nullable: true),
                     ProductId = table.Column<int>(type: "integer", nullable: true),
                     defaultProduct = table.Column<bool>(type: "boolean", nullable: true)
                 },
@@ -320,8 +328,8 @@ namespace API.data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "a5bf79b6-1646-426d-b4ef-96b2e6475a96", "Member", "MEMBER" },
-                    { 2, "0d037af0-3514-43b0-8acd-3cdc7ca38b79", "Admin", "ADMIN" }
+                    { 1, null, "Member", "MEMBER" },
+                    { 2, null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -382,6 +390,7 @@ namespace API.data.Migrations
                 column: "OrderId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

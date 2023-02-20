@@ -17,7 +17,7 @@ namespace API.data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -31,6 +31,9 @@ namespace API.data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PictureUrl")
                         .HasColumnType("text");
 
                     b.Property<long>("Price")
@@ -236,14 +239,12 @@ namespace API.data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "af585d61-130d-4640-bdee-783415f0dc49",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5b3eac21-10d2-40c3-8967-fbd4093728cb",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
