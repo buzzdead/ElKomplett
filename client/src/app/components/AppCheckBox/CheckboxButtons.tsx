@@ -1,5 +1,6 @@
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { useUpdateEffect } from 'usehooks-ts'
 
 interface Props {
     items: string[]
@@ -9,13 +10,22 @@ interface Props {
 
 export default function CheckboxButtons({items, checked, onChange}: Props) {
     const [checkedItems, setCheckedItems] = useState(checked || [])
+    const timer = useRef<NodeJS.Timeout>()
+
+    const debouncedOnChange = () => {
+        if(timer.current) clearTimeout(timer.current)
+        timer.current = setTimeout(() => {console.log("adsf"); onChange(checkedItems)}, 600)
+    }
+
+    useUpdateEffect(() => {
+        debouncedOnChange()
+    }, [checkedItems])
     function handleChecked(value: string) {
         const currentIndex = checkedItems.findIndex(item => item === value)
         let newChecked: string[] = []
         if(currentIndex === -1) newChecked = [...checkedItems, value]
         else newChecked = checkedItems.filter(item => item !== value)
         setCheckedItems(newChecked)
-        onChange(newChecked)
     }
     return (
         <FormGroup>
