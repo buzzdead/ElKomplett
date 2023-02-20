@@ -1,15 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Data;
-using API.DTOs;
-using API.Entities;
-using API.Extensions;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -33,17 +22,17 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BasketDto>> AddItemtoBasket(int productId, int quantity)
+        public async Task<ActionResult<BasketDto>> AddItemtoBasket(int productId, int quantity, int configId = 0)
         {
             var basket = await RetrieveBasket(GetBuyerId());
 
             if (basket == null) basket = CreateBasket();
 
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.Include(p => p.Configurables).FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null) return BadRequest(new ProblemDetails { Title = "Product Not Found" });
 
-            basket.AddItem(product, quantity);
+            basket.AddItem(product, quantity, configId);
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -80,6 +69,7 @@ namespace API.Controllers
             return await _context.Baskets
                         .Include(i => i.Items)
                         .ThenInclude(p => p.Product)
+                        .ThenInclude(p => p.Configurables)
                         .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
         }
 

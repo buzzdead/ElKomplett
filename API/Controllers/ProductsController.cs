@@ -1,14 +1,7 @@
 using System.Linq;
-using System.Threading.Tasks;
-using API.Data;
-using API.DTOs;
-using API.Entities;
-using API.Extensions;
-using API.RequestHelpers;
-using API.Services;
+using System.Net.NetworkInformation;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
@@ -30,6 +23,7 @@ namespace API.Controllers
         public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
         {
             var query = _context.Products
+            .Include(p => p.Configurables)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
             .Filter(productParams.Brands, productParams.Types)
@@ -45,8 +39,12 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.Configurables).FirstOrDefaultAsync(p => p.Id == id);
+
             if (product == null) return NotFound();
+
+            if (_context.Config.Any(c => c.ProductId == product.Id)) { var configs = _context.Config.Where(cfg => cfg.ProductId == product.Id); await configs.ForEachAsync(cfg => {if(!product.Configurables.Contains(cfg)) product.AddItem(cfg);});}
+
             return product;
         }
 
@@ -58,12 +56,12 @@ namespace API.Controllers
 
             return Ok(new { brands, types });
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
-
             if (productDto.File != null)
             {
                 var imageResult = await _imageService.AddImageAsync(productDto.File);
@@ -84,7 +82,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<ActionResult<Product>> UpdateProduct([FromForm]UpdateProductDto productDto)
+        public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProductDto productDto)
         {
             var product = await _context.Products.FindAsync(productDto.Id);
 
@@ -121,9 +119,9 @@ namespace API.Controllers
             if (product == null) return NotFound();
 
             // Will crash app if 
-            
+
             if (!string.IsNullOrEmpty(product.PublicId))
-                    await _imageService.DeleteImageAsync(product.PublicId);
+                await _imageService.DeleteImageAsync(product.PublicId);
 
             _context.Products.Remove(product);
 

@@ -1,15 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Data;
-using API.DTOs;
-using API.Entities;
 using API.Entities.OrderAggregate;
-using API.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -52,18 +41,33 @@ namespace API.Controllers
 
             foreach(var item in basket.Items)
             {
-                var productItem = await _context.Products.FindAsync(item.ProductId);
+                var productItem = await _context.Products.Include(p => p.Configurables).FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                long Price = 0;
+                if(productItem.Configurables != null) {
+                    var config = productItem.Configurables.Find(o => o.Id == item.ConfigId);
+                    if(config != null){
+                    Price = config.ProductId == productItem.Id ? config.Price : productItem.Price;
+                    }
+                    else {
+                    Price = productItem.Price;
+                }
+                } 
+                else {
+                    Price = productItem.Price;
+                }
                 var itemOrdered = new ProductItemOrdered
                 {
                     ProductId = productItem.Id,
                     Name = productItem.Name,
-                    PictureUrl = productItem.PictureUrl
+                    PictureUrl = productItem.PictureUrl,
+                    ConfigId = item.ConfigId
                 };
                 var orderItem = new OrderItem
                 {
                     ItemOrdered = itemOrdered,
-                    Price = productItem.Price,
-                    Quantity = item.Quantity
+                    Price = Price,
+                    Quantity = item.Quantity,
+                    ConfigId = item.ConfigId
                 };
                 items.Add(orderItem);
                 productItem.QuantityInStock -= item.Quantity;

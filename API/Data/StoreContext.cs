@@ -17,6 +17,7 @@ namespace API.Data
         public DbSet<Basket>  Baskets { get; set; }
 
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Config> Config { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
