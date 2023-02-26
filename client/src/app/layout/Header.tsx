@@ -14,6 +14,7 @@ import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import useView from '../hooks/useView'
 import { useAppSelector } from '../store/configureStore'
+import { AuthorisedRoles } from '../util/util'
 import Render from './Render'
 import SignedInMenu from './SignedInMenu'
 
@@ -88,7 +89,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               </ListItem>
             ))}
           </Render>
-          <Render condition={!view.ipad && user && user.roles?.includes('Admin')}>
+          <Render condition={!view.ipad && user && AuthorisedRoles.some(role => user.roles?.includes(role))}>
             <ListItem component={NavLink} to={'/inventory'} sx={navStyles}>
               INVENTORY
             </ListItem>

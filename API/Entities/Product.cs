@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace API.Entities
 {
-    public class Product
+    public class Product : ImageDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,8 +24,10 @@ namespace API.Entities
                 Price = config.Price,
                 Key = config.Key,
                 Value = config.Value,
-                defaultProduct = config.defaultProduct
+                PublicId = config.PublicId,
+                PictureUrl = config.PictureUrl,
             });
+            Configurable = true;
         }
 
         public void RemoveItem(Config config) 

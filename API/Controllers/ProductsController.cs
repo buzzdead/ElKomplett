@@ -1,8 +1,4 @@
-using System.Linq;
-using System.Net.NetworkInformation;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -11,8 +7,10 @@ namespace API.Controllers
         private readonly StoreContext _context;
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
-        public ProductsController(StoreContext context, IMapper mapper, ImageService imageService)
+        private readonly UserManager<User> _userManager;
+        public ProductsController(StoreContext context, IMapper mapper, ImageService imageService, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _imageService = imageService;
             _mapper = mapper;
             _context = context;
@@ -43,8 +41,6 @@ namespace API.Controllers
 
             if (product == null) return NotFound();
 
-            if (_context.Config.Any(c => c.ProductId == product.Id)) { var configs = _context.Config.Where(cfg => cfg.ProductId == product.Id); await configs.ForEachAsync(cfg => {if(!product.Configurables.Contains(cfg)) product.AddItem(cfg);});}
-
             return product;
         }
 
@@ -57,20 +53,17 @@ namespace API.Controllers
             return Ok(new { brands, types });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Test")]
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
+            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
+            
             var product = _mapper.Map<Product>(productDto);
-            if (productDto.File != null)
-            {
-                var imageResult = await _imageService.AddImageAsync(productDto.File);
-
-                if (imageResult.Error != null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
-
-                product.PictureUrl = imageResult.SecureUrl.ToString();
-                product.PublicId = imageResult.PublicId;
-            }
+            product = (Product) await this.AddImageAsync(productDto.File, product, _imageService);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _context.Products.Add(product);
 
@@ -80,29 +73,22 @@ namespace API.Controllers
 
             return BadRequest(new ProblemDetails { Title = "Problem creating new product" });
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Test")]
         [HttpPut]
         public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProductDto productDto)
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
+            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
+
             var product = await _context.Products.FindAsync(productDto.Id);
 
             if (product == null) return NotFound();
 
             _mapper.Map(productDto, product);
-
-            if (productDto.File != null)
-            {
-                var imageResult = await _imageService.AddImageAsync(productDto.File);
-
-                if (imageResult.Error != null)
-                    return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
-
-                if (!string.IsNullOrEmpty(product.PublicId))
-                    await _imageService.DeleteImageAsync(product.PublicId);
-
-                product.PictureUrl = imageResult.SecureUrl.ToString();
-                product.PublicId = imageResult.PublicId;
-            }
+            if(productDto.File != null){
+            product = (Product) await this.AddImageAsync(productDto.File, product, _imageService);
+            if (!ModelState.IsValid) return BadRequest(ModelState);}
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -110,17 +96,21 @@ namespace API.Controllers
 
             return BadRequest(new ProblemDetails { Title = "Problem updating product" });
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Test")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
+            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
+
             var product = await _context.Products.FindAsync(id);
 
             if (product == null) return NotFound();
 
             // Will crash app if 
 
-            if (!string.IsNullOrEmpty(product.PublicId))
+            if (!string.IsNullOrEmpty(product.PublicId) && product.PublicId != "0")
                 await _imageService.DeleteImageAsync(product.PublicId);
 
             _context.Products.Remove(product);

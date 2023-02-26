@@ -1,11 +1,13 @@
-interface Configurable {
+export interface Configurable {
   id?: number;
   price: number;
   quantityInStock: number;
   key: string;
   value: string;
   productId?: number;
-  defaultProduct?: boolean;
+  pictureUrl?: string
+  publicId?: string
+  file?: any
 }
 
 export interface IProduct {

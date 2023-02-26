@@ -1,9 +1,9 @@
-import { Typography, Grid, Paper, Box, Button } from '@mui/material'
+import { Typography, Grid, Paper, Box, Button, Tab, Tabs } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../app/components/AppTextInput'
 import * as React from 'react'
 import { IProduct } from '../../app/models/product'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useProducts from '../../app/hooks/useProducts'
 import AppSelectList from '../../app/components/AppSelectList'
 import AppDropzone from '../../app/components/AppDropzone'
@@ -14,6 +14,7 @@ import agent from '../../app/api/agent'
 import { useAppDispatch } from '../../app/store/configureStore'
 import { setProduct } from '../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
+import ProductConfigurations from './ProductConfigurations'
 
 interface Props {
   product?: IProduct
@@ -21,12 +22,19 @@ interface Props {
 }
 
 export default function ProductForm({ product, cancelEdit }: Props) {
-  const { control, reset, handleSubmit, watch, formState: {isDirty, isSubmitting} } = useForm({
-    resolver: yupResolver(validationSchema)
+  const { control, reset, handleSubmit, watch, formState: {isDirty, isSubmitting, isValid} } = useForm({
+    resolver: yupResolver(validationSchema(product === undefined || product === null))
   })
+  console.log(product)
   const { brands, types } = useProducts()
   const watchFile = watch('file', null)
   const dispatch = useAppDispatch()
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleTabChange = () => {
+    const setNewValue = selectedTab === 0 ? 1 : 0
+    setSelectedTab(setNewValue);
+  };
 
   useEffect(() => {
     if (product && !watchFile && !isDirty) reset(product)
@@ -50,12 +58,16 @@ export default function ProductForm({ product, cancelEdit }: Props) {
         console.log(error)
     }
   }
-
   return (
     <Box component={Paper} sx={{ p: 4 }}>
       <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
         Product Details
       </Typography>
+      <Tabs sx={{paddingBottom: 3}} value={selectedTab} onChange={handleTabChange}>
+        <Tab label="Product Details" />
+        <Tab label="Product Configurations" />
+      </Tabs>
+      {selectedTab === 0 ? (
       <form onSubmit={handleSubmit(handleSubmitData)}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12}>
@@ -102,11 +114,15 @@ export default function ProductForm({ product, cancelEdit }: Props) {
           <Button onClick={cancelEdit} variant='contained' color='inherit'>
             Cancel
           </Button>
-          <LoadingButton loading={isSubmitting} type='submit' variant='contained' color='success'>
+          <LoadingButton loading={isSubmitting} disabled={product ? !isDirty : !isValid} type='submit' variant='contained' color='success'>
             Submit
           </LoadingButton>
         </Box>
       </form>
+      )
+      :
+      <ProductConfigurations configs={product?.configurables} productId={product?.id!} />
+    }
     </Box>
   )
 }

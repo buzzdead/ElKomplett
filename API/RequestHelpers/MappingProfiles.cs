@@ -11,6 +11,8 @@ namespace API.RequestHelpers
         {
             CreateMap<CreateProductDto, Product>();
             CreateMap<UpdateProductDto, Product>();
+            CreateMap<CreateConfigDto, Config>();
+            CreateMap<UpdateConfigDto, Config>();
         }
         
     }

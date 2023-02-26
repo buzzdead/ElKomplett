@@ -1,23 +1,28 @@
 import { UploadFile } from '@mui/icons-material'
-import { FormControl, FormHelperText, Typography } from '@mui/material'
+import { FormControl, FormHelperText } from '@mui/material'
 import React, {useCallback} from 'react'
 import {useDropzone} from 'react-dropzone'
 import { useController, UseControllerProps } from 'react-hook-form'
 
-interface Props extends UseControllerProps {}
+interface Props extends UseControllerProps {
+  height?: number
+  width?: number
+  iconSize?: string
+  defaultValue?: any
+}
 
 export default function AppDropzone(props: Props) {
-    const {fieldState, field} = useController({...props, defaultValue: null})
+    const {fieldState, field} = useController({...props, defaultValue: null })
 
     const dzStyles = {
         display: 'flex',
         border: 'dashed 3px #eee',
         borderColor: '#eee',
         borderRadius: '5px',
-        paddingTop: '30px',
         alignItems: 'center',
-        height: 200,
-        width: 500
+        justifyContent: 'center',
+        height: props.height || 200,
+        width: props.width || 500
     }
 
     const dzActive = {
@@ -35,8 +40,7 @@ export default function AppDropzone(props: Props) {
     <div {...getRootProps()}>
      <FormControl style={isDragActive ? {...dzStyles, ...dzActive} : dzStyles}>
         <input {...getInputProps()} />
-        <UploadFile sx={{fontSize: '100px'}} />
-        <Typography variant='h4'>Drop image here</Typography>
+        <UploadFile sx={{fontSize: props.iconSize || '100px'}} />
         <FormHelperText>{fieldState.error?.message}</FormHelperText>
      </FormControl>
     </div>

@@ -12,6 +12,12 @@ import { currencyFormat } from '../../app/util/util'
 import AppTable, { TableData } from '../../app/components/AppTable/AppTable'
 import RadioButtonGroup from '../../app/components/RadioButtonGroup'
 import Render from '../../app/layout/Render'
+import { Configurable } from '../../app/models/product'
+
+type cfg = {
+  value: string
+  config: Configurable
+}
 
 export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
@@ -20,7 +26,7 @@ export default function ProductDetails() {
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
   const { status: productStatus } = useAppSelector((state) => state.catalog)
   const [newQuantity, setNewQuantity] = useState(0)
-  const [config, setConfig] = useState('')
+  const [config, setConfig] = useState<cfg>()
 
   const basketItem = basket?.items.find(
     (i: { productId: number | undefined }) => i.productId === product?.id,
@@ -49,6 +55,12 @@ export default function ProductDetails() {
       : dispatch(removeBasketItemAsync({ productId, quantity }))
   }
 
+  function handleConfigChange (e: any) {
+    const currentConfig = product?.configurables?.find((b) => b.value === e)
+    currentConfig !== undefined && setConfig({value: e, config: currentConfig})
+
+  }
+
   if (productStatus.includes('pending')) return <LoadingComponent message='Loading product' />
 
   if (!product) return <NotFound />
@@ -72,7 +84,7 @@ export default function ProductDetails() {
     },
     {
       key: 'Quantity in stock',
-      value: product.quantityInStock,
+      value: config?.config.quantityInStock || product.quantityInStock,
     },
   ]
 
@@ -111,21 +123,20 @@ export default function ProductDetails() {
       </Grid>
     )
   }
-  const opt2: { label: string; value: string }[] = []
-  const opt = product.configurables?.forEach((cfg) =>
-    opt2.push({ label: cfg.value, value: cfg.value }),
-  )
+
+  const cfgValues: {label: string, value: string}[] = product.configurables?.map((e) => ({label: e.value, value: e.value})) || []
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>
-        <img src={product.pictureUrl} alt={product.name} style={{ width: '100%' }} />
+        <img src={config?.config.pictureUrl || product.pictureUrl} alt={product.name} style={{ width: '100%' }} />
       </Grid>
       <Grid item xs={6}>
         <Typography variant='h3'>{product.name}</Typography>
         <Divider sx={{ mb: 2 }} />
         <Typography variant='h4' color='secondary'>
           {currencyFormat(
-            product.configurables?.find((e) => e.value === config)?.price || product.price,
+            config?.config?.price || product.price,
           )}
         </Typography>
         <AppTable tableData={tableData} />
@@ -139,9 +150,9 @@ export default function ProductDetails() {
               </Box>
               <RadioButtonGroup
                 flexDirection='row'
-                selectedValue={config}
-                options={opt2}
-                onChange={(e) => setConfig(e.target.value)}
+                selectedValue={config?.value || ''}
+                options={cfgValues}
+                onChange={(e) => handleConfigChange(e.target.value)}
               />
             </>
           </Render>

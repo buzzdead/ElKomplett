@@ -56,7 +56,12 @@ namespace API.Controllers
                 }
                 return ValidationProblem();
             }
-            await _userManager.AddToRoleAsync(user, "Member");
+            if(registerDto.TestAdmin == true) {
+                user.AdminTokens = 0;
+                await _userManager.AddToRoleAsync(user, "Test");
+            }
+            else
+                await _userManager.AddToRoleAsync(user, "Member");
 
             return StatusCode(201);
         }
@@ -65,8 +70,10 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await _userManager.GetRolesAsync(user);
 
             var userBasket = await RetrieveBasket(User.Identity.Name);
+
 
             return new UserDto
             {

@@ -5,26 +5,30 @@ import { useController, UseControllerProps } from 'react-hook-form';
 interface Props extends UseControllerProps {
     label: string
     multiline?: boolean
+    disabled?: boolean
     rows?: number
     type?: string
+    defaultValue?: string | number
+    addError?: boolean
 }
 
 export default function AppTextInput(props: Props) {
     const {fieldState, field} = useController({
         ...props, 
-        defaultValue: ''
+        defaultValue: props.defaultValue || ''
     })
 
     return (
         <TextField 
-        {...props}
+        label={props.label}
+        disabled={props.disabled}
         {...field}
         multiline={props.multiline}
         rows={props.rows}
         type={props.type}
         fullWidth
         variant='outlined'
-        error={!!fieldState.error}
+        error={!!fieldState.error || props.addError}
         helperText={fieldState.error?.message}
         />
     )

@@ -6,15 +6,19 @@ import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { Paper } from '@mui/material'
+import { Checkbox, Paper, Switch } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import agent from '../../app/api/agent'
 import { toast } from 'react-toastify'
+import { useState } from 'react'
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import Render from '../../app/layout/Render'
 
 export default function Register() {
   const navigate = useNavigate()
+  const [testAdmin, setTestAdmin] = useState(false)
   const {
     register,
     setError,
@@ -45,8 +49,11 @@ export default function Register() {
       maxWidth='sm'
       sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4 }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      <Avatar sx={{ m: 1, bgcolor: testAdmin ? 'primary.main' : 'secondary.main' }}>
+        <Render condition={testAdmin}>
+        <SupervisorAccountIcon />
         <LockOutlinedIcon />
+        </Render>
       </Avatar>
       <Typography component='h1' variant='h5'>
         Register
@@ -54,7 +61,7 @@ export default function Register() {
       <Box
         component='form'
         onSubmit={handleSubmit((data) =>
-          agent.Account.register(data)
+          agent.Account.register({...data, testAdmin})
             .then(() => {
               toast.success('Registration successful - you can now login')
               navigate('/login')
@@ -103,7 +110,12 @@ export default function Register() {
           error={!!errors.password}
           helperText={errors?.password?.message as string}
         />
-
+        <Box paddingTop={2} alignContent={'center'} flexDirection={'row'} display='flex'>
+        <Switch value={testAdmin} onChange={() => setTestAdmin(!testAdmin)}/>
+        <Typography sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', fontFamily: 'sans-serif'}}>
+        Register as admin (temporarily to test admin functionalities).
+        </Typography>
+        </Box>
         <LoadingButton
           disabled={!isValid}
           loading={isSubmitting}

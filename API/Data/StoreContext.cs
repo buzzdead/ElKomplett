@@ -32,7 +32,8 @@ namespace API.Data
             builder.Entity<Role>()
             .HasData(
                 new Role{Id = 1, Name = "Member", NormalizedName = "MEMBER"},
-                new Role{Id = 2, Name = "Admin", NormalizedName = "ADMIN"}
+                new Role{Id = 2, Name = "Admin", NormalizedName = "ADMIN" },
+                new Role{Id = 3, Name = "Test", NormalizedName = "TEST" }
             );
         }
     }

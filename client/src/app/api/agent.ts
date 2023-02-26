@@ -92,6 +92,8 @@ const Admin = {
   createProduct: (product: any) => requests.postForm('products', createFormData(product)),
   updateProduct: (product: any) => requests.putForm('products', createFormData(product)),
   deleteProduct: (id: number) => requests.delete(`products/${id}`),
+  createConfig: (config: any) => requests.postForm('config', createFormData(config)),
+  updateConfig: (config: any) => requests.putForm('config', createFormData(config))
 }
 
 const Catalog = {

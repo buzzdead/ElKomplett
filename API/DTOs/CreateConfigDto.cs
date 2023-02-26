@@ -1,17 +1,19 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
 namespace API.DTOs
 {
     public class CreateConfigDto
     {
-         public int? Id { get; set; }
+        [Required]
         public long Price { get; set; }
+        [Required]
         public int QuantityInStock { get; set; }
+        [Required]
         public string Key { get; set; }
+        [Required]
         public string Value { get; set; }
         public IFormFile File { get; set; }
-        public int? ProductId { get; set; }
-        public bool? defaultProduct { get; set; }
+        [Required]
+        public int ProductId { get; set; }
     }
 }

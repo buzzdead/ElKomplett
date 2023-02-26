@@ -24,11 +24,11 @@ namespace API.data.Migrations
 
             modelBuilder.Entity("API.DTOs.Config", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Key")
                         .HasColumnType("text");
@@ -39,17 +39,17 @@ namespace API.data.Migrations
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
 
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("integer");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
-
-                    b.Property<bool?>("defaultProduct")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -247,6 +247,12 @@ namespace API.data.Migrations
                             Id = 2,
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Test",
+                            NormalizedName = "TEST"
                         });
                 });
 
@@ -259,6 +265,9 @@ namespace API.data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("AdminTokens")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -455,7 +464,9 @@ namespace API.data.Migrations
                 {
                     b.HasOne("API.Entities.Product", null)
                         .WithMany("Configurables")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("API.Entities.BasketItem", b =>

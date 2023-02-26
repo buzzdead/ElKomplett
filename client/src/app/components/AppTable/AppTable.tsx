@@ -21,7 +21,7 @@ export default function AppTable({tableData, sx, component}: Props) {
 
   const renderTableRow = (row: TableData) => {
     return (
-      <TableRow>
+      <TableRow key={row.key}>
         <TableCell>{row.key}</TableCell>
         <TableCell component={row.component} scope={row.scope}>{row.value}</TableCell>
       </TableRow>

@@ -2984,11 +2984,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+      "projectUniqueName": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "c:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+      "projectPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
       "packagesPath": "C:\\Users\\sigmu\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\sigmu\\restorte\\Restore\\API\\obj\\",
+      "outputPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\sigmu\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3073,7 +3073,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }
