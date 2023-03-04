@@ -35,6 +35,7 @@ namespace API.data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AdminTokens = table.Column<int>(type: "integer", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -330,7 +331,8 @@ namespace API.data.Migrations
                 values: new object[,]
                 {
                     { 1, null, "Member", "MEMBER" },
-                    { 2, null, "Admin", "ADMIN" }
+                    { 2, null, "Admin", "ADMIN" },
+                    { 3, null, "Test", "TEST" }
                 });
 
             migrationBuilder.CreateIndex(

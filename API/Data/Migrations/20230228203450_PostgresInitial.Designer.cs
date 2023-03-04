@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230225222346_AdminTokensAdded")]
-    partial class AdminTokensAdded
+    [Migration("20230228203450_PostgresInitial")]
+    partial class PostgresInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
