@@ -1,8 +1,6 @@
-using API.Entities;
+using API.Entities.ConfigAggregate;
 using API.Entities.OrderAggregate;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
@@ -18,6 +16,7 @@ namespace API.Data
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<Config> Config { get; set; }
+        public DbSet<ConfigPresetComposition> ConfigPresetCompositions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

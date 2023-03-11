@@ -22,6 +22,7 @@ namespace API.Controllers
         {
             var query = _context.Products
             .Include(p => p.Configurables)
+            .Include(p => p.ConfigPresets)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
             .Filter(productParams.Brands, productParams.Types)
@@ -37,7 +38,7 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.Include(p => p.Configurables).FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.Include(p => p.Configurables).Include(d => d.ConfigPresets).FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return NotFound();
 

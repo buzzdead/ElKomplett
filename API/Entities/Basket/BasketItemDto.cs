@@ -1,5 +1,10 @@
-namespace API.DTOs
+
+
+using API.Entities.ConfigAggregate;
+
+namespace API.Entities
 {
+    
     public class BasketItemDto
     {
         public int ProductId { get; set; }

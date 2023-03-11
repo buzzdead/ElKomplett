@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace API.data.Migrations
+namespace API.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
     partial class StoreContextModelSnapshot : ModelSnapshot
@@ -21,42 +21,6 @@ namespace API.data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("API.DTOs.Config", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Key")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PictureUrl")
-                        .HasColumnType("text");
-
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("QuantityInStock")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Config");
-                });
 
             modelBuilder.Entity("API.Entities.Basket", b =>
                 {
@@ -107,6 +71,87 @@ namespace API.data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("BasketItems");
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.Config", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("QuantityInStock")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Config");
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.ConfigPreset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ConfigPresetCompositionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfigPresetCompositionId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ConfigPreset");
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.ConfigPresetComposition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfigPresetCompositions");
                 });
 
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
@@ -177,9 +222,6 @@ namespace API.data.Migrations
 
                     b.Property<string>("Brand")
                         .HasColumnType("text");
-
-                    b.Property<bool?>("Configurable")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -460,15 +502,6 @@ namespace API.data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("API.DTOs.Config", b =>
-                {
-                    b.HasOne("API.Entities.Product", null)
-                        .WithMany("Configurables")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("API.Entities.BasketItem", b =>
                 {
                     b.HasOne("API.Entities.Basket", "Basket")
@@ -486,6 +519,26 @@ namespace API.data.Migrations
                     b.Navigation("Basket");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.Config", b =>
+                {
+                    b.HasOne("API.Entities.Product", null)
+                        .WithMany("Configurables")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.ConfigPreset", b =>
+                {
+                    b.HasOne("API.Entities.ConfigAggregate.ConfigPresetComposition", null)
+                        .WithMany("Configurations")
+                        .HasForeignKey("ConfigPresetCompositionId");
+
+                    b.HasOne("API.Entities.Product", null)
+                        .WithMany("ConfigPresets")
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
@@ -627,6 +680,11 @@ namespace API.data.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("API.Entities.ConfigAggregate.ConfigPresetComposition", b =>
+                {
+                    b.Navigation("Configurations");
+                });
+
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
                 {
                     b.Navigation("OrderItems");
@@ -634,6 +692,8 @@ namespace API.data.Migrations
 
             modelBuilder.Entity("API.Entities.Product", b =>
                 {
+                    b.Navigation("ConfigPresets");
+
                     b.Navigation("Configurables");
                 });
 

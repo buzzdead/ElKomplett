@@ -30,8 +30,11 @@ public static class ControllerExtensions
     {
         var roles = await userManager.GetRolesAsync(user);
         if (roles.Contains("Test"))
+        {
         user.AdminTokens += 1;
-        return user.AdminTokens < 136;
+        return user.AdminTokens <= 100;
+        }
+        return true;
 
     }
 }

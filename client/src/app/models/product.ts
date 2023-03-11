@@ -8,6 +8,12 @@ export interface Configurable {
   pictureUrl?: string
   publicId?: string
   file?: any
+
+}
+
+export interface ConfigPreset {
+  configPresetKeys: string[]
+  configPresetValues: string[]
 }
 
 export interface IProduct {
@@ -19,8 +25,9 @@ export interface IProduct {
     type?: string;
     brand: string;
     quantityInStock?: number;
-    configureable?: boolean;
+    configurable?: boolean;
     configurables?: Configurable[]
+    configPresets?: {key: string, value: string}[]
 
   }
 

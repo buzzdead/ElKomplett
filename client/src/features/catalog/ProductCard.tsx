@@ -23,7 +23,6 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const { status } = useAppSelector(state => state.basket)
   const dispatch = useAppDispatch()
-  if(product.name === 'asdf') console.log(product)
 
   return (
     <Card>
@@ -54,7 +53,7 @@ export default function ProductCard({ product }: Props) {
         </Typography>
       </CardContent>
       <CardActions>
-        <LoadingButton loading={status === ('pendingAddItem' + product.id)} onClick={() => dispatch(addBasketItemAsync({productId: product.id}))} size='small'>
+        <LoadingButton loading={status === ('pendingAddItem' + product.id)} onClick={() => dispatch(addBasketItemAsync({productId: product.id, quantity: 1}))} size='small'>
           Add to cart
         </LoadingButton>
         <Button component={Link} to={`/catalog/${product.id}`} size='small'>

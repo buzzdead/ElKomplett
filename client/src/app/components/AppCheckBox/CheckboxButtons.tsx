@@ -5,16 +5,17 @@ import { useUpdateEffect } from 'usehooks-ts'
 interface Props {
     items: string[]
     checked?: string[]
+    flexRow?: boolean
     onChange: (items: string[]) => void
 }
 
-export default function CheckboxButtons({items, checked, onChange}: Props) {
+export default function CheckboxButtons({items, checked, onChange, flexRow = false}: Props) {
     const [checkedItems, setCheckedItems] = useState(checked || [])
     const timer = useRef<NodeJS.Timeout>()
 
     const debouncedOnChange = () => {
         if(timer.current) clearTimeout(timer.current)
-        timer.current = setTimeout(() => {console.log("adsf"); onChange(checkedItems)}, 600)
+        timer.current = setTimeout(() => {onChange(checkedItems)}, 600)
     }
 
     useUpdateEffect(() => {
@@ -28,7 +29,7 @@ export default function CheckboxButtons({items, checked, onChange}: Props) {
         setCheckedItems(newChecked)
     }
     return (
-        <FormGroup>
+        <FormGroup sx={{display: 'flex', flexDirection: flexRow ? 'row' : 'column' }}>
             {items.map(item => (
               <FormControlLabel control={<Checkbox checked={checkedItems.indexOf(item) !== -1} onClick={() => handleChecked(item)} />} label={item} key={item} />
             ))}

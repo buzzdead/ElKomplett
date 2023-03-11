@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Box, Button, Grid, Paper, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Typography } from '@mui/material'
 import { FieldValues, useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import AppDropzone from '../../app/components/AppDropzone'
@@ -8,7 +8,9 @@ import agent from '../../app/api/agent'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { productConfigurationSchema } from './productValidation'
 import Render from '../../app/layout/Render'
-import { Configurable } from '../../app/models/product'
+import { ConfigPreset, Configurable } from '../../app/models/product'
+import ConfigDialog, { IConfigPresetComposition } from './ConfigDialog'
+import { handleProductsToAdd } from '../../app/util/util'
 
 interface Props {
   productId: number
@@ -17,6 +19,9 @@ interface Props {
 
 const ProductConfigurations = ({ productId, configs }: Props) => {
   const [configurations, setConfigurations] = useState<number>(1 + (configs?.length || 0))
+  const [configAdded, setConfigAdded] = useState(false)
+  const [defaultKey, setDefaultKey] = useState('')
+  const [multipleValues, setMultipleValues] = useState<string[]>()
   const { control, handleSubmit, watch } = useForm({
     resolver: yupResolver(productConfigurationSchema(configurations)),
   })
@@ -27,31 +32,13 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
   }
 
   async function handleSubmitData(data: FieldValues) {
-    const dataArray = []
+    console.log(multipleValues)
+    console.log(multipleValues !== undefined && multipleValues.length !== 0)
+    const preset: ConfigPreset = {configPresetKeys: defaultKey.split(','), configPresetValues: multipleValues!}
+    const dataArray = handleProductsToAdd(configurations, data, configs!, preset)
 
-    for (let i = 0; i < configurations; i++) {
-      const id = data[`id${i}`]
-      const productId = data[`productId${i}`]
-      const value = data[`value${i}`]
-      const key = data[`key${i}`]
-      const quantityInStock = data[`quantityInStock${i}`]
-      const price = data[`price${i}`]
-      const file = data[`file${i}`]
-
-      if (productId && value && key && quantityInStock && price) {
-        if(id)
-        {
-          const cfg = configs && configs?.find(cfg => cfg?.id?.toString() === id.toString())
-          if(file === null && value === cfg?.value.toString() && key === cfg?.key.toString() && quantityInStock === cfg?.quantityInStock.toString() && price === cfg?.price.toString())
-            continue
-        dataArray.push({ id, productId, value, key, quantityInStock, price, file })
-        }
-        else
-        dataArray.push({ productId, value, key, quantityInStock, price, file })
-      }
-    }
     dataArray.forEach(async (array, id) => {
-      array.id 
+      array.id
         ? agent.Admin.updateConfig(array)
             .then((res) => console.log(res))
             .catch((error) => console.log(error))
@@ -72,6 +59,29 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
 
   const getConfigValue = (index: number, value: keyof Configurable, alt?: string) => {
     return configs && configs[index] ? (alt ? alt : configs[index][value]?.toString()) : alt || ''
+  }
+  const handleCloseModal = (numberOfValues: number, key: string, n?: IConfigPresetComposition[]) => {
+
+      setConfigAdded(true)
+      setConfigurations(numberOfValues)
+      setDefaultKey(key)
+      const values = n && n.map(e => e.configurations.map(e2 => e2.value))
+      const resultArray = values && values[0].flatMap((color) => values[1].map((size) => color + ' ' + size));
+      setMultipleValues(resultArray)
+      console.log(values)
+      if(values) {
+        n.forEach(e => e.configurations.forEach(async cfg => await agent.Admin.addConfigPreset(cfg, productId)))
+      }
+    
+  }
+
+  useEffect(() => {
+    if(configs?.length! > 0)
+    setConfigAdded(true)
+  }, [configs])
+
+  if(configs?.length === 0 && !configAdded) {
+    return <ConfigDialog handleConfigSubmit={(k, v, n) => handleCloseModal(k, v, n)} />
   }
 
   return (
@@ -114,7 +124,7 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
               <AppTextInput
                 control={control}
                 name={`key${index}`}
-                defaultValue={getConfigValue(index, 'key')}
+                defaultValue={getConfigValue(index, 'key', defaultKey)}
                 label='Key'
                 type='string'
               />
@@ -123,7 +133,7 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
               <AppTextInput
                 addError={valuesWithDuplicates[index].hasDuplicate}
                 control={control}
-                defaultValue={getConfigValue(index, 'value')}
+                defaultValue={getConfigValue(index, 'value', multipleValues && multipleValues[index])}
                 name={`value${index}`}
                 label='Value'
                 type='string'

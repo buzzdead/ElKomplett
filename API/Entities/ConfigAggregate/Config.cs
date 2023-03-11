@@ -1,4 +1,4 @@
-namespace API.DTOs
+namespace API.Entities.ConfigAggregate
 {
     public class Config : ImageDto
     {
@@ -10,5 +10,6 @@ namespace API.DTOs
         public string Value { get; set; }
         public string PictureUrl { get; set; }
         public int ProductId { get; set; }
+
     }
 }

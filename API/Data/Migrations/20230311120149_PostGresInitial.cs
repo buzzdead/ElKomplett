@@ -6,10 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace API.data.Migrations
+namespace API.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class PostgresInitial : Migration
+    public partial class PostGresInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,6 +72,19 @@ namespace API.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ConfigPresetCompositions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Key = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfigPresetCompositions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -109,8 +122,7 @@ namespace API.data.Migrations
                     Type = table.Column<string>(type: "text", nullable: true),
                     Brand = table.Column<string>(type: "text", nullable: true),
                     QuantityInStock = table.Column<int>(type: "integer", nullable: false),
-                    PublicId = table.Column<string>(type: "text", nullable: true),
-                    Configurable = table.Column<bool>(type: "boolean", nullable: true)
+                    PublicId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -325,6 +337,32 @@ namespace API.data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ConfigPreset",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true),
+                    ConfigPresetCompositionId = table.Column<int>(type: "integer", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfigPreset", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConfigPreset_ConfigPresetCompositions_ConfigPresetCompositi~",
+                        column: x => x.ConfigPresetCompositionId,
+                        principalTable: "ConfigPresetCompositions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ConfigPreset_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -388,6 +426,16 @@ namespace API.data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ConfigPreset_ConfigPresetCompositionId",
+                table: "ConfigPreset",
+                column: "ConfigPresetCompositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfigPreset_ProductId",
+                table: "ConfigPreset",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderId",
                 table: "OrderItem",
                 column: "OrderId");
@@ -418,6 +466,9 @@ namespace API.data.Migrations
                 name: "Config");
 
             migrationBuilder.DropTable(
+                name: "ConfigPreset");
+
+            migrationBuilder.DropTable(
                 name: "OrderItem");
 
             migrationBuilder.DropTable(
@@ -428,6 +479,9 @@ namespace API.data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Baskets");
+
+            migrationBuilder.DropTable(
+                name: "ConfigPresetCompositions");
 
             migrationBuilder.DropTable(
                 name: "Products");

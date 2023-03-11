@@ -1,11 +1,10 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
-
 namespace API.DTOs
 {
-    public class CreateProductDto
+    public class UpdateProductDto
     {
+        public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
         [Required]
@@ -13,7 +12,6 @@ namespace API.DTOs
         [Required]
         [Range(100, Double.PositiveInfinity)]
         public long Price { get; set; }
-        [Required]
         public IFormFile File { get; set; }
         [Required]
         public string Type { get; set; }
@@ -22,7 +20,5 @@ namespace API.DTOs
         [Required]
         [Range(0, 200)]
         public int QuantityInStock { get; set; }
-        public bool? Configurable { get; set; }
-        
     }
 }

@@ -26,10 +26,10 @@ export const fetchBasketAsync = createAsyncThunk<Basket>(
 
 export const addBasketItemAsync = createAsyncThunk<
   Basket,
-  { productId: number; quantity?: number }
->('basket/addBasketItemAsync', async ({ productId, quantity = 1 }, thunkAPI) => {
+  { productId: number; quantity: number, configId?: number }
+>('basket/addBasketItemAsync', async ({ productId, quantity, configId }, thunkAPI) => {
   try {
-    return await agent.Basket.addItem(productId, quantity)
+    return await agent.Basket.addItem(productId, quantity, configId)
   } catch (error: any) {
     return thunkAPI.rejectWithValue({ error: error.data })
   }

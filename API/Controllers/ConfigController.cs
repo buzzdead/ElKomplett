@@ -1,3 +1,5 @@
+using API.DTOs.Config;
+using API.Entities.ConfigAggregate;
 using AutoMapper;
 
 namespace API.Controllers
@@ -19,20 +21,20 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin, Test")]
         [HttpPost(Name = "AddConfig")]
-        public async Task<ActionResult<Config>> AddConfig([FromForm] CreateConfigDto configDto)
+        public async Task<ActionResult<Config>> AddConfig([FromForm] CreateConfigDto createConfigDto)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
             if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
 
-            var config = _mapper.Map<Config>(configDto);
+            var config = _mapper.Map<Config>(createConfigDto);
 
-            var product = await _context.Products.FindAsync(configDto.ProductId);
+            var product = await _context.Products.FindAsync(createConfigDto.ProductId);
 
-            config = (Config)await this.AddImageAsync(configDto.File, config, _imageService);
+            config = (Config)await this.AddImageAsync(createConfigDto.File, config, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            product.AddItem(config);
+            product.AddConfig(config);
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -40,6 +42,72 @@ namespace API.Controllers
 
             return BadRequest(new ProblemDetails { Title = "Problem updaintg config" });
 
+        }
+
+        [Authorize(Roles = "Admin, Test")]
+        [HttpPost("AddConfigPreset")]
+        public async Task<ActionResult<ConfigPreset>> AddConfigPreset(CreateConfigPresetCompositionDto createConfigPresetComposition)
+        {
+
+            var configPresetComposition = _mapper.Map<ConfigPresetComposition>(createConfigPresetComposition);
+
+            createConfigPresetComposition.ConfigPresets.ForEach(cfg => configPresetComposition.AddItem(new ConfigPreset { Key = createConfigPresetComposition.Key, Value = cfg.Value }));
+
+            _context.ConfigPresetCompositions.Add(configPresetComposition);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok(configPresetComposition);
+
+            return BadRequest(new ProblemDetails { Title = "Problem creating new configPreset" });
+        }
+
+        [Authorize(Roles = "Admin, Test")]
+        [HttpGet("GetConfigPresets")]
+        public async Task<ActionResult<List<ConfigPresetComposition>>> GetConfigPresets()
+        {
+            var configPresetCompositions = await _context.ConfigPresetCompositions.Include(p => p.Configurations).ToListAsync();
+            return configPresetCompositions;
+        }
+
+        [Authorize(Roles = "Admin, Test")]
+        [HttpPost("CreateConfigPresetComposition")]
+        public async Task<ActionResult<ConfigPresetComposition>> CreateConfigPresetComposition(CreateConfigPresetCompositionDto createConfigPresetCompositionDto)
+        {
+            var configPresetComposition = _mapper.Map<ConfigPresetComposition>(createConfigPresetCompositionDto);
+            configPresetComposition.Configurations.AddRange(_mapper.Map<List<ConfigPreset>>(createConfigPresetCompositionDto.ConfigPresets));
+            configPresetComposition.Configurations.ForEach(e => e.Key = configPresetComposition.Key);
+            await _context.ConfigPresetCompositions.AddAsync(configPresetComposition);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok(configPresetComposition);
+            else return BadRequest(new ProblemDetails { Title = "Problem creating config preset composition" });
+
+        }
+        [HttpDelete("DeleteCompositions")]
+        public async Task<ActionResult> DeleteConfigPresetCompositions()
+        {
+            var presetCompositions = _context.ConfigPresetCompositions;
+            _context.ConfigPresetCompositions.RemoveRange(presetCompositions);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin, Test")]
+        [HttpPost("AddConfigPresetComposition/{productId}")]
+        public async Task<ActionResult<Product>> AddConfigPreset(int productId, [FromBody] ConfigPresetDto configPresetDto)
+        {
+            var product = await _context.Products.FindAsync(productId);
+
+            var configPreset = _mapper.Map<ConfigPreset>(configPresetDto);
+
+            product.AddConfigPreset(configPreset);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result)
+                return Ok(product);
+            else
+                return BadRequest(new ProblemDetails { Title = "Problem adding compositions" });
         }
 
         [Authorize(Roles = "Admin, Test")]

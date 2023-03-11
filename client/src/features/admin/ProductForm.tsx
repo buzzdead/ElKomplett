@@ -25,7 +25,6 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const { control, reset, handleSubmit, watch, formState: {isDirty, isSubmitting, isValid} } = useForm({
     resolver: yupResolver(validationSchema(product === undefined || product === null))
   })
-  console.log(product)
   const { brands, types } = useProducts()
   const watchFile = watch('file', null)
   const dispatch = useAppDispatch()

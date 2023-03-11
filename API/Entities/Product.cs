@@ -1,4 +1,4 @@
-using System.Linq;
+using API.Entities.ConfigAggregate;
 
 namespace API.Entities
 {
@@ -13,10 +13,10 @@ namespace API.Entities
         public string Brand { get; set; }
         public int QuantityInStock { get; set; }
         public string PublicId { get; set; }
-        public bool? Configurable { get; set; }
         public List<Config> Configurables { get; set; } = new ();
+        public List<ConfigPreset> ConfigPresets { get; set; } = new();
 
-        public void AddItem(Config config) 
+        public void AddConfig(Config config) 
         {
             Configurables.Add(new Config{
                 ProductId = Id,
@@ -27,12 +27,11 @@ namespace API.Entities
                 PublicId = config.PublicId,
                 PictureUrl = config.PictureUrl,
             });
-            Configurable = true;
         }
 
-        public void RemoveItem(Config config) 
+        public void AddConfigPreset(ConfigPreset configPreset) 
         {
-            Configurables.Remove(config);
+            ConfigPresets.Add(configPreset);
         }
     }
 }

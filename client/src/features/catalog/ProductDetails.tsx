@@ -13,10 +13,21 @@ import AppTable, { TableData } from '../../app/components/AppTable/AppTable'
 import RadioButtonGroup from '../../app/components/RadioButtonGroup'
 import Render from '../../app/layout/Render'
 import { Configurable } from '../../app/models/product'
+import './Product.css'
 
 type cfg = {
   value: string
   config: Configurable
+}
+
+interface ConfigMap {
+  key: string
+  values: string[]
+}
+
+interface IRadioButton {
+  key: string
+  checkedValue: string
 }
 
 export default function ProductDetails() {
@@ -27,7 +38,7 @@ export default function ProductDetails() {
   const { status: productStatus } = useAppSelector((state) => state.catalog)
   const [newQuantity, setNewQuantity] = useState(0)
   const [config, setConfig] = useState<cfg>()
-
+  const [checkedRadioButton, setCheckedRadioButton] = useState<IRadioButton[]>([{key: '', checkedValue: ''}])  
   const basketItem = basket?.items.find(
     (i: { productId: number | undefined }) => i.productId === product?.id,
   )
@@ -37,7 +48,7 @@ export default function ProductDetails() {
       setNewQuantity(basketItem.quantity)
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))
-  }, [id, basketItem, dispatch, product, newQuantity])
+  }, [id, basketItem, dispatch, product])
 
   function handleInputChange(event: any) {
     if (event.target.value >= 0) {
@@ -55,10 +66,15 @@ export default function ProductDetails() {
       : dispatch(removeBasketItemAsync({ productId, quantity }))
   }
 
-  function handleConfigChange (e: any) {
-    const currentConfig = product?.configurables?.find((b) => b.value === e)
-    currentConfig !== undefined && setConfig({value: e, config: currentConfig})
-
+  function handleConfigChange(e: any, key: string = '') {
+    const current = checkedRadioButton.map(checked => checked.key === key ? {key: key, checkedValue: e} : checked)
+    const hasKey = current.find(e => e.key === key)
+    if(!hasKey) current.push({key: key, checkedValue: e})
+    const newConfig = current.filter(e => e.checkedValue !== '')
+    const newConfigValue = newConfig.map(e => e.checkedValue).join(' ')
+    const currentConfig = product?.configurables?.find(e => e.value === newConfigValue)
+    if(currentConfig) setConfig({config: currentConfig, value: currentConfig.value})
+    setCheckedRadioButton(current)
   }
 
   if (productStatus.includes('pending')) return <LoadingComponent message='Loading product' />
@@ -124,36 +140,52 @@ export default function ProductDetails() {
     )
   }
 
-  const cfgValues: {label: string, value: string}[] = product.configurables?.map((e) => ({label: e.value, value: e.value})) || []
+  const cfgValues: { label: string; value: string }[] =
+    product.configurables?.map((e) => ({ label: e.value, value: e.value })) || []
+
+    
+  const configMap: ConfigMap[] = []
+  product.configPresets?.map(cfg => {
+    const key = configMap.find(e => e.key === cfg.key)
+    key ? key.values.push(cfg.value) : configMap.push({key: cfg.key, values: [cfg.value]})
+  })
+console.log(checkedRadioButton)
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>
-        <img src={config?.config.pictureUrl || product.pictureUrl} alt={product.name} style={{ width: '100%' }} />
+        <img
+          className='productImage'
+          src={config?.config.pictureUrl || product.pictureUrl}
+          alt={product.name}
+          style={{ width: '100%' }}
+        />
       </Grid>
       <Grid item xs={6}>
         <Typography variant='h3'>{product.name}</Typography>
         <Divider sx={{ mb: 2 }} />
         <Typography variant='h4' color='secondary'>
-          {currencyFormat(
-            config?.config?.price || product.price,
-          )}
+          {currencyFormat(config?.config?.price || product.price)}
         </Typography>
         <AppTable tableData={tableData} />
-        <Grid container sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1 }}>
-          <Render
-            condition={product?.configurables !== undefined && product.configurables.length !== 0}
-          >
+        <Grid container sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}>
+          <Render condition={configMap.length > 0}>
             <>
-              <Box marginTop={1}>
-                Choose {product?.configurables && product.configurables[0]?.key}:
+              {configMap.map(cfg => {
+                return (
+                  <>
+                <Box marginTop={1}>
+                Choose {cfg.key}:
               </Box>
               <RadioButtonGroup
                 flexDirection='row'
-                selectedValue={config?.value || ''}
-                options={cfgValues}
-                onChange={(e) => handleConfigChange(e.target.value)}
+                selectedValue={checkedRadioButton.find(b => b.key === cfg.key)?.checkedValue || ''}
+                options={cfg.values.map(e => ({value: e, label: e}))}
+                onChange={(e) => handleConfigChange(e.target.value, cfg.key)}
               />
+              </>
+                )
+              })}
             </>
           </Render>
         </Grid>
