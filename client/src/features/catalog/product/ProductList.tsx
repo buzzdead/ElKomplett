@@ -1,10 +1,10 @@
 import { Grid, useMediaQuery } from '@mui/material'
-import { IProduct } from '../../app/models/product'
+import { IProduct } from '../../../app/models/product'
 import React from 'react'
 import ProductCard from './ProductCard'
-import { useAppSelector } from '../../app/store/configureStore'
+import { useAppSelector } from '../../../app/store/configureStore'
 import ProductCardSkeleton from './ProductCardSkeleton'
-import Render from '../../app/layout/Render'
+import Render from '../../../app/layout/Render'
 
 interface Props {
   products: IProduct[]

@@ -1,8 +1,8 @@
 import { InputLabel, Select, MenuItem, SelectChangeEvent, FormControl, Box, Paper } from "@mui/material";
 import { useState } from "react";
 import { string } from "yup";
-import CheckboxButtons from "../../app/components/AppCheckBox/CheckboxButtons";
-import Render from "../../app/layout/Render";
+import CheckboxButtons from "../../../app/components/AppCheckBox/CheckboxButtons";
+import Render from "../../../app/layout/Render";
 import { IConfigPresetComposition } from "./ConfigDialog";
 
 interface Props {

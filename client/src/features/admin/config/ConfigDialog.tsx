@@ -10,9 +10,9 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import agent from '../../app/api/agent'
-import AppTextInput from '../../app/components/AppTextInput'
-import Render from '../../app/layout/Render'
+import agent from '../../../app/api/agent'
+import AppTextInput from '../../../app/components/AppTextInput'
+import Render from '../../../app/layout/Render'
 import ConfigPreset from './ConfigPreset'
 
 interface Props {
@@ -34,12 +34,11 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
 
   const handleCloseModal = () => {
     if(multipleKeys) {
-      const key2 = checkedConfigPreset.map(e => e.key).join(", ")
-      //pass checkedConfigPreset, take values from it, take composition from it. add composition to product as Dto.
+      const keys = checkedConfigPreset.map(e => e.key).join(", ")
       const values = checkedConfigPreset.map(e => e.configurations.map(e2 => e2.value))
-      const totalLength = values.reduce((acc, curr) => acc.concat(curr)).length;
+      const configLength = values.reduce((acc, curr) => acc.concat(curr)).length;
       setAddingConfig(false)
-      handleConfigSubmit(totalLength, key2, checkedConfigPreset)
+      handleConfigSubmit(configLength, keys, checkedConfigPreset)
       return
     }
     if (!control._fields['configKey']?._f.value) alert('Must enter value')
