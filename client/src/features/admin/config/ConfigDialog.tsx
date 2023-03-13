@@ -8,9 +8,10 @@ import {
   Button,
   Grid,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useConfig } from 'app/hooks/useConfig'
+import LoadingComponent from 'app/layout/LoadingComponent'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import agent from '../../../app/api/agent'
 import AppTextInput from '../../../app/components/AppTextInput'
 import Render from '../../../app/layout/Render'
 import ConfigPreset from './ConfigPreset'
@@ -29,8 +30,8 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
   const [addingConfig, setAddingConfig] = useState(false)
   const { control } = useForm({})
   const [multipleKeys, setMultipleKeys] = useState(false)
-  const [configPresets, setConfigPresets] = useState<IConfigPresetComposition[]>([])
   const [checkedConfigPreset, setCheckedConfigPreset] = useState<IConfigPresetComposition[]>([])
+  const {configPresets, loading} = useConfig(multipleKeys)
 
   const handleCloseModal = () => {
     if(multipleKeys) {
@@ -49,9 +50,6 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
       handleConfigSubmit(numberOfValues, key)
     }
   }
-  useEffect(() => {
-    if (multipleKeys) agent.Admin.getConfigPresets().then((res) => setConfigPresets(res))
-  }, [multipleKeys])
 
   const getFieldValue = (fieldValue: any) => {
     return control._fields[fieldValue]?._f.value
@@ -62,7 +60,6 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
     setCheckedConfigPreset(newCheckedConfigPreset)
 
   }
-  console.log(checkedConfigPreset)
   if (addingConfig) {
     return (
       <>
@@ -71,14 +68,14 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
             Configure the product
           </DialogTitle>
           <DialogContent>
-            <Render condition={multipleKeys}>
+            <Render condition={multipleKeys && !loading}>
               <Box padding={2} sx={{display: 'flex', gap: 2, flexDirection: 'column'}}>
               <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
-              <ConfigPreset onChange={handleOnChange} label='Preset 1' items={configPresets}/>
+              <ConfigPreset onChange={handleOnChange} label='Preset 1' items={configPresets!}/>
               </Grid>
               <Grid item xs={12} sm={6}>
-              <ConfigPreset onChange={handleOnChange} label='Preset 2' items={configPresets}/>
+              <ConfigPreset onChange={handleOnChange} label='Preset 2' items={configPresets!}/>
               </Grid>
               </Grid>
               </Box> 

@@ -58,6 +58,9 @@ const Configurations = ({ productId, configs }: Props) => {
   const getConfigValue = (index: number, value: keyof Configurable, alt?: string) => {
     return configs && configs[index] ? (alt ? alt : configs[index][value]?.toString()) : alt || ''
   }
+  const removeConfig = async (id: number) => {
+    await agent.Admin.removeConfig(id)
+  }
 
   // Rewrite entirely (not sure how yet)
   const handleCloseModal = (numberOfValues: number, key: string, n?: IConfigPresetComposition[]) => {
