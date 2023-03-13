@@ -137,7 +137,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Admin, Test")]
-        [HttpDelete("{id}", Name = "RemoveConfigs")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveConfig(int id)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -149,6 +149,7 @@ namespace API.Controllers
             var productId = cfg.ProductId;
 
             var product = await _context.Products.FindAsync(productId);
+            product.RemoveConfig(cfg);
 
             if (!string.IsNullOrEmpty(cfg.PublicId) && cfg.PublicId != "0")
                 await _imageService.DeleteImageAsync(cfg.PublicId);
