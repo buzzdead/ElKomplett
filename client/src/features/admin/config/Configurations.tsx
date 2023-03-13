@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Typography } from '@mui/material'
+import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import { FieldValues, useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
-import AppDropzone from '../../app/components/AppDropzone'
-import AppTextInput from '../../app/components/AppTextInput'
-import agent from '../../app/api/agent'
+import AppDropzone from '../../../app/components/AppDropzone'
+import AppTextInput from '../../../app/components/AppTextInput'
+import agent from '../../../app/api/agent'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { productConfigurationSchema } from './productValidation'
-import Render from '../../app/layout/Render'
-import { ConfigPreset, Configurable } from '../../app/models/product'
+import { productConfigurationSchema } from '../productValidation'
+import Render from '../../../app/layout/Render'
+import { ConfigPreset, Configurable } from '../../../app/models/product'
 import ConfigDialog, { IConfigPresetComposition } from './ConfigDialog'
-import { handleProductsToAdd } from '../../app/util/util'
+import { handleProductsToAdd } from '../../../app/util/util'
 
 interface Props {
   productId: number
   configs?: Configurable[]
 }
 
-const ProductConfigurations = ({ productId, configs }: Props) => {
+const Configurations = ({ productId, configs }: Props) => {
   const [configurations, setConfigurations] = useState<number>(1 + (configs?.length || 0))
   const [configAdded, setConfigAdded] = useState(false)
   const [defaultKey, setDefaultKey] = useState('')
@@ -32,8 +32,6 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
   }
 
   async function handleSubmitData(data: FieldValues) {
-    console.log(multipleValues)
-    console.log(multipleValues !== undefined && multipleValues.length !== 0)
     const preset: ConfigPreset = {configPresetKeys: defaultKey.split(','), configPresetValues: multipleValues!}
     const dataArray = handleProductsToAdd(configurations, data, configs!, preset)
 
@@ -60,6 +58,11 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
   const getConfigValue = (index: number, value: keyof Configurable, alt?: string) => {
     return configs && configs[index] ? (alt ? alt : configs[index][value]?.toString()) : alt || ''
   }
+  const removeConfig = async (id: number) => {
+    await agent.Admin.removeConfig(id)
+  }
+
+  // Rewrite entirely (not sure how yet)
   const handleCloseModal = (numberOfValues: number, key: string, n?: IConfigPresetComposition[]) => {
 
       setConfigAdded(true)
@@ -198,4 +201,4 @@ const ProductConfigurations = ({ productId, configs }: Props) => {
   )
 }
 
-export default ProductConfigurations
+export default Configurations

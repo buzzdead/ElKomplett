@@ -94,6 +94,7 @@ const Admin = {
   deleteProduct: (id: number) => requests.delete(`products/${id}`),
   createConfig: (config: any) => requests.postForm('config', createFormData(config)),
   updateConfig: (config: any) => requests.putForm('config', createFormData(config)),
+  removeConfig: (id: any) => requests.delete(`config/${id}`), 
   getConfigPresets: () => requests.get('config/getConfigPresets'),
   addConfigPreset: (configPreset: any, productId: number) => requests.post(`config/AddConfigPresetComposition/${productId}`, configPreset)
 }

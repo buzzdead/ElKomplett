@@ -8,13 +8,13 @@ import {
   CardMedia,
   Typography,
 } from '@mui/material'
-import { IProduct } from '../../app/models/product'
+import { IProduct } from '../../../app/models/product'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { LoadingButton } from '@mui/lab'
-import { currencyFormat } from '../../app/util/util'
-import { useAppDispatch, useAppSelector } from '../../app/store/configureStore'
-import { addBasketItemAsync } from '../basket/basketSlice'
+import { currencyFormat } from '../../../app/util/util'
+import { useAppDispatch, useAppSelector } from '../../../app/store/configureStore'
+import { addBasketItemAsync } from '../../basket/basketSlice'
 
 interface Props {
   product: IProduct

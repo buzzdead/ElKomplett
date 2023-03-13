@@ -1,7 +1,7 @@
 import { debounce, Paper, TextField } from '@mui/material'
 import React, { useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../../app/store/configureStore'
-import { setProductParams } from './catalogSlice'
+import { useAppDispatch, useAppSelector } from '../../../app/store/configureStore'
+import { setProductParams } from '.././catalogSlice'
 
 export default function ProductSearch() {
     const {productParams} = useAppSelector(state => state.catalog)

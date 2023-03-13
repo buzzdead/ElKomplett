@@ -28,6 +28,10 @@ namespace API.Entities
                 PictureUrl = config.PictureUrl,
             });
         }
+        public void RemoveConfig(Config config)
+        {
+            Configurables.Remove(config);
+        }
 
         public void AddConfigPreset(ConfigPreset configPreset) 
         {

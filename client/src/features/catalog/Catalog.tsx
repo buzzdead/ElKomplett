@@ -1,14 +1,14 @@
 import { Grid } from '@mui/material'
-import ProductList from './ProductList'
 import React from 'react'
 import LoadingComponent from '../../app/layout/LoadingComponent'
 import { useAppDispatch } from '../../app/store/configureStore'
 import { setPageNumber } from './catalogSlice'
-import ProductSearch from './productSearch'
 import AppPagination from '../../app/components/AppPagination'
 import useProducts from '../../app/hooks/useProducts'
 import SideBar from '../SideBar'
 import Render from '../../app/layout/Render'
+import ProductSearch from './product/productSearch'
+import ProductList from './product/ProductList'
 
 export default function Catalog() {
   const { products, brands, types, filtersLoaded, metaData } = useProducts()

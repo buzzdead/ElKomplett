@@ -14,7 +14,7 @@ import agent from '../../app/api/agent'
 import { useAppDispatch } from '../../app/store/configureStore'
 import { setProduct } from '../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
-import ProductConfigurations from './ProductConfigurations'
+import Configurations from './config/Configurations'
 
 interface Props {
   product?: IProduct
@@ -66,7 +66,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
         <Tab label="Product Details" />
         <Tab label="Product Configurations" />
       </Tabs>
-      {selectedTab === 0 ? (
+      { //make into own component or use apptable
+      selectedTab === 0 ? (
       <form onSubmit={handleSubmit(handleSubmitData)}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12}>
@@ -120,7 +121,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       </form>
       )
       :
-      <ProductConfigurations configs={product?.configurables} productId={product?.id!} />
+      <Configurations configs={product?.configurables} productId={product?.id!} />
     }
     </Box>
   )
