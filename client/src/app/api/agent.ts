@@ -60,7 +60,9 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)
   },
 )
-
+const options = {
+  headers: {"content-type": "application/json"}
+}
 const requests = {
   get: (url: string, params?: URLSearchParams) => axios.get(url, { params }).then(responseBody),
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
@@ -96,7 +98,10 @@ const Admin = {
   updateConfig: (config: any) => requests.putForm('config', createFormData(config)),
   removeConfig: (id: any) => requests.delete(`config/${id}`), 
   getConfigPresets: () => requests.get('config/getConfigPresets'),
-  addConfigPreset: (configPreset: any, productId: number) => requests.post(`config/AddConfigPresetComposition/${productId}`, configPreset)
+  addConfigPreset: (configPreset: any, productId: number) => requests.post(`config/AddConfigPresetComposition/${productId}`, configPreset),
+  createConfigPresetComposition: (configPreset: any) => requests.post(`config/CreateConfigPresetComposition/`, configPreset),
+  setDefaultProduct: (defaultProduct: any) => requests.putForm(`products/SetDefaultConfig`, createFormData(defaultProduct)),
+  getConfig: (id: any) => requests.get(`config/${id}`)
 }
   
 
@@ -116,18 +121,18 @@ const TestErrors = {
   getValidationerror: () => requests.get('buggy/validation-error'),
 }
 
-const productReq = (productId: number, quantity: number, cfgId?: number) => {
+const productReq = (productId: number, quantity: number, configId?: number) => {
   let str = `basket?productId=${productId}&quantity=${quantity}`
-  if (cfgId) str += `&configId=${cfgId}`
+  if (configId) str += `&configId=${configId}`
   return str
 }
 
 const Basket = {
   get: () => requests.get('basket'),
-  addItem: (productId: number, quantity = 1, cfgId?: number) =>
-    requests.post(productReq(productId, quantity, cfgId), {}),
-  removeItem: (productId: number, quantity = 1, cfgId?: number) =>
-    requests.delete(productReq(productId, quantity, cfgId)),
+  addItem: (productId: number, quantity = 1, configId?: number) =>
+    requests.post(productReq(productId, quantity, configId), {}),
+  removeItem: (productId: number, quantity = 1, configId?: number) =>
+    requests.delete(productReq(productId, quantity, configId)),
 }
 
 const Account = {
