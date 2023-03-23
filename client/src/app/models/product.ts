@@ -1,5 +1,6 @@
 export interface Configurable {
   id?: number;
+  tempId?: number
   price: number;
   quantityInStock: number;
   key: string;
@@ -8,7 +9,6 @@ export interface Configurable {
   pictureUrl?: string
   publicId?: string
   file?: any
-
 }
 
 export interface ConfigPreset {
