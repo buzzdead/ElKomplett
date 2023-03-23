@@ -84,6 +84,7 @@ export const basketSlice = createSlice({
     })
     builder.addMatcher(isAnyOf(addBasketItemAsync.fulfilled, fetchBasketAsync.fulfilled), (state, action) => {
         state.basket = action.payload
+        console.log("ASDf", action.payload)
         state.status = 'idle'
       })
       builder.addMatcher(isAnyOf(addBasketItemAsync.rejected, fetchBasketAsync.rejected), (state, action) => {
