@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react'
 
 export function useConfig(multipleKeys: boolean) {
   const dispatch = useAppDispatch()
+  const {configsLoaded} = useAppSelector(state => state.config)
   const configs = useAppSelector((state) => state.config)
   const configPresets = configs.configPresets
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!multipleKeys) return
-    if (!configPresets) dispatch(fetchConfigPresetCompositionAsync()).then(() => setLoading(false))
+    if (!configsLoaded) dispatch(fetchConfigPresetCompositionAsync())
   }, [dispatch, configs, multipleKeys])
-  return { configPresets, loading }
+  return { configPresets, configsLoaded }
 }

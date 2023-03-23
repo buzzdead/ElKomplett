@@ -7,7 +7,7 @@ namespace API.Entities
     {
         public UserAddress Address { get; set; }
 
-        [Range(0,134)]
+        [Range(0,100)]
         public int? AdminTokens { get; set; }
     }
 }

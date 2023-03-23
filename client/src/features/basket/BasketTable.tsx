@@ -4,7 +4,10 @@ import {
   Paper,
   Box,
 } from '@mui/material'
+import agent from 'app/api/agent'
+import { Configurable } from 'app/models/product'
 import * as React from 'react'
+import { useEffect } from 'react'
 import { TableData } from '../../app/components/AppTable/AppTable'
 import AppTable2D from '../../app/components/AppTable/AppTable2D'
 import { BasketItem } from '../../app/models/basket'
@@ -20,12 +23,13 @@ interface Props {
 export default function BasketTable({ items, isBasket = true }: Props) {
   const { status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
+  const [config, setConfig] = React.useState<Configurable[]>()
 
-  const product = (item: BasketItem) => {
+  const product = (item: BasketItem, cfg?: Configurable) => {
     return (
       <Box display='flex' alignItems='center'>
         <img
-          src={item.pictureUrl}
+          src={cfg?.pictureUrl || item.pictureUrl}
           alt={item.name}
           style={{
             height: 50,
@@ -33,7 +37,7 @@ export default function BasketTable({ items, isBasket = true }: Props) {
           }}
         />
         <span>{item.name}</span>
-      </Box>
+      </Box>  
     )
   }
 
@@ -89,15 +93,28 @@ export default function BasketTable({ items, isBasket = true }: Props) {
     )
   }
 
+  const getConfig = async (configId: number | undefined) => {
+    console.log(configId);
+    if (configId === undefined) return;
+    const abc = await agent.Admin.getConfig(configId);
+    return abc;
+  };
+  useEffect(() => {
+    (async () => {
+      await Promise.all(items.map((item) => getConfig(item.configId))).then(res => setConfig(res));
+    })();
+  }, [items]);
+
   const tableData: TableData[][] = items.map((item) => {
+    const cfg = config?.find(cfg => cfg.id === item.configId)
     return [
       {
         key: 'Product',
-        value: product(item) as any,
+        value: product(item, cfg) as any,
       },
       {
         key: 'Price',
-        value: currencyFormat(item.price),
+        value: currencyFormat(cfg?.price || item.price),
         sx: { alignItems: 'right' },
       },
       {
@@ -107,7 +124,7 @@ export default function BasketTable({ items, isBasket = true }: Props) {
       },
       {
         key: 'Subtotal',
-        value: currencyFormat(item.price * item.quantity),
+        value: currencyFormat((cfg?.price || item.price) * item.quantity),
         sx: { alignItems: 'right' },
       },
       {

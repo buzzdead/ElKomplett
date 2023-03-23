@@ -24,6 +24,7 @@ namespace API.Extensions
                     Type = item.Product.Type,
                     Brand = item.Product.Brand,
                     Quantity = item.Quantity,
+                    ConfigId = item.ConfigId,
                     Configurables = item.Product.Configurables
                 }).ToList()
             };

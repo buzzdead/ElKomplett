@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Grid, Paper, Typography } from '@mui/material'
-import { FieldValues, useForm } from 'react-hook-form'
-import { LoadingButton } from '@mui/lab'
-import AppDropzone from '../../../app/components/AppDropzone'
-import AppTextInput from '../../../app/components/AppTextInput'
+import { Box, Button, Paper, Typography } from '@mui/material'
 import agent from '../../../app/api/agent'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { productConfigurationSchema } from '../productValidation'
-import Render from '../../../app/layout/Render'
-import { ConfigPreset, Configurable } from '../../../app/models/product'
-import ConfigDialog, { IConfigPresetComposition } from './ConfigDialog'
-import { handleProductsToAdd } from '../../../app/util/util'
+import { Configurable } from '../../../app/models/product'
+import ConfigDialog, { IConfigPresetComposition } from './ConfigPreset/ConfigDialog'
+import { createNewConfig } from '../../../app/util/util'
+import Config from './Config'
+import { LoadingButton } from '@mui/lab'
+import { FieldValues, useForm } from 'react-hook-form'
+import _ from 'lodash'
+import ConfigPreset from './ConfigPreset/ConfigPreset'
+import { toast } from 'react-toastify'
 
 interface Props {
   productId: number
@@ -18,186 +17,181 @@ interface Props {
 }
 
 const Configurations = ({ productId, configs }: Props) => {
-  const [configurations, setConfigurations] = useState<number>(1 + (configs?.length || 0))
+  const [configurations, setConfigurations] = useState<Configurable[]>(configs?.map((cfg, id) => {return {...cfg, tempId: id}}) || [])
   const [configAdded, setConfigAdded] = useState(false)
-  const [defaultKey, setDefaultKey] = useState('')
-  const [multipleValues, setMultipleValues] = useState<string[]>()
-  const { control, handleSubmit, watch } = useForm({
-    resolver: yupResolver(productConfigurationSchema(configurations)),
-  })
-  let watchFiles: Array<any> = []
+  const [configPresets, setConfigPresets] = useState<IConfigPresetComposition[]>([])
+  const [defaultKey, setDefaultKey] = useState((configs && configs[0]?.key) || '')
+  const [radioButton, setRadioButton] = useState((configs && configs[0]?.id) || 0)
 
-  for (let i = 0; i < configurations; i += 1) {
-    watchFiles[i] = watch(`file${i}`)
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { isDirty, isSubmitting, isValid },
+  } = useForm({})
+
+  const isUnChanged = (a: Configurable, b: Configurable) => {
+    const aCopy = {
+      value: a.value.toString(),
+      price: a.price.toString(),
+      quantityInStock: a.quantityInStock.toString(),
+    }
+    const bCopy = {
+      value: b.value.toString(),
+      price: b.price.toString(),
+      quantityInStock: b.quantityInStock.toString(),
+    }
+    return b['file'] === null && _.isEqual(aCopy, bCopy)
   }
 
   async function handleSubmitData(data: FieldValues) {
-    const preset: ConfigPreset = {configPresetKeys: defaultKey.split(','), configPresetValues: multipleValues!}
-    const dataArray = handleProductsToAdd(configurations, data, configs!, preset)
+    const dataArray: Configurable[] = Object.values(data)
 
-    dataArray.forEach(async (array, id) => {
-      array.id
-        ? agent.Admin.updateConfig(array)
-            .then((res) => console.log(res))
-            .catch((error) => console.log(error))
-        : agent.Admin.createConfig(array)
-            .then((res) => console.log(res))
-            .catch((error) => console.log(error))
-    })
-  }
+    const promises = dataArray.map(async (config) => {
+      try {
+        // Check if the config has changed before updating it
+        const oldConfig = configurations.find((c) => c.id?.toString() === config.id?.toString())
 
-  const values: any[] = []
-  for (let i = 0; i < configurations; i += 1) {
-    values.push(control._fields[`value${i}`]?._f.value)
-  }
-
-  const valuesWithDuplicates = values.map((value, index) => {
-    return { value: value, hasDuplicate: values.filter((v) => v !== '' && v === value).length > 0 }
-  })
-
-  const getConfigValue = (index: number, value: keyof Configurable, alt?: string) => {
-    return configs && configs[index] ? (alt ? alt : configs[index][value]?.toString()) : alt || ''
-  }
-  const removeConfig = async (id: number) => {
-    await agent.Admin.removeConfig(id)
-  }
-
-  // Rewrite entirely (not sure how yet)
-  const handleCloseModal = (numberOfValues: number, key: string, n?: IConfigPresetComposition[]) => {
-
-      setConfigAdded(true)
-      setConfigurations(numberOfValues)
-      setDefaultKey(key)
-      const values = n && n.map(e => e.configurations.map(e2 => e2.value))
-      const resultArray = values && values[0].flatMap((color) => values[1].map((size) => color + ' ' + size));
-      setMultipleValues(resultArray)
-      console.log(values)
-      if(values) {
-        n.forEach(e => e.configurations.forEach(async cfg => await agent.Admin.addConfigPreset(cfg, productId)))
+        if (!oldConfig || !isUnChanged(oldConfig, config)) {
+          const res = config.id
+            ? await agent.Admin.updateConfig(config).then((res) =>
+                setConfigurations(configurations.map((cfg) => (cfg.id === res.id ? res : cfg))),
+              )
+            : await agent.Admin.createConfig(config)
+          return res
+        } else {
+          return null
+        }
+      } catch (error) {
+        console.log(error)
       }
-    
+    })
+
+    const results = await Promise.all(promises)
+    addPresetsToProduct()
+  }
+
+  const addPresetsToProduct = () => {
+    if (configPresets) {
+      configPresets.forEach(({ configurations }) =>
+        configurations.forEach(
+          async (configuration) => await agent.Admin.addConfigPreset(configuration, productId),
+        ),
+      )
+    }
+  }
+
+  const handleCloseModal = (
+    configKey: string,
+    configPresets?: IConfigPresetComposition[],
+    combinations?: string[],
+  ) => {
+    setConfigAdded(true)
+
+    const newConfigs = combinations?.map((combination, index) =>
+      createNewConfig(configKey, productId, combination, index),
+    )
+    setConfigurations(newConfigs || [])
+    setDefaultKey(configKey)
+    setConfigPresets(configPresets || [])
   }
 
   useEffect(() => {
-    if(configs?.length! > 0)
-    setConfigAdded(true)
+    if (configs?.length! > 0) {
+      setConfigAdded(true)
+    }
   }, [configs])
 
-  if(configs?.length === 0 && !configAdded) {
-    return <ConfigDialog handleConfigSubmit={(k, v, n) => handleCloseModal(k, v, n)} />
+  if (!configAdded && (!configs || configs.length === 0)) {
+    return (
+      <ConfigDialog
+        handleConfigSubmit={(configKey, configPresets, values) =>
+          handleCloseModal(configKey, configPresets, values)
+        }
+      />
+    )
+  }
+
+  const removeConfig = async (config: Configurable) => {
+    if (config.id) {
+      configurations[0].key.split(',').length > 1
+        ? toast.error('Not yet possible')
+        : await agent.Admin.removeConfig(config.id).then((res) =>
+            toast.warning('Config removed, update not yet implemented'),
+          )
+      return
+    }
+    const newConfigurations = configurations.filter((cfg) => cfg.tempId !== config.tempId)
+    setConfigurations(newConfigurations)
+  }
+
+  const setDefaultConfig = async () => {
+    const config = configurations.find(cfg => cfg.id === configurations[radioButton].id)
+    console.log(config)
+    if(!config) {
+      toast.warning("not possible")
+    }
+    else {await agent.Admin.setDefaultProduct({
+      id: config.productId,
+      quantityInStock: config.quantityInStock,
+      price: config.price,
+      pictureUrl: config.pictureUrl,
+    })  
+    }
   }
 
   return (
-    <Box component={Paper} sx={{ p: 4 }}>
-      <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
-        Product Configurations
-      </Typography>
-      <form onSubmit={handleSubmit(handleSubmitData)}>
-        {watchFiles.map((file, index) => (
-          <Grid container spacing={3} sx={{ marginTop: 0.25 }} key={index}>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                control={control}
-                disabled
-                defaultValue={getConfigValue(index, 'id')}
-                name={`id${index}`}
-                label='Id'
-                type='string'
-              />
-            </Grid>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                control={control}
-                defaultValue={getConfigValue(index, 'price')}
-                name={`price${index}`}
-                label='Price'
-                type='number'
-              />
-            </Grid>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                control={control}
-                name={`quantityInStock${index}`}
-                defaultValue={getConfigValue(index, 'quantityInStock')}
-                label='Quantity in Stock'
-                type='number'
-              />
-            </Grid>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                control={control}
-                name={`key${index}`}
-                defaultValue={getConfigValue(index, 'key', defaultKey)}
-                label='Key'
-                type='string'
-              />
-            </Grid>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                addError={valuesWithDuplicates[index].hasDuplicate}
-                control={control}
-                defaultValue={getConfigValue(index, 'value', multipleValues && multipleValues[index])}
-                name={`value${index}`}
-                label='Value'
-                type='string'
-              />
-            </Grid>
-            <Grid item xs={12} sm={1.5}>
-              <AppTextInput
-                disabled
-                defaultValue={productId.toString()}
-                control={control}
-                name={`productId${index}`}
-                label='Product Id'
-                type='string'
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Box
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
-                sx={{ gap: 2 }}
-              >
-                <AppDropzone
-                  height={60}
-                  width={100}
-                  iconSize={'30px'}
-                  control={control}
-                  name={`file${index}`}
-                />
-                <Render
-                  condition={
-                    configs && configs[index] ? configs[index]?.pictureUrl : watchFiles[index]
-                  }
-                >
-                  <img
-                    src={getConfigValue(index, 'pictureUrl', watchFiles[index]?.preview)}
-                    alt='preview'
-                    style={{ maxHeight: 50 }}
-                  />
-                </Render>
-                <Button onClick={() => setConfigurations(configurations - 1)} variant='outlined'>
-                  Remove
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        ))}
-        <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>
-          <Button
-            onClick={() => setConfigurations(configurations + 1)}
-            variant='contained'
-            color='inherit'
-          >
-            Add Configuration
-          </Button>
-          <LoadingButton type='submit' variant='contained' color='success'>
-            Save
-          </LoadingButton>
-        </Box>
-      </form>
-    </Box>
+    <form onSubmit={handleSubmit(handleSubmitData)}>
+      <Box component={Paper} variant='outlined' sx={{ p: 4 }}>
+        <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
+          Product Configurations
+        </Typography>
+      </Box>
+      {configurations.map((config, index) => {
+        return (
+          <Box key={config.tempId}>
+            <Config
+              config={config}
+              removeConfig={removeConfig}
+              control={control}
+              setValue={setValue}
+              watch={watch}
+              index={index}
+              radioNumber={radioButton}
+              setRadioNumber={(i: number) => setRadioButton(i)}
+            />
+          </Box>
+        )
+      })}
+      <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>
+        <Button
+          onClick={() =>
+            setConfigurations([...configurations, createNewConfig(defaultKey, productId, '', configurations.length)])
+          }
+          variant='contained'
+          color='inherit'
+        >
+          {configurations[0].key.split(',').length > 1
+            ? 'Modify configurations'
+            : 'Add Configuration'}
+        </Button>
+        <Button
+          onClick={setDefaultConfig}
+        >
+          Set default config
+        </Button>
+        <LoadingButton
+          type='submit'
+          variant='contained'
+          color='success'
+          disabled={!isDirty || !isValid}
+          loading={isSubmitting}
+        >
+          Save
+        </LoadingButton>
+      </Box>
+    </form>
   )
 }
 

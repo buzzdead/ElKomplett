@@ -15,6 +15,7 @@ import './Product.css'
 import { IRadioButton, ProductConfigs } from './ProductConfigs'
 
 type Config = {
+  id?: number
   value: string
   config: Configurable
 }
@@ -53,7 +54,9 @@ export default function ProductDetails() {
     const addToCart = !basketItem || newQuantity > basketItem.quantity
 
     addToCart
-      ? dispatch(addBasketItemAsync({ productId, quantity }))
+      ? config
+        ? dispatch(addBasketItemAsync({ productId, quantity, configId: config.id })).then(res => console.log("asdfadsfasdfasdf", res))
+        : dispatch(addBasketItemAsync({ productId, quantity }))
       : dispatch(removeBasketItemAsync({ productId, quantity }))
   }
 
@@ -61,7 +64,8 @@ export default function ProductDetails() {
     const newConfig = updatedWithNewValue.filter((e) => e.checkedValue !== '')
     const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
     const currentConfig = product?.configurables?.find((e) => e.value === newConfigValue)
-    if (currentConfig) setConfig({ config: currentConfig, value: currentConfig.value })
+    if (currentConfig)
+      setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
   }
 
   if (productStatus.includes('pending')) return <LoadingComponent message='Loading product' />
@@ -126,6 +130,8 @@ export default function ProductDetails() {
       </Grid>
     )
   }
+
+  console.log(config?.id)
 
   return (
     <Grid container spacing={6}>

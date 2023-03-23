@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.DTOs.Config;
 using API.Entities.ConfigAggregate;
 using AutoMapper;
@@ -23,10 +24,6 @@ namespace API.Controllers
         [HttpPost(Name = "AddConfig")]
         public async Task<ActionResult<Config>> AddConfig([FromForm] CreateConfigDto createConfigDto)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
-
             var config = _mapper.Map<Config>(createConfigDto);
 
             var product = await _context.Products.FindAsync(createConfigDto.ProductId);
@@ -45,24 +42,6 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Admin, Test")]
-        [HttpPost("AddConfigPreset")]
-        public async Task<ActionResult<ConfigPreset>> AddConfigPreset(CreateConfigPresetCompositionDto createConfigPresetComposition)
-        {
-
-            var configPresetComposition = _mapper.Map<ConfigPresetComposition>(createConfigPresetComposition);
-
-            createConfigPresetComposition.ConfigPresets.ForEach(cfg => configPresetComposition.AddItem(new ConfigPreset { Key = createConfigPresetComposition.Key, Value = cfg.Value }));
-
-            _context.ConfigPresetCompositions.Add(configPresetComposition);
-
-            var result = await _context.SaveChangesAsync() > 0;
-
-            if (result) return Ok(configPresetComposition);
-
-            return BadRequest(new ProblemDetails { Title = "Problem creating new configPreset" });
-        }
-
-        [Authorize(Roles = "Admin, Test")]
         [HttpGet("GetConfigPresets")]
         public async Task<ActionResult<List<ConfigPresetComposition>>> GetConfigPresets()
         {
@@ -70,23 +49,36 @@ namespace API.Controllers
             return configPresetCompositions;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Config>> GetConfig(int id)
+        {
+            var config = await _context.Config.FindAsync(id);
+            return Ok(config);
+        }
+
         [Authorize(Roles = "Admin, Test")]
         [HttpPost("CreateConfigPresetComposition")]
         public async Task<ActionResult<ConfigPresetComposition>> CreateConfigPresetComposition(CreateConfigPresetCompositionDto createConfigPresetCompositionDto)
         {
             var configPresetComposition = _mapper.Map<ConfigPresetComposition>(createConfigPresetCompositionDto);
+
             configPresetComposition.Configurations.AddRange(_mapper.Map<List<ConfigPreset>>(createConfigPresetCompositionDto.ConfigPresets));
+
             configPresetComposition.Configurations.ForEach(e => e.Key = configPresetComposition.Key);
+
             await _context.ConfigPresetCompositions.AddAsync(configPresetComposition);
+
             var result = await _context.SaveChangesAsync() > 0;
+
             if (result) return Ok(configPresetComposition);
+            
             else return BadRequest(new ProblemDetails { Title = "Problem creating config preset composition" });
 
         }
         [HttpDelete("DeleteCompositions")]
         public async Task<ActionResult> DeleteConfigPresetCompositions()
         {
-            var presetCompositions = _context.ConfigPresetCompositions;
+            var presetCompositions = _context.ConfigPresetCompositions.Include(p => p.Configurations);
             _context.ConfigPresetCompositions.RemoveRange(presetCompositions);
             await _context.SaveChangesAsync();
             return Ok();
@@ -114,10 +106,6 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult<Product>> UpdateConfig([FromForm] UpdateConfigDto configDto)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
-
             var config = await _context.Config.FindAsync(configDto.Id);
 
             if (config == null) return NotFound();
@@ -140,9 +128,6 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveConfig(int id)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
 
             var cfg = await _context.Config.FindAsync(id);
 

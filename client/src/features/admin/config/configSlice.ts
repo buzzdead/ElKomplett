@@ -5,7 +5,10 @@ import { IConfigPresetComposition } from "app/models/config";
 interface ConfigState {
     configPresets: IConfigPresetComposition[] | null
     status: string
+    configsLoaded: boolean
 }
+
+const configAdapter = createEntityAdapter<IConfigPresetComposition>()
 
 export const fetchConfigPresetCompositionAsync = createAsyncThunk<IConfigPresetComposition[]>(
     'config/fetchConfigPresetCompositionAsync',
@@ -18,15 +21,19 @@ export const fetchConfigPresetCompositionAsync = createAsyncThunk<IConfigPresetC
     },
   )
 
-  const initialState: ConfigState = {
-    configPresets: null,
-    status: 'idle',
-  }
-
   export const configSlice = createSlice({
     name: 'config',
-    initialState,
-    reducers: {},
+    initialState: configAdapter.getInitialState<ConfigState>({
+      configPresets: null,
+      status: 'idle',
+      configsLoaded: false
+    }),
+    reducers: {
+      setConfigPresetComposition: (state, action) => {
+        configAdapter.upsertOne(state, action.payload)
+        state.configsLoaded = false
+    },
+    },
     extraReducers: (builder) => {
       builder.addCase(fetchConfigPresetCompositionAsync.rejected, (state, action) => {
         console.log(action.payload)
@@ -34,7 +41,10 @@ export const fetchConfigPresetCompositionAsync = createAsyncThunk<IConfigPresetC
       })
       builder.addCase(fetchConfigPresetCompositionAsync.fulfilled, (state, action) => {
         state.configPresets = action.payload
+        state.configsLoaded = true
         state.status = 'idle'
       })
     },
   })
+
+  export const {setConfigPresetComposition} = configSlice.actions

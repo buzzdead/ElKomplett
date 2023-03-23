@@ -1,3 +1,5 @@
+import { Configurable } from "./product";
+
 export interface BasketItem {
     productId: number;
     name: string;
@@ -6,6 +8,8 @@ export interface BasketItem {
     brand: string;
     type: string;
     quantity: number;
+    configId?: number
+    configurables?: Configurable[]
 }
 
 export interface Basket {
