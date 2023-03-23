@@ -19,17 +19,22 @@ export default function AppTextInput(props: Props) {
     })
 
     return (
-        <TextField 
-        label={props.label}
-        disabled={props.disabled}
-        {...field}
-        multiline={props.multiline}
-        rows={props.rows}
-        type={props.type}
-        fullWidth
-        variant='outlined'
-        error={!!fieldState.error || props.addError}
-        helperText={fieldState.error?.message}
-        />
+        <TextField
+      label={props.label}
+      disabled={props.disabled}
+      {...field}
+      multiline={props.multiline}
+      rows={props.rows}
+      type={props.type}
+      fullWidth
+      variant="outlined"
+      error={!!fieldState.error || props.addError}
+      helperText={fieldState.error?.message}
+      sx={{
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: props.disabled ? "green !important" : '',
+        },
+      }}
+    />
     )
 }

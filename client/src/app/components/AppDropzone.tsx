@@ -22,7 +22,7 @@ export default function AppDropzone(props: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         height: props.height || 200,
-        width: props.width || 500
+        width: props.width || 500,
     }
 
     const dzActive = {
@@ -34,11 +34,11 @@ export default function AppDropzone(props: Props) {
         {preview: URL.createObjectURL(acceptedFiles[0])})
     field.onChange(acceptedFiles[0])
 }, [field])
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const {getRootProps, getInputProps, isDragActive, isFileDialogActive} = useDropzone({onDrop})
 
   return (
-    <div {...getRootProps()}>
-     <FormControl style={isDragActive ? {...dzStyles, ...dzActive} : dzStyles}>
+    <div {...getRootProps()} >
+     <FormControl style={isDragActive || isFileDialogActive ? {...dzStyles, ...dzActive} : dzStyles}>
         <input {...getInputProps()} />
         <UploadFile sx={{fontSize: props.iconSize || '100px'}} />
         <FormHelperText>{fieldState.error?.message}</FormHelperText>
