@@ -60,11 +60,25 @@ export default function ProductDetails() {
       : dispatch(removeBasketItemAsync({ productId, quantity }))
   }
 
+  const isTheRightOne = (a: string, b: string) => {
+    const arrayA = a.split(" ");
+    const arrayB = b.split(" ");
+  
+    if (arrayA.length !== arrayB.length) {
+      return false;
+    }
+  
+    const sortedArrayA = arrayA.sort();
+    const sortedArrayB = arrayB.sort();
+  
+    return sortedArrayA.every((value, index) => value === sortedArrayB[index]);
+  };
+
   function onConfigChange(updatedWithNewValue: IRadioButton[]) {
     const newConfig = updatedWithNewValue.filter((e) => e.checkedValue !== '')
     const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
-    const currentConfig = product?.configurables?.find((e) => e.value === newConfigValue)
-    if (currentConfig)
+    const currentConfig = product?.configurables?.find((e) => isTheRightOne(e.value, newConfigValue))
+    if(currentConfig)
       setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
   }
 
@@ -130,9 +144,7 @@ export default function ProductDetails() {
       </Grid>
     )
   }
-
-  console.log(config?.id)
-
+console.log(config)
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>
