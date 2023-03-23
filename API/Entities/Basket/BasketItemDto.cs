@@ -14,6 +14,7 @@ namespace API.Entities
         public string Brand { get; set; }
         public string Type { get; set; }
         public int Quantity { get; set; }
+        public int ConfigId { get; set; }
         public List<Config> Configurables { get; set; }
     }
 }

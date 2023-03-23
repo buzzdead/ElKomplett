@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BasketDto>> AddItemtoBasket(int productId, int quantity, int configId = 0)
+        public async Task<ActionResult<BasketDto>> AddItemtoBasket(int productId, int quantity, int configId)
         {
             var basket = await RetrieveBasket(GetBuyerId());
 

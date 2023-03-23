@@ -1,3 +1,4 @@
+using API.DTOs.Product;
 using AutoMapper;
 
 namespace API.Controllers
@@ -58,9 +59,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
             
             var product = _mapper.Map<Product>(productDto);
             product = (Product) await this.AddImageAsync(productDto.File, product, _imageService);
@@ -78,10 +76,6 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProductDto productDto)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
-
             var product = await _context.Products.FindAsync(productDto.Id);
 
             if (product == null) return NotFound();
@@ -98,12 +92,27 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails { Title = "Problem updating product" });
         }
         [Authorize(Roles = "Admin, Test")]
+        [HttpPut("SetDefaultConfig")]
+        public async Task<ActionResult<Product>> SetDefaultConfig([FromForm] SetDefaultProductDto setDefaultProductDto)
+        {
+            var product = await _context.Products.FindAsync(setDefaultProductDto.Id);
+
+            if (product == null) return NotFound();
+
+            product.Price = setDefaultProductDto.Price;
+            product.QuantityInStock = setDefaultProductDto.QuantityInStock;
+            product.PictureUrl = setDefaultProductDto.PictureUrl;
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok(product);
+
+            return BadRequest(new ProblemDetails { Title = "Problem updating product" });
+        }
+        [Authorize(Roles = "Admin, Test")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var hasToken = await ControllerExtensions.TestAdminRequest(user, _userManager);
-            if (!hasToken) return BadRequest(new ProblemDetails { Title = "Admin access has expired, try again later." });
 
             var product = await _context.Products.FindAsync(id);
 
