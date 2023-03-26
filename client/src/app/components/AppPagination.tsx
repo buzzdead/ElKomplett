@@ -1,4 +1,4 @@
-import { Box, Typography, Pagination } from '@mui/material'
+import { Box, Typography, Pagination, PaginationItem } from '@mui/material'
 import React, { useState } from 'react'
 import { MetaData } from '../models/pagination'
 
@@ -16,24 +16,42 @@ export default function AppPagination({ metaData, onPageChange, flexOnMobile = '
     setPageNumber(page)
     onPageChange(page)
   }
+
   return (
     <Box
-      display='flex'
-      alignItems='center'
-      flexDirection={flexOnMobile}
-      sx={{ placeContent: 'flex-end' }}
+      sx={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexDirection: flexOnMobile,
+      }}
     >
-      <Typography>
-        Displaying {(currentPage - 1) * pageSize + 1} -
-        {currentPage * pageSize > totalCount ? totalCount : currentPage * pageSize} of {totalCount}{' '}
-        items
-      </Typography>
+      <Box sx={{ flexGrow: 0.6, textAlign: 'center' }}>
+        <Typography variant='subtitle2' fontSize={'16px'} >
+          Displaying {(currentPage - 1) * pageSize + 1} through{' '}
+          {currentPage * pageSize > totalCount ? totalCount : currentPage * pageSize} of{' '}
+          {totalCount} items
+        </Typography>
+      </Box>
       <Pagination
-        color='secondary'
-        size='large'
+        sx={{ color: (theme) => theme.palette.neutral.dark }}
+        size='medium'
+        variant='outlined'
         count={totalPages}
         page={pageNumber}
         onChange={(e, page) => handlePageChange(page)}
+        renderItem={(item) => (
+          <PaginationItem
+            {...item}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: (theme) => theme.palette.neutral.main,
+                color: (theme) => theme.palette.neutral.contrastText,
+              },
+            }}
+          />
+        )}
       />
     </Box>
   )

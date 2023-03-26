@@ -60,9 +60,7 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)
   },
 )
-const options = {
-  headers: {"content-type": "application/json"}
-}
+
 const requests = {
   get: (url: string, params?: URLSearchParams) => axios.get(url, { params }).then(responseBody),
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),

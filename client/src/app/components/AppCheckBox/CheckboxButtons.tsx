@@ -1,5 +1,5 @@
 import { FormGroup, FormControlLabel, Checkbox } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useUpdateEffect } from 'usehooks-ts'
 
 interface Props {
@@ -7,20 +7,38 @@ interface Props {
     checked?: string[]
     flexRow?: boolean
     onChange: (items: string[]) => void
+    onStateUpdate?: (loading: boolean) => void
 }
 
-export default function CheckboxButtons({items, checked, onChange, flexRow = false}: Props) {
+export default function CheckboxButtons({items, checked, onChange, flexRow = false, onStateUpdate}: Props) {
     const [checkedItems, setCheckedItems] = useState(checked || [])
+    const [loading, setLoading] = useState(false)
     const timer = useRef<NodeJS.Timeout>()
+    const onStateUpdateRef = useRef(onStateUpdate)
+
+    useEffect(() => {
+        onStateUpdateRef.current = onStateUpdate
+    }, [onStateUpdate])
 
     const debouncedOnChange = () => {
         if(timer.current) clearTimeout(timer.current)
-        timer.current = setTimeout(() => {onChange(checkedItems)}, 600)
+        setLoading(true)
+        timer.current = setTimeout(() => {
+            onChange(checkedItems)
+            setLoading(false)
+        }, 600)
     }
 
     useUpdateEffect(() => {
         debouncedOnChange()
     }, [checkedItems])
+
+    useEffect(() => {
+        if (onStateUpdateRef.current) {
+            onStateUpdateRef.current(loading)
+        }
+    }, [loading])
+
     function handleChecked(value: string) {
         const currentIndex = checkedItems.findIndex(item => item === value)
         let newChecked: string[] = []
@@ -28,6 +46,7 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
         else newChecked = checkedItems.filter(item => item !== value)
         setCheckedItems(newChecked)
     }
+
     return (
         <FormGroup sx={{display: 'flex', flexDirection: flexRow ? 'row' : 'column' }}>
             {items.map(item => (

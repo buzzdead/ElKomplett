@@ -11,13 +11,14 @@ import {
 } from '@mui/material'
 import { useConfig } from 'app/hooks/useConfig'
 import { getCombinations } from 'app/util/util'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../../../app/components/AppTextInput'
 import Render from '../../../../app/layout/Render'
 import ConfigPreset from './ConfigPreset'
 import ConfigPresetDialog from './ConfigPresetDialog'
 import CloseIcon from '@mui/icons-material/Close'
+import { LoadingButton } from '@mui/lab'
 
 interface Props {
   handleConfigSubmit: (
@@ -46,19 +47,13 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
   const [configPresetDialogOpen, setConfigPresetDialogOpen] = useState(false)
   const [multipleKeys, setMultipleKeys] = useState(false)
   const [checkedConfigPreset, setCheckedConfigPreset] = useState<IConfigPresetComposition[]>([])
+  const [loadingPresets, setLoadingPresets] = useState(false)
 
   const { control, getValues, watch } = useForm({})
   const { configPresets, configsLoaded } = useConfig(multipleKeys)
 
   const watchConfigKey = watch('configKey')
   const watchNumberOfValues = watch('numberOfValues')
-
-  const iconProps = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    paddingTop: 2,
-  }
 
   const handleSingleKeySubmit = () => {
     if (!control._fields['configKey']?._f.value) alert('Must enter value')
@@ -97,6 +92,13 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
     setCheckedConfigPreset(newCheckedConfigPreset)
   }
 
+  const onStateUpdate = (b: boolean) => {
+    if (b && loadingPresets) return
+    if (!b && !loadingPresets) return
+    if (b && !loadingPresets) setLoadingPresets(true)
+    if (!b && loadingPresets) setLoadingPresets(false)
+  }
+
   if (configDialogOpen) {
     return (
       <>
@@ -133,6 +135,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                         label='Preset 1'
                         items={configPresets!}
                         loading={!configsLoaded}
+                        onStateUpdate={(b) => onStateUpdate(b)}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -141,6 +144,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                         label='Preset 2'
                         items={configPresets!}
                         loading={!configsLoaded}
+                        onStateUpdate={(b) => onStateUpdate(b)}
                       />
                     </Grid>
                   </Grid>
@@ -168,15 +172,16 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
               <Render condition={multipleKeys}>
                 <Button
                   onClick={() => setConfigPresetDialogOpen(true)}
-                  sx={{ display: 'flex', marginRight: 'auto', marginLeft: 5 }}
+                  sx={{ display: 'flex', marginRight: 'auto', marginLeft: 5}}
                 >
                   Add Preset
                 </Button>
               </Render>
-              <Button onClick={() => setMultipleKeys(!multipleKeys)}>
+              <Button color={multipleKeys ? 'secondary' : 'primary'} onClick={() => setMultipleKeys(!multipleKeys)}>
                 {multipleKeys ? 'Remove Key' : 'Add key'}
               </Button>
-              <Button
+              <LoadingButton
+              loading={loadingPresets}
                 disabled={
                   multipleKeys
                     ? !checkedConfigPreset.some((preset) => preset.configurations.length > 0)
@@ -186,7 +191,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                 onClick={handleCloseModal}
               >
                 Generate
-              </Button>
+              </LoadingButton>
             </DialogActions>
           </Dialog>
           <ConfigPresetDialog
@@ -209,7 +214,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
       }}
     >
       <Typography>No configuration found</Typography>
-      <Button onClick={() => setConfigDialogOpen(true)} variant='outlined' color='secondary'>
+      <Button onClick={() => setConfigDialogOpen(true)} variant='contained' color='primary'>
         Add new configuration
       </Button>
     </Box>

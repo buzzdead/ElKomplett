@@ -8,7 +8,6 @@ import Config from './Config'
 import { LoadingButton } from '@mui/lab'
 import { FieldValues, useForm } from 'react-hook-form'
 import _ from 'lodash'
-import ConfigPreset from './ConfigPreset/ConfigPreset'
 import { toast } from 'react-toastify'
 
 interface Props {
@@ -68,7 +67,7 @@ const Configurations = ({ productId, configs }: Props) => {
       }
     })
 
-    const results = await Promise.all(promises)
+    await Promise.all(promises)
     addPresetsToProduct()
   }
 

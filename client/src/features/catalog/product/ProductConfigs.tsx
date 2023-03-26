@@ -39,7 +39,7 @@ export function ProductConfigs({ onConfigChange, product }: Props) {
   const radioButtonsMap = (buttons: radioButton): ConfigMap[] => {
     if (!buttons) return []
     const configMap: ConfigMap[] = []
-    buttons.map((cfg) => {
+    buttons.forEach((cfg) => {
       const key = configMap.find((e) => e.key === cfg.key)
       key ? key.values.push(cfg.value) : configMap.push({ key: cfg.key, values: [cfg.value] })
     })

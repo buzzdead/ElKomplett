@@ -1,4 +1,4 @@
-import { Grid, Box, Checkbox, Button, Radio } from '@mui/material'
+import { Grid, Box, Button, Radio } from '@mui/material'
 import AppDropzone from 'app/components/AppDropzone'
 import AppTextInput from 'app/components/AppTextInput'
 import Render from 'app/layout/Render'
@@ -15,7 +15,7 @@ interface Props {
   removeConfig: (config: Configurable) => void
 }
 
-export default function Config({ config, control, setValue, watch, index, removeConfig, radioNumber, setRadioNumber }: Props) {
+export default function Config({ config, control, watch, index, removeConfig, radioNumber, setRadioNumber }: Props) {
 
   const watchFile = watch(`${index}.file`, null)
 

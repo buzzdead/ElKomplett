@@ -29,7 +29,7 @@ export default function ConfigPresetDialog(props: Props) {
   if(loading === false && fields.length > 0){
     reset()
     fields.forEach((field, id) => remove(id))}
- }, [loading])
+ }, [loading, remove, fields, reset])
  
   return (
     <Dialog fullWidth maxWidth='sm' open={props.open}>

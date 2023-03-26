@@ -36,7 +36,7 @@ export default function ProductDetails() {
   )
 
   useEffect(() => {
-    if (basketItem && basketItem.quantity !== newQuantity) {
+    if (basketItem) {
       setNewQuantity(basketItem.quantity)
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))

@@ -1,0 +1,20 @@
+/* Target the slider container */
+.slick-slider {
+    /* Remove default padding */
+    padding: 0 !important;
+  }
+  
+  /* Target each slide */
+  .slick-slide {
+    /* Remove default padding */
+    padding: 0 !important;
+    /* Add a smooth transition effect */
+    transition: all 0.3s ease;
+  }
+  
+  /* Target the active slide */
+  .slick-current {
+    /* Add a smooth transition effect */
+    transition: all 0.3s ease;
+  }
+  

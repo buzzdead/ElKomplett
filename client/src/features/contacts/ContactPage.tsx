@@ -1,28 +1,74 @@
-import { Button, ButtonGroup, Typography } from "@mui/material";
-import React from 'react'
-import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import { decrement, increment } from "./counterSlice";
+import React from 'react';
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+} from '@mui/material';
+import { styled } from '@mui/system';
 
-export default function ContactPage() {
-    const dispatch = useAppDispatch()
-    const {data, title} = useAppSelector((state) => state.counter)
+const FormContainer = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  marginTop: theme.spacing(8),
+  marginBottom: theme.spacing(8),
+}));
 
-    return (
-        <>
-        <Typography variant='h2'>
-            {title}
+const Form = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+}));
+
+const FormTextField = styled(TextField)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  width: '100%',
+}));
+
+const SubmitButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+}));
+
+const ContactPage = () => {
+  return (
+    <Container maxWidth="sm">
+      <FormContainer>
+        <Typography variant="h4" gutterBottom>
+          Contact Us
         </Typography>
-        <Typography>
-            The data is {data}
+        <Typography variant="subtitle1">
+          Have any questions or concerns? Please fill out the form below, and we'll get back to you as soon as possible.
         </Typography>
-        <ButtonGroup>
-            <Button onClick={() => dispatch(decrement(1))} variant='contained' color='error'>
-                Decrement
-            </Button>
-            <Button onClick={() => dispatch(increment(5))} variant='contained' color='primary'>
-                Increment
-            </Button>
-        </ButtonGroup>
-        </>
-    )
-}
+      </FormContainer>
+      <Box mt={4}>
+        <Form noValidate autoComplete="off">
+          <FormTextField
+            label="Full Name"
+            variant="outlined"
+            required
+          />
+          <FormTextField
+            label="Email Address"
+            variant="outlined"
+            required
+          />
+          <FormTextField
+            label="Message"
+            variant="outlined"
+            multiline
+            rows={6}
+            required
+          />
+          <SubmitButton
+            variant="contained"
+            color="primary"
+          >
+            Send Message
+          </SubmitButton>
+        </Form>
+      </Box>
+    </Container>
+  );
+};
+
+export default ContactPage;

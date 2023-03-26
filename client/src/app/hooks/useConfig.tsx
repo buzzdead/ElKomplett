@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/configureStore'
 import { fetchConfigPresetCompositionAsync } from 'features/admin/config/configSlice'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export function useConfig(multipleKeys: boolean) {
   const dispatch = useAppDispatch()
@@ -10,6 +10,6 @@ export function useConfig(multipleKeys: boolean) {
 
   useEffect(() => {
     if (!configsLoaded) dispatch(fetchConfigPresetCompositionAsync())
-  }, [dispatch, configs, multipleKeys])
+  }, [dispatch, configs, multipleKeys, configsLoaded])
   return { configPresets, configsLoaded }
 }

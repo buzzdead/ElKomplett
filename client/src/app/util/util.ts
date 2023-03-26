@@ -1,5 +1,4 @@
-import { FieldValues } from "react-hook-form/dist/types";
-import { ConfigPreset, Configurable } from "../models/product";
+import { Configurable } from "../models/product";
 
 export function getCookie(key: string) {
     const b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
