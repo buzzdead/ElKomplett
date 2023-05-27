@@ -16,9 +16,6 @@ This application is built with React, TypeScript, .NET, and C#. It is hosted on 
 
 ## Usage
 
-To use the application, simply navigate to the following link: 
-https://nettbutikk.herokuapp.com/
-
 To test the CRUD operations, you can create a test admin account by navigating to `/register` and entering the following details:
 
 Email: admin@example.com
