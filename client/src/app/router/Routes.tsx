@@ -13,6 +13,8 @@ import NotFound from '../errors/NotFound'
 import ServerError from '../errors/ServerError'
 import App from '../layout/App'
 import RequireAuth from './RequireAuth'
+import Categories from 'features/home/Categories'
+import Category from 'features/home/Category'
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,8 @@ export const router = createBrowserRouter([
       },
       { element: <RequireAuth roles={['Admin', 'Test']} />, children: [{ path: 'inventory', element: <Inventory /> }] },
       { path: 'catalog', element: <Catalog /> },
+      { path: 'catalog/categories', element: <Categories /> },
+      { path: 'catalog/categories/:id', element: <Category /> },
       { path: 'catalog/:id', element: <ProductDetails /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },

@@ -18,3 +18,9 @@
     transition: all 0.3s ease;
   }
   
+  .slider-image {
+    object-fit: cover;
+    width: 90%;
+    height: 50vh;
+    margin: 0 auto;
+  }

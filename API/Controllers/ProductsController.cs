@@ -26,7 +26,7 @@ namespace API.Controllers
             .Include(p => p.ConfigPresets)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
-            .Filter(productParams.Brands, productParams.Types)
+            .Filter(productParams.Brands, productParams.Types, productParams.categoryId)
             .AsQueryable();
 
             var products = await PagedList<Product>
@@ -130,6 +130,17 @@ namespace API.Controllers
             if (result) return Ok();
 
             return BadRequest(new ProblemDetails { Title = "Problem deleting product" });
+        }
+        [Authorize(Roles = "Admin, Test")]
+        [HttpPut("setCategory")]
+        public async Task<ActionResult> setCategory(int categoryId, int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            product.categoryId = categoryId;
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok();
+            return BadRequest(new ProblemDetails { Title = "Problem setting category"});
         }
     }
 }

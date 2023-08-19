@@ -11,6 +11,8 @@ namespace API.Services
         private readonly Cloudinary _cloudinary;
        public ImageService(IConfiguration config)
        {
+        Console.WriteLine(config);
+        
         var acc = new Account
         (
             config["Cloudinary:CloudName"],

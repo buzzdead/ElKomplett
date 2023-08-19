@@ -55,7 +55,7 @@ export default function ProductDetails() {
 
     addToCart
       ? config
-        ? dispatch(addBasketItemAsync({ productId, quantity, configId: config.id })).then(res => console.log("asdfadsfasdfasdf", res))
+        ? dispatch(addBasketItemAsync({ productId, quantity, configId: config.id }))
         : dispatch(addBasketItemAsync({ productId, quantity }))
       : dispatch(removeBasketItemAsync({ productId, quantity }))
   }
@@ -144,7 +144,6 @@ export default function ProductDetails() {
       </Grid>
     )
   }
-console.log(config)
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>

@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -37,9 +38,12 @@ builder.Services.AddSwaggerGen(c =>
 
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
+
+
 string connStr;
 
-if (env == "Development")
+//if (env == "Development")
+if(true)
 {
     // Use connection string from file.
     connStr = builder.Configuration.GetConnectionString("DefaultConnection");

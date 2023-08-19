@@ -79,12 +79,10 @@ export const basketSlice = createSlice({
       state.status = 'idle'
     })
     builder.addCase(removeBasketItemAsync.rejected, (state, action) => {
-      console.log(action.payload)
       state.status = 'idle'
     })
     builder.addMatcher(isAnyOf(addBasketItemAsync.fulfilled, fetchBasketAsync.fulfilled), (state, action) => {
         state.basket = action.payload
-        console.log("ASDf", action.payload)
         state.status = 'idle'
       })
       builder.addMatcher(isAnyOf(addBasketItemAsync.rejected, fetchBasketAsync.rejected), (state, action) => {

@@ -8,17 +8,18 @@ import Render from '../../../app/layout/Render'
 
 interface Props {
   products: IProduct[]
+  loadingCondition?: boolean
 }
 
-export default function ProductList({ products }: Props) {
+export default function ProductList({ products, loadingCondition = false }: Props) {
   const isMobileMatch = useMediaQuery('(max-width:900px)')
-  const { productsLoaded } = useAppSelector((state) => state.catalog)
+  const { productsLoaded } = useAppSelector((state: { catalog: any }) => state.catalog)
 
   return (
     <Grid container spacing={4}>
       {products.map((product) => (
-        <Grid key={product.id} item xs={isMobileMatch ? 6 : 4}>
-          <Render condition={productsLoaded}>
+        <Grid key={product.id} item xs={isMobileMatch ? 6 : 3}>
+          <Render condition={productsLoaded && !loadingCondition}>
             <ProductCard product={product} />
             <ProductCardSkeleton />
           </Render>

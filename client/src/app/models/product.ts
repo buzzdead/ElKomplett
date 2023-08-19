@@ -28,12 +28,14 @@ export interface IProduct {
     configurable?: boolean;
     configurables?: Configurable[]
     configPresets?: {key: string, value: string}[]
+    categoryId?: number
 
   }
 
   export interface ProductParams {
     orderBy: string
     searchTerm?: string
+    categoryId: number
     types: string[]
     brands: string[]
     pageNumber: number

@@ -17,6 +17,9 @@ import { useAppSelector } from '../store/configureStore'
 import { AuthorisedRoles } from '../util/util'
 import Render from './Render'
 import SignedInMenu from './SignedInMenu'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import { yellow } from '@mui/material/colors'
 
 interface Props {
   darkMode: boolean
@@ -25,15 +28,11 @@ interface Props {
 
 const midLinks = [
   {
-    title: 'catalog',
+    title: 'katalog',
     path: '/catalog',
   },
   {
-    title: 'about',
-    path: '/about',
-  },
-  {
-    title: 'contact',
+    title: 'Kontakt',
     path: '/contact',
   },
 ]
@@ -69,6 +68,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
   return (
     <AppBar position='static'>
       <Toolbar
+        style={{ maxHeight: '10px' }}
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -77,9 +77,21 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
       >
         <Box display='flex' alignItems='center'>
           <Typography variant='h6' component={NavLink} to='/' sx={navStyles}>
-            RE-STORE
+            ElKomplett
           </Typography>
-          <Switch checked={darkMode} onChange={handleThemeChange} />
+          <Switch
+            icon={
+              <LightModeIcon
+                sx={{ marginTop: -0.25, marginLeft: -0.3, color: yellow[400] }}
+                fontSize={'medium'}
+              />
+            }
+            checkedIcon={
+              <DarkModeIcon sx={{ marginTop: -0.5 }} color={'action'} fontSize={'medium'} />
+            }
+            checked={darkMode}
+            onChange={handleThemeChange}
+          />
         </Box>
         <List sx={{ display: 'flex' }}>
           <Render condition={!view.ipad} ignoreTernary>
@@ -89,9 +101,13 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               </ListItem>
             ))}
           </Render>
-          <Render condition={!view.ipad && user && AuthorisedRoles.some(role => user.roles?.includes(role))}>
+          <Render
+            condition={
+              !view.ipad && user && AuthorisedRoles.some((role) => user.roles?.includes(role))
+            }
+          >
             <ListItem component={NavLink} to={'/inventory'} sx={navStyles}>
-              INVENTORY
+              INNHOLD
             </ListItem>
           </Render>
         </List>

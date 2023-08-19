@@ -94,7 +94,7 @@ function App() {
       ) : location.pathname === '/' ? (
         <HomePage />
       ) : (
-        <Container sx={{ mt: 4 }} disableGutters>
+        <Container sx={{ mt: 4, maxWidth: '1600px' }} disableGutters maxWidth={false}>
           <Outlet />
         </Container>
       )}

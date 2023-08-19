@@ -24,10 +24,12 @@ namespace API.Extensions
             return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
          }
 
-         public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types)
+         public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types, int categoryId)
          {
             var brandList = new List<string>();
             var typeList = new List<string>();
+
+            if(categoryId != 0)query = query.Where(p => p.categoryId == categoryId);
 
             if(!string.IsNullOrEmpty(brands))
                 brandList.AddRange(brands.ToLower().Split(",").ToList());

@@ -22,6 +22,7 @@ namespace API.DTOs
         [Required]
         [Range(0, 200)]
         public int QuantityInStock { get; set; }
+        public int categoryId { get; set; }
         
     }
 }

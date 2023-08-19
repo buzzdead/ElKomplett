@@ -26,7 +26,7 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
         timer.current = setTimeout(() => {
             onChange(checkedItems)
             setLoading(false)
-        }, 600)
+        }, 300)
     }
 
     useUpdateEffect(() => {

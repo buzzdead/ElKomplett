@@ -4,7 +4,7 @@ import { PaginatedResponse } from '../models/pagination'
 import { router } from '../router/Routes'
 import { store } from '../store/configureStore'
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 500))
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 550))
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL
 axios.defaults.withCredentials = true
@@ -107,6 +107,8 @@ const Catalog = {
   list: (params: URLSearchParams) => requests.get('products', params),
   details: (id: number) => requests.get(`products/${id}`),
   fetchFilters: () => requests.get('products/filters'),
+  categories: () => requests.get('category/getCategories'),
+  category: (id: number) => requests.get(`category/${id}`)
 }
 const promiseAndCatchError = (path: string) => {
   requests.get(path).catch((error) => console.log(error))

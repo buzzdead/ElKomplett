@@ -4,6 +4,7 @@ import CheckboxButtons from '../app/components/AppCheckBox/CheckboxButtons'
 import RadioButtonGroup from '../app/components/RadioButtonGroup'
 import { useAppDispatch, useAppSelector } from '../app/store/configureStore'
 import { setProductParams } from './catalog/catalogSlice'
+import Render from 'app/layout/Render'
 
 interface Props {
     brands: string[]
@@ -11,9 +12,9 @@ interface Props {
 }
 
 const sortOptions = [
-    { value: 'name', label: 'Alphabetical' },
-    { value: 'priceDesc', label: 'Price - High to low' },
-    { value: 'price', label: 'Price - Low to high' },
+    { value: 'name', label: 'Alfabetisk' },
+    { value: 'priceDesc', label: 'Pris - Høy til lav' },
+    { value: 'price', label: 'Pris - Lav til høy' },
   ]
 
 export default function SideBar(props: Props) {
@@ -25,10 +26,12 @@ export default function SideBar(props: Props) {
       <Paper sx={{ mb: 2, p: 2 }}>
         <RadioButtonGroup
           selectedValue={productParams.orderBy}
+          flexDirection='column'
           options={sortOptions}
           onChange={(e) => dispatch(setProductParams({ orderBy: e.target.value }))}
         />
       </Paper>
+      <Render condition={props.brands.length > 0}>
       <Paper sx={{ mb: 2, p: 2 }}>
         <CheckboxButtons
           items={props.brands}
@@ -36,6 +39,8 @@ export default function SideBar(props: Props) {
           onChange={(items: string[]) => dispatch(setProductParams({ brands: items }))}
         />
       </Paper>
+      </Render>
+      <Render condition={props.types.length > 0}>
       <Paper sx={{ mb: 2, p: 2 }}>
         <CheckboxButtons
           items={props.types}
@@ -43,6 +48,7 @@ export default function SideBar(props: Props) {
           onChange={(items: string[]) => dispatch(setProductParams({ types: items }))}
         />
       </Paper>
+      </Render>
     </div>
   )
 }

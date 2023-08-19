@@ -1,7 +1,6 @@
 import { Typography, Grid, Paper, Box, Button, Tab, Tabs } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../app/components/AppTextInput'
-import * as React from 'react'
 import { IProduct } from '../../app/models/product'
 import { useEffect, useState } from 'react'
 import useProducts from '../../app/hooks/useProducts'
@@ -15,6 +14,7 @@ import { useAppDispatch } from '../../app/store/configureStore'
 import { setProduct } from '../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
 import Configurations from './config/Configurations'
+import { useCategories } from 'app/hooks/useCategories'
 
 interface Props {
   product?: IProduct
@@ -29,6 +29,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const watchFile = watch('file', null)
   const dispatch = useAppDispatch()
   const [selectedTab, setSelectedTab] = useState(0);
+  const categories = useCategories()
+  const cats = categories.map(e => e.title)
 
   const handleTabChange = () => {
     const setNewValue = selectedTab === 0 ? 1 : 0
@@ -43,6 +45,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   }, [product, reset, watchFile, isDirty])
 
   async function handleSubmitData(data: FieldValues) {
+    const cat = categories.find(e => e.title === data.categoryId)
+    data.categoryId = cat?.id
     try {
         let response: IProduct
         if(product) {
@@ -57,6 +61,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
         console.log(error)
     }
   }
+  const catTitle = categories.find(c => c.id === product?.categoryId)?.title
   return (
     <Box component={Paper} sx={{ p: 4 }}>
       <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
@@ -81,6 +86,9 @@ export default function ProductForm({ product, cancelEdit }: Props) {
           </Grid>
           <Grid item xs={12} sm={6}>
             <AppTextInput control={control} type='number' name='price' label='Price' />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <AppSelectList control={control} dValue={catTitle ?? categories[0].title} items={cats} name='categoryId' label='CategoryId' />
           </Grid>
           <Grid item xs={12} sm={6}>
             <AppTextInput

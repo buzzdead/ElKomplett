@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {}
+    "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj": {
+    "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\API.csproj",
-        "packagesPath": "C:\\Users\\sigmu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sigmu\\restorte\\Restore\\API\\obj\\",
+        "projectPath": "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\BigBu\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\BigBu\\Projects\\Restore\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sigmu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\BigBu\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -96,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

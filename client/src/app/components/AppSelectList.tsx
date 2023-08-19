@@ -5,6 +5,7 @@ import { useController, UseControllerProps } from 'react-hook-form'
 interface Props extends UseControllerProps {
     label: string
     items: string[]
+    dValue?: string
 }
 
 export default function AppSelectList(props: Props) {
@@ -13,7 +14,7 @@ export default function AppSelectList(props: Props) {
     <FormControl fullWidth error={!!fieldState.error}>
       <InputLabel>{props.label}</InputLabel>
       <Select
-        value={field.value}
+        value={props.dValue !== undefined && typeof field.value === 'number' || field.value === 0 ? props.dValue : field.value}
         label={props.label}
         onChange={field.onChange}
       >

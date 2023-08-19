@@ -13,6 +13,7 @@ namespace API.Entities
         public string Brand { get; set; }
         public int QuantityInStock { get; set; }
         public string PublicId { get; set; }
+        public int categoryId { get; set; }
         public List<Config> Configurables { get; set; } = new ();
         public List<ConfigPreset> ConfigPresets { get; set; } = new();
 

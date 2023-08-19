@@ -64,7 +64,7 @@ export default function BasketTable({ items, isBasket = true }: Props) {
           <LoadingButton
             loading={status === 'pendingAddItem' + item.productId}
             color='secondary'
-            onClick={() => dispatch(addBasketItemAsync({ productId: item.productId, quantity: item.quantity }))}
+            onClick={() => dispatch(addBasketItemAsync({ productId: item.productId, quantity: 1 }))}
           >
             <Add />
           </LoadingButton>

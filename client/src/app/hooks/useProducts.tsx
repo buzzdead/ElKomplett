@@ -27,6 +27,6 @@ export default function useProducts() {
     filtersLoaded,
     brands,
     types,
-    metaData
+    metaData,
   }
 }

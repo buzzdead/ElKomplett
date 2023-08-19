@@ -22,6 +22,7 @@ function getAxiosParams(productParams: ProductParams) {
     params.append('pageSize', productParams.pageSize.toString())
     params.append('orderBy', productParams.orderBy)
     if(productParams.searchTerm) params.append('searchTerm', productParams.searchTerm)
+    if(productParams.categoryId) params.append('categoryId', productParams.categoryId.toString())
     if(productParams.brands.length > 0) params.append('brands', productParams.brands.toString())
     if(productParams.types.length > 0) params.append('types', productParams.types.toString())
     return params
@@ -31,6 +32,7 @@ function getAxiosParams(productParams: ProductParams) {
 export const fetchProductsAsync = createAsyncThunk<IProduct[], void, {state: RootState}>(
     'catalog/fetchProductsAsync',
     async (_, thunkAPI) => {
+        console.log("fetching products")
         const params = getAxiosParams(thunkAPI.getState().catalog.productParams)
         try{
             const response = await agent.Catalog.list(params)
@@ -46,6 +48,7 @@ export const fetchProductsAsync = createAsyncThunk<IProduct[], void, {state: Roo
 export const fetchProductAsync = createAsyncThunk<IProduct, number>(
     'catalog/fetchProductAsync',
     async (productId, thunkAPI) => {
+        console.log("fetching product")
         try{
             return await agent.Catalog.details(productId)
         }
@@ -58,6 +61,7 @@ export const fetchProductAsync = createAsyncThunk<IProduct, number>(
 export const fetchFilters = createAsyncThunk(
     'catalog/fetchFilters',
     async (_, thunkAPI) => {
+        console.log("fetching filters")
         try {
             return agent.Catalog.fetchFilters()
         }
@@ -70,7 +74,8 @@ export const fetchFilters = createAsyncThunk(
 function initParams() {
     return {
         pageNumber: 1,
-        pageSize: 6,
+        pageSize: 12,
+        categoryId: 0,
         orderBy: 'name',
         brands: [],
         types: []
@@ -90,9 +95,9 @@ export const catalogSlice = createSlice({
     }),
     reducers: {
         setProductParams: (state, action) => {
-            console.log(action.payload)
-            state.productsLoaded = false
+            console.log("setting produkt params")
             state.productParams = {...state.productParams, ...action.payload, pageNumber: 1}
+            state.productsLoaded = false
         },
         setPageNumber: (state, action) => {
             state.productsLoaded = false

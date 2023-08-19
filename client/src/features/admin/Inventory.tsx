@@ -1,6 +1,5 @@
 import { Typography, Button, Paper, Box, Grid } from '@mui/material'
 import { Edit, Delete } from '@mui/icons-material'
-import * as React from 'react'
 import useProducts from '../../app/hooks/useProducts'
 import AppPagination from '../../app/components/AppPagination'
 import { useAppDispatch } from '../../app/store/configureStore'
