@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230814164210_abc")]
-    partial class abc
+    [Migration("20230821113945_CategoryDescription")]
+    partial class CategoryDescription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,6 +86,9 @@ namespace API.Data.Migrations
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<int?>("ParentCategoryId")
                         .HasColumnType("integer");
@@ -184,6 +187,30 @@ namespace API.Data.Migrations
                     b.ToTable("ConfigPresetCompositions");
                 });
 
+            modelBuilder.Entity("API.Entities.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Image");
+                });
+
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -259,20 +286,17 @@ namespace API.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("PictureUrl")
-                        .HasColumnType("text");
-
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("text");
 
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .HasColumnType("text");
+
+                    b.Property<int>("categoryId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -578,6 +602,13 @@ namespace API.Data.Migrations
                         .HasForeignKey("ProductId");
                 });
 
+            modelBuilder.Entity("API.Entities.Image", b =>
+                {
+                    b.HasOne("API.Entities.Product", null)
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId");
+                });
+
             modelBuilder.Entity("API.Entities.OrderAggregate.Order", b =>
                 {
                     b.OwnsOne("API.Entities.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
@@ -737,6 +768,8 @@ namespace API.Data.Migrations
                     b.Navigation("ConfigPresets");
 
                     b.Navigation("Configurables");
+
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("API.Entities.User", b =>

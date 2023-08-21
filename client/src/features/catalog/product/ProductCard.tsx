@@ -48,7 +48,7 @@ export default function ProductCard({ product }: Props) {
           height: '12.5vh',
           backgroundSize: 'contain',
         }}
-        image={product.pictureUrl}
+        image={product.images[0].pictureUrl}
         title={product.name}
       />
       <CardContent sx={{paddingTop: 1, paddingBottom: 0}}>

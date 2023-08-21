@@ -10,12 +10,7 @@ export const validationSchema = (imageRequired?: Boolean) =>
     price: yup.number().required("Price must be a number greater than 100").moreThan(100),
     quantityInStock: yup.number().min(0).required("Quantity in stock must be a positive number"),
     description: yup.string().required(REQ),
-    file: imageRequired
-      ? yup.mixed().when('pictureUrl', {
-          is: (value: string) => !value,
-          then: (schema) => schema.required('Please provide an image'),
-        })
-      : yup.string().notRequired(),
+    
   })
 
 const getRequirement = (fieldVal: string, imageRequired?: boolean) => {

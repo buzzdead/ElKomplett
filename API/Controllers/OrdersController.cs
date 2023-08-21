@@ -59,7 +59,7 @@ namespace API.Controllers
                 {
                     ProductId = productItem.Id,
                     Name = productItem.Name,
-                    PictureUrl = productItem.PictureUrl,
+                    PictureUrl = productItem.Images[0].PictureUrl,
                     ConfigId = item.ConfigId
                 };
                 var orderItem = new OrderItem

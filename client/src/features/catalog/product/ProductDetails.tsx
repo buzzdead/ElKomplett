@@ -1,4 +1,4 @@
-import { Divider, Grid, TextField, Typography } from '@mui/material'
+import { Box, Divider, Grid, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
@@ -13,6 +13,8 @@ import AppTable, { TableData } from '../../../app/components/AppTable/AppTable'
 import { Configurable } from '../../../app/models/product'
 import './Product.css'
 import { IRadioButton, ProductConfigs } from './ProductConfigs'
+import ImageScroller from 'app/components/ImageScroller'
+import Render from 'app/layout/Render'
 
 type Config = {
   id?: number
@@ -27,6 +29,7 @@ export default function ProductDetails() {
 
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
+  const [currentPicture, setCurrentPicture] = useState(product?.images[0])
 
   const [newQuantity, setNewQuantity] = useState(0)
   const [config, setConfig] = useState<Config>()
@@ -96,10 +99,6 @@ export default function ProductDetails() {
       value: product.description,
     },
     {
-      key: 'Type',
-      value: product.type,
-    },
-    {
       key: 'Brand',
       value: product.brand,
     },
@@ -144,17 +143,28 @@ export default function ProductDetails() {
       </Grid>
     )
   }
+
+  const handleOnPress = (img: {pictureUrl: string}) => {
+    setCurrentPicture(img)
+  }
   return (
     <Grid container spacing={6}>
-      <Grid item xs={6}>
+      <Render condition={product.images.length > 1}>
+      <Grid item xs={2}>
+        <ImageScroller selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={product.images}/>
+      </Grid>
+      </Render>
+      <Grid style={{padding: 20}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={4}>
         <img
           className='productImage'
-          src={config?.config.pictureUrl || product.pictureUrl}
+          src={config?.config.pictureUrl || currentPicture?.pictureUrl || product.images[0].pictureUrl}
           alt={product.name}
           style={{ width: '100%' }}
         />
       </Grid>
+      
       <Grid item xs={6}>
+      
         <Typography variant='h3'>{product.name}</Typography>
         <Divider sx={{ mb: 2 }} />
         <Typography variant='h4' color='secondary'>

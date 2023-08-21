@@ -65,7 +65,7 @@ function App() {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       background: {
-        default: darkMode ? grey[800] : grey[100],
+        default: darkMode ? grey[800] : 'white',
       },
       secondary: {
         main: darkMode ? blue[400] : red[400]

@@ -20,7 +20,7 @@ namespace API.Extensions
                     ProductId = item.ProductId,
                     Name = item.Product.Name,
                     Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
+                    PictureUrl = item.Product.Images[0].PictureUrl,
                     Type = item.Product.Type,
                     Brand = item.Product.Brand,
                     Quantity = item.Quantity,

@@ -80,10 +80,9 @@ export default function Category() {
                 <Skeleton animation='wave' height={60} width='80%' style={{}} />
               )}
             </Typography>
-            <Typography variant='body2' color='text.secondary'>
+            <Typography variant='h6' fontSize={14} >
               {!categoryLoading ? (
-                'En kategori inneholder alle produktene som tilhører kategorien. Produktene finnes i' +
-                'katalogen.'
+                category.description
               ) : (
                 <Skeleton animation='wave' height={60} width='80%' style={{}} />
               )}

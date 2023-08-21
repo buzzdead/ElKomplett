@@ -24,6 +24,7 @@ namespace API.Controllers
             var query = _context.Products
             .Include(p => p.Configurables)
             .Include(p => p.ConfigPresets)
+            .Include(p => p.Images)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
             .Filter(productParams.Brands, productParams.Types, productParams.categoryId)
@@ -39,7 +40,7 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.Include(p => p.Configurables).Include(d => d.ConfigPresets).FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.Include(p => p.Configurables).Include(d => d.ConfigPresets).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return NotFound();
 
@@ -55,13 +56,13 @@ namespace API.Controllers
             return Ok(new { brands, types });
         }
 
-        [Authorize(Roles = "Admin, Test")]
+      
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
             
             var product = _mapper.Map<Product>(productDto);
-            product = (Product) await this.AddImageAsync(productDto.File, product, _imageService);
+            product = (Product) await this.AddImagesAsync(productDto.Files, product, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _context.Products.Add(product);
@@ -81,8 +82,8 @@ namespace API.Controllers
             if (product == null) return NotFound();
 
             _mapper.Map(productDto, product);
-            if(productDto.File != null){
-            product = (Product) await this.AddImageAsync(productDto.File, product, _imageService);
+            if(productDto.Files.Count != 0){
+            product = (Product) await this.AddImagesAsync(productDto.Files, product, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);}
 
             var result = await _context.SaveChangesAsync() > 0;
@@ -101,7 +102,7 @@ namespace API.Controllers
 
             product.Price = setDefaultProductDto.Price;
             product.QuantityInStock = setDefaultProductDto.QuantityInStock;
-            product.PictureUrl = setDefaultProductDto.PictureUrl;
+            product.Images[0].PictureUrl = setDefaultProductDto.PictureUrl;
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -119,9 +120,11 @@ namespace API.Controllers
             if (product == null) return NotFound();
 
             // Will crash app if 
-
-            if (!string.IsNullOrEmpty(product.PublicId) && product.PublicId != "0")
-                await _imageService.DeleteImageAsync(product.PublicId);
+            foreach (ImageDto image in product.Images)
+            {
+                if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
+                    await _imageService.DeleteImageAsync(image.PublicId);
+            }
 
             _context.Products.Remove(product);
 

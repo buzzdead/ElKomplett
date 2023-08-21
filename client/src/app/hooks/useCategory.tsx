@@ -5,16 +5,16 @@ import { setProductParams } from "features/catalog/catalogSlice"
 import { useAppDispatch } from "app/store/configureStore"
 import { useParams } from "react-router-dom"
 
-const categoryCache: { [key: number]: { title: string; pictureUrl: string; id: number } } = {};
+const categoryCache: { [key: number]: { title: string; pictureUrl: string; id: number, description: string } } = {};
 let currentId = 0
 
 export const useCategory = (categoryId?: number) => {
-    const [category, setCategory] = useState<{title: string, pictureUrl: string, id: number}>({title: '', pictureUrl: '', id: 1})
+    const [category, setCategory] = useState<{title: string, pictureUrl: string, id: number, description: string}>({title: '', pictureUrl: '', id: 1, description: ''})
     const [categoryLoading, setCategoryLoading] = useState(true)
     const {categories, categoriesLoading} = useCategories()
     const { id } = useParams<{ id: string }>()
     const dispatch = useAppDispatch()
-
+    console.log(categoryCache)
     const fetchCategories = async () => {
       if(id !== undefined || categoryId !== undefined){
         const newId = categoryId !== undefined ? categoryId : parseInt(id!)
@@ -29,7 +29,7 @@ export const useCategory = (categoryId?: number) => {
           categoryCache[newId] = cat;
           setCategory(cat);
         }
-        if(newId === 0) {categoryCache[newId] = {title: '', pictureUrl: '', id: 0}; setCategory({title: '', pictureUrl: '', id: 0})}
+        if(newId === 0) {categoryCache[newId] = {title: '', pictureUrl: '', id: 0, description: ''}; setCategory({title: '', pictureUrl: '', id: 0, description: ''})}
         dispatch(setProductParams({ categoryId: newId }));
         setCategoryLoading(false);
       }}

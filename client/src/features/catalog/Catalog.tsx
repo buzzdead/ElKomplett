@@ -19,7 +19,7 @@ export default function Catalog() {
   const {category, categoryLoading} = useCategory(0)
   const {categories} = useCategories()
 
-  if(!filtersLoaded) return <LoadingComponent message={'Loading categories'} />
+  if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading categories'} />
 
   return (
     <Grid container columnSpacing={4}>

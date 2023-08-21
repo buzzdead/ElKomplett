@@ -34,12 +34,19 @@ namespace API.Data
                     Description =
                         "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
                     Price = 20000,
-                    PictureUrl = "/images/products/sb-ang1.png",
+                     Images = new List<Image>
+        {
+            new Image
+            {
+                PictureUrl = "/images/products/sb-ang1.png",
+                PublicId = "0"
+            }
+        },
                     Brand = "Angular",
                     Type = "Boards",
                     QuantityInStock = 100
                 },
-                new Product
+                /* new Product
                 {
                     Name = "Green Angular Board 3000",
                     Description = "Nunc viverra imperdiet enim. Fusce est. Vivamus a tellus.",
@@ -223,12 +230,16 @@ namespace API.Data
                     Brand = "Angular",
                     Type = "Boots",
                     QuantityInStock = 100
-                },
+                }, */
             };
             foreach (var product in products)
             {
                 context.Products.Add(product);
             }
+
+            var cat = new Category{Id = 1, PictureUrl="./images/elbillader.png", Title="Elbillader"};
+
+            context.Categories.Add(cat);
 
             context.SaveChanges();
         }

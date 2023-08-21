@@ -79,14 +79,15 @@ namespace API.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: true),
                     PictureUrl = table.Column<string>(type: "text", nullable: true),
-                    ParentCategoryId = table.Column<int>(type: "integer", nullable: true)
+                    ParentCategoryId = table.Column<int>(type: "integer", nullable: true),
+                    CategoryId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Categories_ParentCategoryId",
-                        column: x => x.ParentCategoryId,
+                        name: "FK_Categories_Categories_CategoryId",
+                        column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id");
                 });
@@ -138,11 +139,10 @@ namespace API.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<long>(type: "bigint", nullable: false),
-                    PictureUrl = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<string>(type: "text", nullable: true),
                     Brand = table.Column<string>(type: "text", nullable: true),
                     QuantityInStock = table.Column<int>(type: "integer", nullable: false),
-                    PublicId = table.Column<string>(type: "text", nullable: true)
+                    categoryId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -383,6 +383,28 @@ namespace API.Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Image",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PictureUrl = table.Column<string>(type: "text", nullable: true),
+                    PublicId = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Image", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Image_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade
+                        );
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -441,9 +463,9 @@ namespace API.Data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_ParentCategoryId",
+                name: "IX_Categories_CategoryId",
                 table: "Categories",
-                column: "ParentCategoryId");
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Config_ProductId",
@@ -458,6 +480,11 @@ namespace API.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ConfigPreset_ProductId",
                 table: "ConfigPreset",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Image_ProductId",
+                table: "Image",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -495,6 +522,9 @@ namespace API.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ConfigPreset");
+
+            migrationBuilder.DropTable(
+                name: "Image");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");

@@ -4,7 +4,7 @@ import { PaginatedResponse } from '../models/pagination'
 import { router } from '../router/Routes'
 import { store } from '../store/configureStore'
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 550))
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 50))
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL
 axios.defaults.withCredentials = true
@@ -88,9 +88,26 @@ function createFormData(item: any) {
   return formData
 }
 
+function createFormData2(item: any) {
+  let formData = new FormData();
+
+  for (const key in item) {
+    if (Array.isArray(item[key])) {
+      // If the property is an array, it might be 'files'
+      item[key].forEach((file: any, index: number) => {
+        formData.append(key, file);
+      });
+    } else {
+      formData.append(key, item[key]);
+    }
+  }
+
+  return formData;
+}
+
 const Admin = {
-  createProduct: (product: any) => requests.postForm('products', createFormData(product)),
-  updateProduct: (product: any) => requests.putForm('products', createFormData(product)),
+  createProduct: (product: any) => requests.postForm('products', createFormData2(product)),
+  updateProduct: (product: any) => requests.putForm('products', createFormData2(product)),
   deleteProduct: (id: number) => requests.delete(`products/${id}`),
   createConfig: (config: any) => requests.postForm('config', createFormData(config)),
   updateConfig: (config: any) => requests.putForm('config', createFormData(config)),

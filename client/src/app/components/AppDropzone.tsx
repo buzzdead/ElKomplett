@@ -29,11 +29,12 @@ export default function AppDropzone(props: Props) {
         borderColor: 'green'
     }
 
-  const onDrop = useCallback((acceptedFiles: any[]) => {
-    acceptedFiles[0] = Object.assign(acceptedFiles[0], 
-        {preview: URL.createObjectURL(acceptedFiles[0])})
-    field.onChange(acceptedFiles[0])
-}, [field])
+    const onDrop = useCallback((acceptedFiles: any[]) => {
+      const updatedFiles = acceptedFiles.map(file => (
+        Object.assign(file, {preview: URL.createObjectURL(file)})
+      ));
+      field.onChange([...(field.value || []), ...updatedFiles]);
+    }, [field]);
   const {getRootProps, getInputProps, isDragActive, isFileDialogActive} = useDropzone({onDrop})
 
   return (

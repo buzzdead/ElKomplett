@@ -26,6 +26,29 @@ public static class ControllerExtensions
         }
         return imageDto;
     }
+    public static async Task<Product> AddImagesAsync(this BaseApiController controller, List<IFormFile> files, Product product, ImageService imageService)
+    {
+        foreach (var file in files){
+        if (file != null)
+        {
+            var imageResult = await imageService.AddImageAsync(file);
+
+            if (imageResult.Error != null)
+            {
+                controller.ModelState.AddModelError("file", imageResult.Error.Message);
+            }
+            else
+            {
+                    product.AddImage(new Image { PictureUrl = imageResult.SecureUrl.ToString(), PublicId = imageResult.PublicId});
+            }
+        }
+        }
+        if (product.Images.Count == 0)
+    {
+        product.AddImage(new Image { PictureUrl = "/images/products/sb-ang1.png", PublicId = "0" });
+    }
+    return product;
+    }
     public static async Task<bool> TestAdminRequest(User user, UserManager<User> userManager) 
     {
         var roles = await userManager.GetRolesAsync(user);

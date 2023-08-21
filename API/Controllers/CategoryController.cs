@@ -33,7 +33,7 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin, Test")]
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory(int id, string title, string pictureUrl)
+        public async Task<ActionResult<Category>> CreateCategory(int id, string title, string pictureUrl, string description)
         {
             var newCategory = new Category
             {
@@ -43,6 +43,18 @@ namespace API.Controllers
             };
 
             _context.Categories.Add(newCategory);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [Authorize(Roles = "Admin, Test")]
+        [HttpPut]
+        public async Task<ActionResult<Category>> EditCategory(int id, string description)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            
+            category.Description = description;
+
             await _context.SaveChangesAsync();
 
             return Ok();
