@@ -20,6 +20,7 @@ namespace API.DTOs
         [Required]
         [Range(0, 200)]
         public int QuantityInStock { get; set; }
+        public List<string> Order { get; set; } = new();
         public int categoryId {get; set;}
     }
 }

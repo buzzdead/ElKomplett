@@ -15,8 +15,15 @@ interface Props {
   removeConfig: (config: Configurable) => void
 }
 
-export default function Config({ config, control, watch, index, removeConfig, radioNumber, setRadioNumber }: Props) {
-
+export default function Config({
+  config,
+  control,
+  watch,
+  index,
+  removeConfig,
+  radioNumber,
+  setRadioNumber,
+}: Props) {
   const watchFile = watch(`${index}.file`, null)
 
   const getConfigValue = (value: keyof Configurable, defaultValue?: string): string => {
@@ -25,13 +32,17 @@ export default function Config({ config, control, watch, index, removeConfig, ra
 
   return (
     <Grid container spacing={2} sx={{ marginTop: 0.25 }}>
-      <Grid item xs={2} sm={1} sx={{display: 'flex', justifyContent: 'center', alignContent: 'center'}}>
-      <Button variant='text' onClick={() => removeConfig(config)}>
-              Del
-            </Button>
-        <Radio onClick={() => setRadioNumber(index)} checked={radioNumber === index}/>
-       
-            </Grid>
+      <Grid
+        item
+        xs={2}
+        sm={1}
+        sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}
+      >
+        <Button variant='text' onClick={() => removeConfig(config)}>
+          Del
+        </Button>
+        <Radio onClick={() => setRadioNumber(index)} checked={radioNumber === index} />
+      </Grid>
       {[
         { name: 'id', label: 'Id', type: 'string', disabled: true },
         { name: 'price', label: 'Price', type: 'number' },
@@ -40,7 +51,7 @@ export default function Config({ config, control, watch, index, removeConfig, ra
         { name: 'value', label: 'Value', type: 'string' },
         { name: 'productId', label: 'Product Id', type: 'string', disabled: true },
       ].map(({ name, label, type, disabled }) => (
-        <Grid item xs={12} sm={1.5} key={name}>
+        <Grid item xs={12} sm={1.3} key={name}>
           <AppTextInput
             control={control}
             disabled={disabled}
@@ -48,13 +59,19 @@ export default function Config({ config, control, watch, index, removeConfig, ra
             name={`${index}.${name}`}
             label={label}
             type={type}
-            
           />
         </Grid>
       ))}
       <Grid item xs={3} sm={1}>
         <Box display='flex' justifyContent='space-between' alignItems='center' sx={{ gap: 2 }}>
-          <AppDropzone height={60} width={100} iconSize={'30px'} control={control} name={`${index}.file`} />
+          <AppDropzone
+            singular
+            height={60}
+            width={100}
+            iconSize={'30px'}
+            control={control}
+            name={`${index}.file`}
+          />
           <Render condition={(config && config.pictureUrl) || watchFile}>
             <img
               src={getConfigValue('pictureUrl', watchFile?.preview)}

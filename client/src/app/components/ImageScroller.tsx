@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { List, ListItem, Button, Box } from '@mui/material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Render from 'app/layout/Render';
 
 interface Image {
   pictureUrl: string
@@ -15,6 +16,7 @@ interface ImageScrollerProps {
 
 const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selectedImageUrl }) => {
   const [scrollIndex, setScrollIndex] = useState(0)
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const handleScroll = (direction: 'up' | 'down') => {
     if (direction === 'up' && scrollIndex > 0) {
@@ -25,6 +27,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
   }
 
   const handleMouseScroll = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.preventDefault()
     if (event.deltaY > 0 && scrollIndex < images.length - 3) {
       // Scrolling down
       setScrollIndex(scrollIndex + 1)
@@ -33,9 +36,38 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
       setScrollIndex(scrollIndex - 1)
     }
   }
+  useEffect(() => {
+    const preventDefault = (event: WheelEvent) => {
+      event.preventDefault();
+    };
+
+    const divElement = divRef.current;
+
+    const handleMouseEnter = () => {
+      document.addEventListener('wheel', preventDefault, { passive: false });
+    };
+
+    const handleMouseLeave = () => {
+      document.removeEventListener('wheel', preventDefault);
+    };
+
+    if (divElement) {
+      divElement.addEventListener('mouseenter', handleMouseEnter);
+      divElement.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (divElement) {
+        divElement.removeEventListener('mouseenter', handleMouseEnter);
+        divElement.removeEventListener('mouseleave', handleMouseLeave);
+      }
+      document.removeEventListener('wheel', preventDefault);
+    };
+  }, []);
 
   return (
-    <div onWheel={handleMouseScroll}>
+    <div ref={divRef} onWheel={handleMouseScroll}>
+      <Render condition={images.length > 3}>
       <Button
         sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}
         onClick={() => handleScroll('up')}
@@ -43,16 +75,17 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
       >
         <ArrowDropUpIcon fontSize='large'/>
       </Button>
-      <List style={{overflow: 'hidden', maxHeight: 550, height: 550 }}>
-        {images.slice(scrollIndex, scrollIndex + images.length - 1).map((image, index) => (
+      </Render>
+      <List style={{overflow: 'hidden', maxHeight: 375, height: 450 }}>
+        {images.slice(scrollIndex, scrollIndex + (images.length)).map((image, index) => (
           <ListItem style={{justifyContent: 'center'}} key={index}>
             <img
               onClick={() => onPress(image)}
               src={image.pictureUrl}
               alt={`Image ${index}`}
               style={{
-                maxHeight: 165,
-                minHeight: 165,
+                maxHeight: 110,
+                minHeight: 110,
                 opacity: selectedImageUrl === image.pictureUrl ? 1 : 0.5,
                 cursor: 'pointer',
                 maxWidth: '80%',
@@ -61,7 +94,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
           </ListItem>
         ))}
       </List>
-
+      <Render condition={images.length > 3}>
       <Button
         sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}
         onClick={() => handleScroll('down')}
@@ -69,6 +102,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
       >
         <ArrowDropDownIcon fontSize={'large'} />
       </Button>
+      </Render>
     </div>
   )
 }

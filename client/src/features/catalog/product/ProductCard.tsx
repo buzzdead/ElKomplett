@@ -33,10 +33,10 @@ export default function ProductCard({ product }: Props) {
   const { basket } = useAppSelector((state) => state.basket)
 
   return (
-    <Card>
+    <Card sx={{bgcolor: 'special'}}>
       <CardHeader
         avatar={
-          <Avatar sx={{ backgroundColor: 'green', fontSize: 14 }}>-10%</Avatar>
+          <Avatar sx={{ backgroundColor: 'secondary.darker', fontSize: 14 }}>-10%</Avatar>
         }
         title={product.name}
         titleTypographyProps={{
@@ -65,13 +65,13 @@ export default function ProductCard({ product }: Props) {
         <LoadingButton sx={{paddingLeft: 0, marginLeft: 0}} loading={status === ('pendingAddItem' + product.id)} onClick={() => dispatch(addBasketItemAsync({productId: product.id, quantity: 1}))} size='small'>
         <Render condition={status !== ('pendingAddItem' + product.id)}>
         <Badge badgeContent={basket?.items.find(e => e.productId === product.id)?.quantity} color='secondary'>
-        <AddShoppingCartIcon sx={{color: 'secondary.default', width: 30, height: 30}}/>
+        <AddShoppingCartIcon sx={{color: 'neutral.dark', width: 30, height: 30}}/>
         </Badge>
         </Render>
         </LoadingButton>
         <Box sx={{width: '100%', display: 'flex', justifyContent: 'flex-end'}}>
         <Button sx={{display: 'flex', gap: 1}} component={Link} to={`/catalog/${product.id}`} size='large'>
-          <ReadMoreIcon sx={{color: 'green', width: 40, height: 40}}/>
+          <ReadMoreIcon sx={{color: 'secondary.darker', width: 40, height: 40}}/>
         </Button>
         </Box>
       </CardActions>

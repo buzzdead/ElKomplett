@@ -9,7 +9,7 @@ import { setBasket } from '../basket/basketSlice'
 import CheckoutPage from './CheckOutPage'
 
 const stripePromise = loadStripe(
-  'pk_test_51MX6rJEP2FAJR8soQgZo57KS7wklWRNaBzluWWud8XybhTJsgI0pL69OYAoXCCVwEe1H9UrEvg5Tp1MCm0XdBtCf00CaWltWtJ',
+  'pk_test_51MX6rJEP2FAJR8soiy9WKUtuy7rweEkp8s3M4Gcfe6lYj60vVuBSW5xKEWzPfRGWPEkbDavd5Ia7imG5KNkNhOYy00yvEnMId5',
 )
 
 export default function CheckoutWrapper() {

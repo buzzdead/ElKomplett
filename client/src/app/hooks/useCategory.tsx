@@ -14,7 +14,7 @@ export const useCategory = (categoryId?: number) => {
     const {categories, categoriesLoading} = useCategories()
     const { id } = useParams<{ id: string }>()
     const dispatch = useAppDispatch()
-    console.log(categoryCache)
+    
     const fetchCategories = async () => {
       if(id !== undefined || categoryId !== undefined){
         const newId = categoryId !== undefined ? categoryId : parseInt(id!)

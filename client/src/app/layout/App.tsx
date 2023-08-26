@@ -1,5 +1,5 @@
 import { Container, createTheme, CssBaseline } from '@mui/material'
-import { ThemeProvider } from '@mui/material/styles'
+import { PaletteColorOptions, Shadows, ThemeProvider } from '@mui/material/styles'
 import { useCallback, useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from './Header'
@@ -11,7 +11,17 @@ import { useAppDispatch } from '../store/configureStore'
 import { fetchBasketAsync } from '../../features/basket/basketSlice'
 import { fetchCurrentUser } from '../../features/account/accountSlice'
 import HomePage from '../../features/home/HomePage'
-import { blue, grey, red } from '@mui/material/colors'
+import { blue, blueGrey, common, green, grey, lightGreen, lime, red, yellow } from '@mui/material/colors'
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    special: PaletteColor;
+  }
+
+  interface PaletteOptions {
+    special: string;
+  }
+}
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -64,18 +74,24 @@ function App() {
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
+      special: darkMode ? grey[700] : 'white',
       background: {
-        default: darkMode ? grey[800] : 'white',
+        default: darkMode ? grey[800] : grey[200],
+        paper: darkMode ? grey[700] : grey[300],
       },
       secondary: {
-        main: darkMode ? blue[400] : red[400]
-        
+        main: darkMode ? blue[400] : red[400],
+        dark: darkMode ? blueGrey[800] : blueGrey[100],
+        darker: darkMode ? green[400] : green[400]
       },
       neutral: {
-        main: blue[300],
-        dark: blue[600],
+        main: darkMode ? 'white' : 'black',
+        dark: darkMode ? blue[400] : blue[300],
         darker: blue[900]
       },
+      common: {
+        
+      }
     },
   })
 

@@ -34,26 +34,26 @@ const ContactPage = () => {
     <Container maxWidth="sm">
       <FormContainer>
         <Typography variant="h4" gutterBottom>
-          Contact Us
+          Kontakt oss
         </Typography>
         <Typography variant="subtitle1">
-          Have any questions or concerns? Please fill out the form below, and we'll get back to you as soon as possible.
+          Har du noen spørsmål eller tilbakemeldinger? Vennligst fyll ut skjemaet nedenfor, så kommer vi tilbake til deg så snart som mulig.
         </Typography>
       </FormContainer>
       <Box mt={4}>
         <Form noValidate autoComplete="off">
           <FormTextField
-            label="Full Name"
+            label="Fullt navn"
             variant="outlined"
             required
           />
           <FormTextField
-            label="Email Address"
+            label="E-postadresse"
             variant="outlined"
             required
           />
           <FormTextField
-            label="Message"
+            label="Beskjed"
             variant="outlined"
             multiline
             rows={6}
@@ -63,7 +63,7 @@ const ContactPage = () => {
             variant="contained"
             color="primary"
           >
-            Send Message
+            Send beskjed
           </SubmitButton>
         </Form>
       </Box>

@@ -15,7 +15,6 @@ namespace API.DTOs
         public long Price { get; set; }
         [Required]
         public List<IFormFile> Files { get; set; } = new();
-        [Required]
         public string Type { get; set; }
         [Required]
         public string Brand { get; set; }
@@ -23,6 +22,7 @@ namespace API.DTOs
         [Range(0, 200)]
         public int QuantityInStock { get; set; }
         public int categoryId { get; set; }
+        public List<string> Order { get; set; } = new();
         
     }
 }

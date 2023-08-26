@@ -21,7 +21,7 @@ export interface IProduct {
     name: string;
     description: string;
     price: number;
-    images: {pictureUrl: string}[];
+    images: {pictureUrl: string, publicId?: string}[];
     type?: string;
     brand: string;
     quantityInStock?: number;

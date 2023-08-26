@@ -15,6 +15,7 @@ import { setProduct } from '../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
 import Configurations from './config/Configurations'
 import { useCategories } from 'app/hooks/useCategories'
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 
 interface Props {
@@ -38,7 +39,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const [selectedTab, setSelectedTab] = useState(0)
   const { categories } = useCategories()
   const cats = categories.map((e) => e.title)
-
+  const [theList, setTheList] = useState<{publicId?: string, path?: string, pictureUrl?: string, preview?: string}[]>(product !== undefined ? product.images.map(i => { return {publicId: i.publicId, pictureUrl: i.pictureUrl}}) : [])
+  
   const handleTabChange = () => {
     const setNewValue = selectedTab === 0 ? 1 : 0
     setSelectedTab(setNewValue)
@@ -56,10 +58,30 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       watchFiles?.forEach((file: { preview: string }) => URL.revokeObjectURL(file.preview))
     }
   }, [product, reset, isDirty])
+  useEffect(() => {
+    let abc = watchFiles?.map((wf: { path: any, preview: any }) => {return {path: wf.path, preview: wf.preview}}) || []
+    if(abc.length > 0) {
+      abc = abc.filter((e: { path: string | undefined }) => !theList.some(t => t.path === e.path))
+    }
+    setTheList([...theList, ...abc])
+  }, [watchFiles])
+  
+
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
+  
+    const [reorderedItem] = theList.splice(source.index, 1);
+    theList.splice(destination.index, 0, reorderedItem);
+  
+  };
+  
 
   async function handleSubmitData(data: FieldValues) {
     const cat = categories.find((e) => e.title === data.categoryId)
     data.categoryId = cat?.id
+    data.order = theList.map(e => e.publicId || e.path)
     try {
       let response: IProduct
       if (product) {
@@ -73,6 +95,15 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       console.log(error)
     }
   }
+  const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
+    
+    background: isDragging ? '#4a2975' : 'white', 
+    color: isDragging ? 'white' : 'black',
+    border: '1px solid black',
+    fontSize: '20px',
+    borderRadius: '5px',
+    ...draggableStyle
+  })
   const catTitle = categories.find((c) => c.id === product?.categoryId)?.title
   return (
     <Box component={Paper} sx={{ p: 4 }}>
@@ -93,9 +124,6 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <AppSelectList control={control} items={brands} name='brand' label='Brand' />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <AppSelectList control={control} items={types} name='type' label='Type' />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <AppTextInput control={control} type='number' name='price' label='Price' />
@@ -120,37 +148,42 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               <Grid item xs={12}>
                 <AppTextInput
                   multiline
-                  rows={4}
+                  rows={2}
                   control={control}
                   name='description'
                   label='Description'
                 />
               </Grid>
               <Grid item xs={12}>
-                <Box display='flex' justifyContent='space-between' alignItems='center' gap={5}>
+                <Box display='flex' justifyContent='space-between' alignItems='center' gap={5} flexDirection='column'>
                   <AppDropzone control={control} name='files' />
-                    <div style={{gap: 10, display: 'flex', flexWrap: 'wrap'}}>
-                      {watchFiles?.map(
-                        (file: { preview: string | undefined }, index: Key | null | undefined) => (
-                          <img
+                  
+                      <DragDropContext onDragEnd={onDragEnd}>
+                      <Droppable droppableId='index' direction='horizontal' >
+                            {(provided) => (
+                              <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'row', gap: 5, flexWrap: 'wrap',}}>
+                      {theList?.map(
+                        (file, index: number) => {
+                          return (
+                          <Draggable key={index} draggableId={index.toString()} index={index}>
+                            {(provided, snapshot) => (
+                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
+                              <img
                             key={index}
-                            src={file.preview}
+                            src={file.pictureUrl || file.preview}
                             alt={`Image ${index}`}
                             style={{ maxHeight: 200 }}
                           />
-                        ),
+                          </div>
+                            )}
+                          
+                          </Draggable>
+                         
+                        )},
                       )}
-                      {product?.images.map((image, index) => (
-                        <Card>
-                        <img
-                          key={index}
-                          src={image.pictureUrl}
-                          alt={`Product Image ${index}`}
-                          style={{ maxHeight: 200 }}
-                        />
-                        </Card>
-                      ))}
-                    </div>
+                      </div>)}</Droppable>
+                      </DragDropContext>
+                     
                 </Box>
               </Grid>
             </Grid>

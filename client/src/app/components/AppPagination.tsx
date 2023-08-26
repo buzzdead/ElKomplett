@@ -46,8 +46,8 @@ export default function AppPagination({ metaData, onPageChange, flexOnMobile = '
             {...item}
             sx={{
               '&.Mui-selected': {
-                backgroundColor: (theme) => theme.palette.neutral.main,
-                color: (theme) => theme.palette.neutral.contrastText,
+                backgroundColor: (theme) => theme.palette.neutral.dark,
+                color: (theme) => 'white',
               },
             }}
           />

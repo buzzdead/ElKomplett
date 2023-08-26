@@ -39,11 +39,11 @@ const midLinks = [
 
 const rightLinks = [
   {
-    title: 'login',
+    title: 'logg inn',
     path: '/login',
   },
   {
-    title: 'register',
+    title: 'registrer',
     path: '/register',
   },
 ]

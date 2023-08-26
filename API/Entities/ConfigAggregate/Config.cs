@@ -10,6 +10,7 @@ namespace API.Entities.ConfigAggregate
         public string Value { get; set; }
         public string PictureUrl { get; set; }
         public int ProductId { get; set; }
+        public string Name { get; set; }
 
     }
 }

@@ -9,6 +9,7 @@ interface Props extends UseControllerProps {
   width?: number
   iconSize?: string
   defaultValue?: any
+  singular?: boolean
 }
 
 export default function AppDropzone(props: Props) {
@@ -30,10 +31,16 @@ export default function AppDropzone(props: Props) {
     }
 
     const onDrop = useCallback((acceptedFiles: any[]) => {
+      if(props.singular) { acceptedFiles[0] = Object.assign(acceptedFiles[0], 
+        {preview: URL.createObjectURL(acceptedFiles[0])})
+    field.onChange(acceptedFiles[0])
+      }
+      else {
       const updatedFiles = acceptedFiles.map(file => (
         Object.assign(file, {preview: URL.createObjectURL(file)})
       ));
       field.onChange([...(field.value || []), ...updatedFiles]);
+      }
     }, [field]);
   const {getRootProps, getInputProps, isDragActive, isFileDialogActive} = useDropzone({onDrop})
 

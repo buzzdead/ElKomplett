@@ -80,7 +80,7 @@ export default function Inventory() {
         value: (
           <Box display='flex' alignItems='center'>
             <img
-              src={product.images[0].pictureUrl}
+              src={product.images[0]?.pictureUrl}
               alt={product.name}
               style={{ height: 50, marginRight: 20 }}
             />

@@ -4,5 +4,6 @@ namespace API.DTOs
     {
          string PublicId { get; set; }
          string PictureUrl { get; set; }
+         public string Name { get; set; }
     }
 }

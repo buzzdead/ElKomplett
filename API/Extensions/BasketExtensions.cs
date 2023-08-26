@@ -21,7 +21,6 @@ namespace API.Extensions
                     Name = item.Product.Name,
                     Price = item.Product.Price,
                     PictureUrl = item.Product.Images[0].PictureUrl,
-                    Type = item.Product.Type,
                     Brand = item.Product.Brand,
                     Quantity = item.Quantity,
                     ConfigId = item.ConfigId,
@@ -31,7 +30,12 @@ namespace API.Extensions
         }
         public static IQueryable<Basket> RetrieveBasketWithItems(this IQueryable<Basket> query, string buyerId)
         {
-            return query.Include(i => i.Items).ThenInclude(p => p.Product).Where(b => b.BuyerId == buyerId);
+            return query
+    .Include(i => i.Items)
+        .ThenInclude(p => p.Product)
+            .ThenInclude(pi => pi.Images)
+    .Where(b => b.BuyerId == buyerId);
+
         }
     }
 }

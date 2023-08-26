@@ -41,7 +41,7 @@ export default function Catalog() {
                 variant='overline'
                 sx={{
                   fontSize: 14,
-                  color: c.id === category.id ? 'blue' : 'black',
+                  color: c.id === category.id ? 'blue' : 'neutral.main',
                   fontWeight: 500,
                 }}
               >
@@ -53,7 +53,7 @@ export default function Catalog() {
       </Grid>
       <Grid item xs={2}>
         <ProductSearch />
-        <SideBar brands={brands} types={types} />
+        <SideBar brands={brands} types={[]} />
       </Grid>
       <Grid item xs={9}>
         <ProductList loadingCondition={!filtersLoaded || categoryLoading || !productsLoaded} products={products} />

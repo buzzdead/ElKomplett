@@ -36,7 +36,7 @@ export default function Category() {
                 variant='overline'
                 sx={{
                   fontSize: 14,
-                  color: c.id === category.id ? 'blue' : 'black',
+                  color: c.id === category.id ? 'blue' : 'neutral.main',
                   fontWeight: 500,
                 }}
               >
@@ -63,7 +63,7 @@ export default function Category() {
           </Grid>
       </Render>
       <Grid item xs={2.65}>
-        <Card sx={{ width: 325, marginBottom: 2 }}>
+        <Card sx={{ width: 325, marginBottom: 2, bgcolor: 'special' }}>
           <Render condition={!categoryLoading}>
             <CardMedia
               sx={{ height: 225, backgroundSize: 'cover' }}

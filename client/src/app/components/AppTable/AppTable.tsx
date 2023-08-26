@@ -17,13 +17,22 @@ interface Props {
     component?: any
 }
 
+const cellStyle = {
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  maxHeight: '60px'
+};
+
 export default function AppTable({tableData, sx, component}: Props) {
 
   const renderTableRow = (row: TableData) => {
     return (
       <TableRow key={row.key}>
         <TableCell>{row.key}</TableCell>
-        <TableCell component={row.component} scope={row.scope}>{row.value}</TableCell>
+        <TableCell component={row.component} scope={row.scope} sx={cellStyle}>{row.value}</TableCell>
       </TableRow>
     )
   }

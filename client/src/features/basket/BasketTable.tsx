@@ -106,6 +106,7 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   }, [items]);
 
   const tableData: TableData[][] = items.map((item) => {
+    console.log(item)
     const cfg = config?.find(cfg => cfg.id === item.configId)
     return [
       {

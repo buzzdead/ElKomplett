@@ -1,5 +1,5 @@
-import { Box, Divider, Grid, TextField, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Box, Card, CardMedia, Divider, Grid, Paper, TextField, Typography } from '@mui/material'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
 import NotFound from '../../../app/errors/NotFound'
@@ -15,6 +15,8 @@ import './Product.css'
 import { IRadioButton, ProductConfigs } from './ProductConfigs'
 import ImageScroller from 'app/components/ImageScroller'
 import Render from 'app/layout/Render'
+import ProductBottom from './ProductBottom'
+import { grey } from '@mui/material/colors'
 
 type Config = {
   id?: number
@@ -26,6 +28,7 @@ export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
   const { status: productStatus } = useAppSelector((state) => state.catalog)
+  const [mounted, setMounted] = useState(false)
 
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
@@ -33,6 +36,7 @@ export default function ProductDetails() {
 
   const [newQuantity, setNewQuantity] = useState(0)
   const [config, setConfig] = useState<Config>()
+  const [bottomValue, setBottomValue] = useState(0)
 
   const basketItem = basket?.items.find(
     (i: { productId: number | undefined }) => i.productId === product?.id,
@@ -44,6 +48,13 @@ export default function ProductDetails() {
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))
   }, [id, basketItem, dispatch, product])
+
+  useEffect(() => {
+    return
+    if(!mounted) setMounted(true)
+    else  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    
+  }, [bottomValue]);
 
   function handleInputChange(event: any) {
     if (event.target.value >= 0) {
@@ -91,26 +102,26 @@ export default function ProductDetails() {
 
   const tableData: TableData[] = [
     {
-      key: 'Name',
+      key: 'Navn',
       value: product.name,
     },
     {
-      key: 'Description',
+      key: 'Beskrivelse',
       value: product.description,
     },
     {
-      key: 'Brand',
+      key: 'Produsent',
       value: product.brand,
     },
     {
-      key: 'Quantity in stock',
+      key: 'Lagerstatus',
       value: config?.config.quantityInStock || product.quantityInStock,
     },
   ]
 
   const renderQuantityField = () => {
     return (
-      <Grid item xs={6}>
+      <Grid item xs={3}>
         <TextField
           variant='outlined'
           type='number'
@@ -127,7 +138,7 @@ export default function ProductDetails() {
     const quantityChanged =
       basketItem?.quantity === newQuantity || (!basketItem && newQuantity === 0)
     return (
-      <Grid item xs={6}>
+      <Grid item xs={3}>
         <LoadingButton
           disabled={quantityChanged}
           loading={status.includes('pending')}
@@ -146,27 +157,31 @@ export default function ProductDetails() {
 
   const handleOnPress = (img: {pictureUrl: string}) => {
     setCurrentPicture(img)
+    
   }
+
   return (
-    <Grid container spacing={6}>
+    <Grid container spacing={6} sx={{marginTop: 0}}>
       <Render condition={product.images.length > 1}>
-      <Grid item xs={2}>
+      <Grid item xs={1.5} sx={{overflow: 'hidden'}}>
         <ImageScroller selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={product.images}/>
       </Grid>
       </Render>
-      <Grid style={{padding: 20}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={4}>
-        <img
-          className='productImage'
-          src={config?.config.pictureUrl || currentPicture?.pictureUrl || product.images[0].pictureUrl}
-          alt={product.name}
-          style={{ width: '100%' }}
+      <Grid style={{padding: 40}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={4}>
+        <Card style={{height: 475, width: '100%' }}>
+        <CardMedia
+        title="asdf"
+          component={Paper}
+          image={config?.config.pictureUrl || currentPicture?.pictureUrl || product.images[0].pictureUrl}
+          
+          sx={{padding: 20, width: '100%', height: '100%', alignSelf: 'center',  backgroundSize: 'cover',}}
         />
+        </Card>
       </Grid>
       
       <Grid item xs={6}>
       
-        <Typography variant='h3'>{product.name}</Typography>
-        <Divider sx={{ mb: 2 }} />
+        <Typography variant='h3' sx={{paddingBottom: 2}}>{product.name}</Typography>
         <Typography variant='h4' color='secondary'>
           {currencyFormat(config?.config?.price || product.price)}
         </Typography>
@@ -175,12 +190,20 @@ export default function ProductDetails() {
           container
           sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}
         >
+          <Box sx={{position: 'absolute', height: '100%', marginTop: -6}}>
           <ProductConfigs product={product} onConfigChange={onConfigChange} />
+          </Box>
         </Grid>
         <Grid container spacing={2}>
           {renderQuantityField()}
           {renderUpdateCartButton()}
         </Grid>
+      </Grid>
+      <Grid component={Paper}  marginBottom={5} marginTop={5} elevation={1} item xs={12} sx={{ backgroundImage: 'none', bgcolor: 'background.paper', borderRadius: 15, minHeight: 250, display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 30, marginRight: 10}}>
+
+        <ProductBottom onChangeValue={setBottomValue} />
+        <Typography variant='subtitle1' sx={{marginBottom: 5, marginTop: 2, marginRight: 5}}>{bottomValue === 0 ? product.description : bottomValue === 1 ? "Spesifikasjoner kommer" : "Dokumentasjon kommer"}</Typography>
+
       </Grid>
     </Grid>
   )

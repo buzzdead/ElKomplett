@@ -104,6 +104,7 @@ namespace API.Controllers
             return await _context.Baskets
                         .Include(i => i.Items)
                         .ThenInclude(p => p.Product)
+                        .ThenInclude(p => p.Images)
                         .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
         }
     }

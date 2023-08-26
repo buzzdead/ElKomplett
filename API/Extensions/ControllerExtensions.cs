@@ -39,7 +39,7 @@ public static class ControllerExtensions
             }
             else
             {
-                    product.AddImage(new Image { PictureUrl = imageResult.SecureUrl.ToString(), PublicId = imageResult.PublicId});
+                    product.AddImage(new Image { PictureUrl = imageResult.SecureUrl.ToString(), PublicId = imageResult.PublicId, Name = file.FileName});
             }
         }
         }
