@@ -1,4 +1,4 @@
-import { Grid, Typography } from '@mui/material'
+import { Grid, Skeleton, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import LoadingComponent from '../../app/layout/LoadingComponent'
 import { useAppDispatch } from '../../app/store/configureStore'
@@ -17,12 +17,13 @@ export default function Catalog() {
   const { products, brands, types, filtersLoaded, metaData, productsLoaded } = useProducts()
   const dispatch = useAppDispatch()
   const {category, categoryLoading} = useCategory(0)
-  const {categories} = useCategories()
+  const {categories, categoriesLoading} = useCategories()
 
   if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading categories'} />
 
   return (
     <Grid container columnSpacing={4}>
+      <Render condition={!categoriesLoading}>
       <Grid
         sx={{
           display: 'flex',
@@ -50,7 +51,22 @@ export default function Catalog() {
             </Link>
           )
         })}
-      </Grid>
+        </Grid>
+        <Grid
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2.5,
+          justifyContent: 'center',
+          marginBottom: 2.5,
+        }}
+        item
+        xs={12}
+      >
+      <Skeleton animation='wave' variant='rectangular' height={35}  width={'60%'} />
+          </Grid>
+        </Render>
+      
       <Grid item xs={2}>
         <ProductSearch />
         <SideBar brands={brands} types={[]} />

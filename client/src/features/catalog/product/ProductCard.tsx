@@ -31,7 +31,14 @@ export default function ProductCard({ product }: Props) {
   const { status } = useAppSelector(state => state.basket)
   const dispatch = useAppDispatch()
   const { basket } = useAppSelector((state) => state.basket)
-
+  const cellStyle = {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxHeight: '60px'
+  };
   return (
     <Card sx={{bgcolor: 'special'}}>
       <CardHeader
@@ -40,7 +47,7 @@ export default function ProductCard({ product }: Props) {
         }
         title={product.name}
         titleTypographyProps={{
-          sx: { fontWeight: 'bold', color: 'primary.default', fontSize: 16 },
+          sx: {...cellStyle, fontWeight: 'bold', color: 'primary.default', fontSize: 15 },
         }}
       />
       <CardMedia
