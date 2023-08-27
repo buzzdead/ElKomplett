@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace API.DTOs
 {
-    public class UpdateProductDto
+    public class UpdateProductDto : Sortable
     {
         public int Id { get; set; }
 

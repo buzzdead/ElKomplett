@@ -17,6 +17,7 @@ import ImageScroller from 'app/components/ImageScroller'
 import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
 import { grey } from '@mui/material/colors'
+import { ProductQuantity } from './ProductQuantity'
 
 type Config = {
   id?: number
@@ -28,14 +29,13 @@ export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
   const { status: productStatus } = useAppSelector((state) => state.catalog)
-  const [mounted, setMounted] = useState(false)
 
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
-  const [currentPicture, setCurrentPicture] = useState(product?.images[0])
+  const [currentPicture, setCurrentPicture] = useState(product?.configurables && product.configurables.length > 0 ? product.configurables[0].images[0] : product?.images[0])
 
   const [newQuantity, setNewQuantity] = useState(0)
-  const [config, setConfig] = useState<Config>()
+  const [config, setConfig] = useState<Config | null>(product?.configurables ? {config: product.configurables[0], id: product.configurables[0]?.id || 0, value: product.configurables[0]?.value} : null)
   const [bottomValue, setBottomValue] = useState(0)
 
   const basketItem = basket?.items.find(
@@ -43,18 +43,11 @@ export default function ProductDetails() {
   )
 
   useEffect(() => {
-    if (basketItem) {
+    if (basketItem && !basketItem.configurables) {
       setNewQuantity(basketItem.quantity)
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))
   }, [id, basketItem, dispatch, product])
-
-  useEffect(() => {
-    return
-    if(!mounted) setMounted(true)
-    else  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    
-  }, [bottomValue]);
 
   function handleInputChange(event: any) {
     if (event.target.value >= 0) {
@@ -115,7 +108,7 @@ export default function ProductDetails() {
     },
     {
       key: 'Lagerstatus',
-      value: config?.config.quantityInStock || product.quantityInStock,
+      value: config && config.config && config.config.quantityInStock ? config?.config.quantityInStock : product.quantityInStock,
     },
   ]
 
@@ -164,7 +157,7 @@ export default function ProductDetails() {
     <Grid container spacing={6} sx={{marginTop: 0}}>
       <Render condition={product.images.length > 1}>
       <Grid item xs={1.5} sx={{overflow: 'hidden'}}>
-        <ImageScroller selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={product.images}/>
+        <ImageScroller selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={config && config?.config ? config.config.images : product.images}/>
       </Grid>
       </Render>
       <Grid style={{padding: 40}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={4}>
@@ -172,7 +165,7 @@ export default function ProductDetails() {
         <CardMedia
         title="asdf"
           component={Paper}
-          image={config?.config.pictureUrl || currentPicture?.pictureUrl || product.images[0].pictureUrl}
+          image={currentPicture?.pictureUrl}
           
           sx={{padding: 20, width: '100%', height: '100%', alignSelf: 'center',  backgroundSize: 'cover',}}
         />
@@ -191,12 +184,17 @@ export default function ProductDetails() {
           sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}
         >
           <Box sx={{position: 'absolute', height: '100%', marginTop: -6}}>
-          <ProductConfigs product={product} onConfigChange={onConfigChange} />
+          <ProductConfigs product={product} onConfigChange={onConfigChange} defaultConfig={config && config.config ? {key: config.config.key, checkedValue: config?.value} : {key: '', checkedValue: ''}} />
           </Box>
         </Grid>
         <Grid container spacing={2}>
-          {renderQuantityField()}
-          {renderUpdateCartButton()}
+          <Render condition={product?.configurables !== undefined}>
+          <ProductQuantity basketItem={basketItem} productId={product.id} newQuantity={newQuantity} setNewQuantity={setNewQuantity} config={config}/>
+          <Grid xs={12} item sx={{display: 'flex', flexDirection: 'row'}}>
+            {renderQuantityField()}
+            {renderUpdateCartButton()}
+          </Grid>
+          </Render>
         </Grid>
       </Grid>
       <Grid component={Paper}  marginBottom={5} marginTop={5} elevation={1} item xs={12} sx={{ backgroundImage: 'none', bgcolor: 'background.paper', borderRadius: 15, minHeight: 250, display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 30, marginRight: 10}}>

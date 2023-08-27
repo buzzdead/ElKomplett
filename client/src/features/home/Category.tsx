@@ -67,7 +67,7 @@ export default function Category() {
           <Render condition={!categoryLoading}>
             <CardMedia
               sx={{ height: 225, backgroundSize: 'cover' }}
-              image={category.pictureUrl}
+              image={category.pictureUrl || ''}
               title={category.title}
             />
             <Skeleton animation='wave' variant='rectangular' height={225} />

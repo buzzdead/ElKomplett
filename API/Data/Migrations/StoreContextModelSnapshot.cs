@@ -117,17 +117,11 @@ namespace API.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("PictureUrl")
-                        .HasColumnType("text");
-
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("text");
 
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("integer");
@@ -195,6 +189,9 @@ namespace API.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ConfigId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -211,6 +208,8 @@ namespace API.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConfigId");
 
                     b.HasIndex("ProductId");
 
@@ -610,6 +609,10 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.Image", b =>
                 {
+                    b.HasOne("API.Entities.ConfigAggregate.Config", null)
+                        .WithMany("Images")
+                        .HasForeignKey("ConfigId");
+
                     b.HasOne("API.Entities.Product", null)
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
@@ -757,6 +760,11 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Entities.Category", b =>
                 {
                     b.Navigation("ChildCategories");
+                });
+
+            modelBuilder.Entity("API.Entities.ConfigAggregate.Config", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("API.Entities.ConfigAggregate.ConfigPresetComposition", b =>

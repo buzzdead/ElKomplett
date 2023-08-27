@@ -34,6 +34,10 @@ namespace API.Extensions
     .Include(i => i.Items)
         .ThenInclude(p => p.Product)
             .ThenInclude(pi => pi.Images)
+    .Include(p => p.Items)
+    .ThenInclude(p => p.Product)
+    .ThenInclude(p => p.Configurables)
+    .ThenInclude(p => p.Images)
     .Where(b => b.BuyerId == buyerId);
 
         }

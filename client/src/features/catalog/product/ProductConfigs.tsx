@@ -7,6 +7,7 @@ import { useState } from 'react'
 interface Props {
   onConfigChange: (btns: any) => void
   product: IProduct
+  defaultConfig: IRadioButton
 }
 
 interface ConfigMap {
@@ -21,9 +22,9 @@ export interface IRadioButton {
   checkedValue: string
 }
 
-export function ProductConfigs({ onConfigChange, product }: Props) {
+export function ProductConfigs({ onConfigChange, product, defaultConfig }: Props) {
   const [checkedRadioButton, setCheckedRadioButton] = useState<IRadioButton[]>([
-    { key: '', checkedValue: '' },
+    defaultConfig,
   ])
   function onRadioButtonChange(value: string, key: string = '') {
     const currentRadioButtons = checkedRadioButton.map((checked) =>
@@ -55,7 +56,7 @@ export function ProductConfigs({ onConfigChange, product }: Props) {
       <>
         {radioButtons.map((cfg) => {
           return (
-            <>
+            <Box key={cfg.key}>
               <Box marginTop={1}>Choose {cfg.key}:</Box>
               <RadioButtonGroup
                 flexDirection='row'
@@ -65,7 +66,7 @@ export function ProductConfigs({ onConfigChange, product }: Props) {
                 options={cfg.values.map((e) => ({ value: e, label: e }))}
                 onChange={(e) => onRadioButtonChange(e.target.value, cfg.key)}
               />
-            </>
+            </Box>
           )
         })}
       </>

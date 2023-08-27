@@ -42,8 +42,7 @@ var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
 string connStr;
 
-//if (env == "Development")
-if(true)
+if (env == "Development")
 {
     // Use connection string from file.
     connStr = builder.Configuration.GetConnectionString("DefaultConnection");

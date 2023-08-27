@@ -27,7 +27,6 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
   }
 
   const handleMouseScroll = (event: React.WheelEvent<HTMLDivElement>) => {
-    event.preventDefault()
     if (event.deltaY > 0 && scrollIndex < images.length - 3) {
       // Scrolling down
       setScrollIndex(scrollIndex + 1)

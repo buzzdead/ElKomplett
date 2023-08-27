@@ -6,8 +6,7 @@ export interface Configurable {
   key: string;
   value: string;
   productId?: number;
-  pictureUrl?: string
-  publicId?: string
+  images: {pictureUrl: string, publicId?: string}[];
   file?: any
 }
 

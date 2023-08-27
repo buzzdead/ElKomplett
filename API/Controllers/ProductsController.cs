@@ -23,6 +23,7 @@ namespace API.Controllers
         {
             var query = _context.Products
             .Include(p => p.Configurables)
+            .ThenInclude(p => p.Images)
             .Include(p => p.ConfigPresets)
             .Include(p => p.Images)
             .Sort(productParams.OrderBy)
@@ -36,6 +37,10 @@ namespace API.Controllers
             foreach (var product in products)
                 {
                     product.Images = product.Images.OrderBy(image => image.Order).ToList();
+                    foreach (var config in product.Configurables) 
+                    {
+                        config.Images = config.Images.OrderBy(image => image.Order).ToList();
+                    }
                 }
 
             Response.AddPaginationHeader(products.MetaData);
@@ -45,9 +50,13 @@ namespace API.Controllers
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.Include(p => p.Configurables).Include(d => d.ConfigPresets).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.Include(p => p.Configurables).ThenInclude(p => p.Images).Include(d => d.ConfigPresets).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
 
             product.Images = product.Images.OrderBy(image => image.Order).ToList();
+            foreach(var config in product.Configurables) 
+            {
+                config.Images = config.Images.OrderBy(image => image.Order).ToList();
+            }
 
             return product;
         }
@@ -64,26 +73,15 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
-            Dictionary<string, int> imageOrder = new Dictionary<string, int>();
-            for (int i = 0; i < productDto.Order.Count; i++)
-            {
-                imageOrder[productDto.Order[i]] = i;
-            }
+            if(productDto.Order.Count > 0)  productDto = (CreateProductDto) await this.SortImagesPre(productDto);
 
-            // Sort the Files list based on the order provided in the Order list
-            productDto.Files.Sort((file1, file2) =>
-            {
-                int order1 = imageOrder.TryGetValue(file1.FileName, out int o1) ? o1 : int.MaxValue;
-                int order2 = imageOrder.TryGetValue(file2.FileName, out int o2) ? o2 : int.MaxValue;
-                return order1.CompareTo(order2);
-            });
-            
             var product = _mapper.Map<Product>(productDto);
             product = (Product) await this.AddImagesAsync(productDto.Files, product, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);
             for (int i = 0; i < product.Images.Count; i++) product.Images[i].Order = i;
 
             _context.Products.Add(product);
+
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -95,19 +93,8 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProductDto productDto)
         {
-            Dictionary<string, int> imageOrder = new Dictionary<string, int>();
-            for (int i = 0; i < productDto.Order.Count; i++)
-            {
-                imageOrder[productDto.Order[i]] = i;
-            }
+            productDto = (UpdateProductDto) await this.SortImagesPre(productDto);
 
-            // Sort the Files list based on the order provided in the Order list
-            productDto.Files.Sort((file1, file2) =>
-            {
-                int order1 = imageOrder.TryGetValue(file1.FileName, out int o1) ? o1 : int.MaxValue;
-                int order2 = imageOrder.TryGetValue(file2.FileName, out int o2) ? o2 : int.MaxValue;
-                return order1.CompareTo(order2);
-            });
             var product = await _context.Products.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDto.Id);
  
             if (product == null) return NotFound();
@@ -117,14 +104,7 @@ namespace API.Controllers
             product = (Product) await this.AddImagesAsync(productDto.Files, product, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);}
 
-            product.Images.Sort((file1, file2) =>
-            {
-                int order1 = imageOrder.TryGetValue(file1.PublicId, out int o1) ? o1 : imageOrder.TryGetValue(file1.Name, out int o2) ? o2 : int.MaxValue;
-                int order2 = imageOrder.TryGetValue(file2.PublicId, out int o3) ? o3 : imageOrder.TryGetValue(file2.Name, out int o4) ? o4 : int.MaxValue;
-                return order1.CompareTo(order2);
-            });
-
-            for (int i = 0; i < product.Images.Count; i++) product.Images[i].Order = i;
+            product = (Product) await this.SortImagesPost(product, productDto);
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -136,6 +116,7 @@ namespace API.Controllers
         [HttpPut("SetDefaultConfig")]
         public async Task<ActionResult<Product>> SetDefaultConfig([FromForm] SetDefaultProductDto setDefaultProductDto)
         {
+           
             var product = await _context.Products.FindAsync(setDefaultProductDto.Id);
 
             if (product == null) return NotFound();

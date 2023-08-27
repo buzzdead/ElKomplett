@@ -5,7 +5,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DescriptionIcon from '@mui/icons-material/Description';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { grey } from '@mui/material/colors';
+import { common, grey } from '@mui/material/colors';
 import { Paper } from '@mui/material';
 
 interface Props {
@@ -26,9 +26,12 @@ export default function ProductBottom({onChangeValue}: Props) {
           onChangeValue(newValue)
         }}
       >
-        <BottomNavigationAction component={Paper}  elevation={5} sx={{fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Produktbeskrivelse" icon={<DescriptionIcon  fontSize='large' />} />
-        <BottomNavigationAction component={Paper}  elevation={5} sx={{fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Spesifikasjoner" icon={<SettingsIcon  fontSize='large'/>} />
-        <BottomNavigationAction component={Paper}  elevation={5} sx={{fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Dokumentasjon" icon={<PictureAsPdfIcon  fontSize='large' />} />
+        <BottomNavigationAction component={Paper}  elevation={5} sx={{'& .MuiBottomNavigationAction-label': {
+      color: value === 0 ? 'green' : 'grey'}, fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Produktbeskrivelse" icon={<DescriptionIcon color={value === 0 ? 'success' : 'disabled'}  fontSize='large' />} />
+        <BottomNavigationAction component={Paper}  elevation={5} sx={{'& .MuiBottomNavigationAction-label': {
+      color: value === 1 ? 'green' : 'grey'}, fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Spesifikasjoner" icon={<SettingsIcon color={value === 1 ? 'success' : 'disabled'}  fontSize='large'/>} />
+        <BottomNavigationAction component={Paper}  elevation={5} sx={{'& .MuiBottomNavigationAction-label': {
+      color: value === 2 ? 'green' : 'grey'},fontWeight: 600, backgroundColor: 'secondary.dark', borderRadius: 5, minWidth: 150, minHeight: 60, flex: 0}} label="Dokumentasjon" icon={<PictureAsPdfIcon color={value === 2 ? 'success' : 'disabled'} fontSize='large' />} />
         
       </BottomNavigation>
     </Box>

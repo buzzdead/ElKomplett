@@ -28,7 +28,7 @@ namespace API.Controllers
 
             if (basket == null) basket = CreateBasket();
 
-            var product = await _context.Products.Include(p => p.Configurables).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productId);
+            var product = await _context.Products.Include(p => p.Configurables).ThenInclude(p => p.Images).Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null) return BadRequest(new ProblemDetails { Title = "Product Not Found" });
 
@@ -73,6 +73,7 @@ namespace API.Controllers
                         .Include(i => i.Items)
                         .ThenInclude(p => p.Product)
                         .ThenInclude(p => p.Configurables)
+                        .ThenInclude(p => p.Images)
                         .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
         }
 

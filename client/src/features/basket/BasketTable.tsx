@@ -29,7 +29,7 @@ export default function BasketTable({ items, isBasket = true }: Props) {
     return (
       <Box display='flex' alignItems='center'>
         <img
-          src={cfg?.pictureUrl || item.pictureUrl}
+          src={cfg?.images[0]?.pictureUrl || item.pictureUrl}
           alt={item.name}
           style={{
             height: 50,
@@ -106,8 +106,8 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   }, [items]);
 
   const tableData: TableData[][] = items.map((item) => {
-    console.log(item)
     const cfg = config?.find(cfg => cfg.id === item.configId)
+    console.log(cfg)
     return [
       {
         key: 'Product',

@@ -1,4 +1,4 @@
-import { Typography, Grid, Paper, Box, Button, Tab, Tabs, Card } from '@mui/material'
+import { Typography, Grid, Paper, Box, Button, Tab, Tabs } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../app/components/AppTextInput'
 import { IProduct } from '../../app/models/product'
@@ -16,6 +16,9 @@ import { LoadingButton } from '@mui/lab'
 import Configurations from './config/Configurations'
 import { useCategories } from 'app/hooks/useCategories'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { useDndList } from '../../app/hooks/useDndList'
+import { DndList } from '../../app/components/DndList'
+import ProductSpecification from './ProductSpecifications'
 
 
 interface Props {
@@ -37,13 +40,14 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const watchFiles = watch('files', [])
   const dispatch = useAppDispatch()
   const [selectedTab, setSelectedTab] = useState(0)
-  const { categories } = useCategories()
+  const { categories, categoriesLoading } = useCategories()
   const cats = categories.map((e) => e.title)
-  const [theList, setTheList] = useState<{publicId?: string, path?: string, pictureUrl?: string, preview?: string}[]>(product !== undefined ? product.images.map(i => { return {publicId: i.publicId, pictureUrl: i.pictureUrl}}) : [])
-  
-  const handleTabChange = () => {
-    const setNewValue = selectedTab === 0 ? 1 : 0
-    setSelectedTab(setNewValue)
+
+  const {list, onDragEnd, reordered} = useDndList({images: product?.images, watchFiles: watchFiles, control: control, name: 'order'})
+
+  const handleTabChange = (e: any, v: any) => {
+    console.log(v)
+    setSelectedTab(v)
   }
 
   useEffect(() => {
@@ -58,30 +62,11 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       watchFiles?.forEach((file: { preview: string }) => URL.revokeObjectURL(file.preview))
     }
   }, [product, reset, isDirty])
-  useEffect(() => {
-    let abc = watchFiles?.map((wf: { path: any, preview: any }) => {return {path: wf.path, preview: wf.preview}}) || []
-    if(abc.length > 0) {
-      abc = abc.filter((e: { path: string | undefined }) => !theList.some(t => t.path === e.path))
-    }
-    setTheList([...theList, ...abc])
-  }, [watchFiles])
-  
-
-
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return;
-  
-    const [reorderedItem] = theList.splice(source.index, 1);
-    theList.splice(destination.index, 0, reorderedItem);
-  
-  };
-  
 
   async function handleSubmitData(data: FieldValues) {
-    const cat = categories.find((e) => e.title === data.categoryId)
-    data.categoryId = cat?.id
-    data.order = theList.map(e => e.publicId || e.path)
+    const cat =  categories.find((e) => e.title === data.categoryId)
+    const newId = !cat ? product?.categoryId : cat?.id
+    data.categoryId = newId
     try {
       let response: IProduct
       if (product) {
@@ -95,16 +80,9 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       console.log(error)
     }
   }
-  const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-    
-    background: isDragging ? '#4a2975' : 'white', 
-    color: isDragging ? 'white' : 'black',
-    border: '1px solid black',
-    fontSize: '20px',
-    borderRadius: '5px',
-    ...draggableStyle
-  })
-  const catTitle = categories.find((c) => c.id === product?.categoryId)?.title
+
+  const catTitle = categories.find((c) => c.id === product?.categoryId)?.title || categories[0].title
+  if(categoriesLoading) return null
   return (
     <Box component={Paper} sx={{ p: 4 }}>
       <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
@@ -112,7 +90,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       </Typography>
       <Tabs sx={{ paddingBottom: 3 }} value={selectedTab} onChange={handleTabChange}>
         <Tab label='Product Details' />
-        <Tab label='Product Configurations' />
+        <Tab disabled={!product} label='Product Configurations' />
+        <Tab label='Produktdetaljer' />
       </Tabs>
       {
         //make into own component or use apptable
@@ -131,10 +110,11 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               <Grid item xs={12} sm={6}>
                 <AppSelectList
                   control={control}
-                  dValue={catTitle ?? categories[0].title}
                   items={cats}
                   name='categoryId'
                   label='CategoryId'
+                  dValue={catTitle}
+                  defaultValue={0}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -155,36 +135,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Box display='flex' justifyContent='space-between' alignItems='center' gap={5} flexDirection='column'>
-                  <AppDropzone control={control} name='files' />
-                  
-                      <DragDropContext onDragEnd={onDragEnd}>
-                      <Droppable droppableId='index' direction='horizontal' >
-                            {(provided) => (
-                              <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'row', gap: 5, flexWrap: 'wrap',}}>
-                      {theList?.map(
-                        (file, index: number) => {
-                          return (
-                          <Draggable key={index} draggableId={index.toString()} index={index}>
-                            {(provided, snapshot) => (
-                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
-                              <img
-                            key={index}
-                            src={file.pictureUrl || file.preview}
-                            alt={`Image ${index}`}
-                            style={{ maxHeight: 200 }}
-                          />
-                          </div>
-                            )}
-                          
-                          </Draggable>
-                         
-                        )},
-                      )}
-                      </div>)}</Droppable>
-                      </DragDropContext>
-                     
-                </Box>
+               <DndList control={control} list={list} onDragEnd={onDragEnd}/>
               </Grid>
             </Grid>
             <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>
@@ -193,7 +144,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               </Button>
               <LoadingButton
                 loading={isSubmitting}
-                disabled={product ? !isDirty : !isValid}
+                disabled={product ? !isDirty && !reordered : !isValid}
                 type='submit'
                 variant='contained'
                 color='success'
@@ -202,9 +153,10 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               </LoadingButton>
             </Box>
           </form>
-        ) : (
+        ) : selectedTab === 1 ? (
           <Configurations configs={product?.configurables} productId={product?.id!} />
         )
+        : <ProductSpecification control={control} specifications={[]} />
       }
     </Box>
   )

@@ -2,60 +2,69 @@ using API.Controllers;
 
 public static class ControllerExtensions
 {
-    public static async Task<ImageDto> AddImageAsync(this BaseApiController controller, IFormFile file, ImageDto imageDto, ImageService imageService)
+    public static async Task<ImageAdder> AddImagesAsync(this BaseApiController controller, List<IFormFile> files, ImageAdder imageAdder, ImageService imageService)
     {
-        if (file != null)
+        foreach (var file in files)
         {
-            var imageResult = await imageService.AddImageAsync(file);
+            if (file != null)
+            {
+                var imageResult = await imageService.AddImageAsync(file);
 
-            if (imageResult.Error != null)
-            {
-                controller.ModelState.AddModelError("file", imageResult.Error.Message);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(imageDto.PublicId) && imageDto.PublicId != "0")
-                    await imageService.DeleteImageAsync(imageDto.PublicId);
-                imageDto.PictureUrl = imageResult.SecureUrl.ToString();
-                imageDto.PublicId = imageResult.PublicId;
+                if (imageResult.Error != null)
+                {
+                    controller.ModelState.AddModelError("file", imageResult.Error.Message);
+                }
+                else
+                {
+                    imageAdder.AddImage(new Image { PictureUrl = imageResult.SecureUrl.ToString(), PublicId = imageResult.PublicId, Name = file.FileName });
+                }
             }
         }
-        else {
-            imageDto.PictureUrl = "/images/products/sb-ang1.png";
-            imageDto.PublicId = "0";
-        }
-        return imageDto;
-    }
-    public static async Task<Product> AddImagesAsync(this BaseApiController controller, List<IFormFile> files, Product product, ImageService imageService)
-    {
-        foreach (var file in files){
-        if (file != null)
+        if (imageAdder.Images.Count == 0)
         {
-            var imageResult = await imageService.AddImageAsync(file);
-
-            if (imageResult.Error != null)
-            {
-                controller.ModelState.AddModelError("file", imageResult.Error.Message);
-            }
-            else
-            {
-                    product.AddImage(new Image { PictureUrl = imageResult.SecureUrl.ToString(), PublicId = imageResult.PublicId, Name = file.FileName});
-            }
+            imageAdder.AddImage(new Image { PictureUrl = "/images/products/sb-ang1.png", PublicId = "0" });
         }
-        }
-        if (product.Images.Count == 0)
+        return imageAdder;
+    }
+    public static Task<Sortable> SortImagesPre(this BaseApiController controller, Sortable sortable)
     {
-        product.AddImage(new Image { PictureUrl = "/images/products/sb-ang1.png", PublicId = "0" });
+        Dictionary<string, int> imageOrder = new();
+        for (int i = 0; i < sortable.Order.Count; i++)
+        {
+            imageOrder[sortable.Order[i]] = i;
+        }
+
+        sortable.Files.Sort((file1, file2) =>
+        {
+            int order1 = imageOrder.TryGetValue(file1.FileName, out int o1) ? o1 : int.MaxValue;
+            int order2 = imageOrder.TryGetValue(file2.FileName, out int o2) ? o2 : int.MaxValue;
+            return order1.CompareTo(order2);
+        });
+        return Task.FromResult(sortable);
     }
-    return product;
+    public static Task<ImageAdder> SortImagesPost(this BaseApiController controller, ImageAdder imageAdder, Sortable sortable)
+    {
+        Dictionary<string, int> imageOrder = new();
+        for (int i = 0; i < sortable.Order.Count; i++)
+        {
+            imageOrder[sortable.Order[i]] = i;
+        }
+        imageAdder.Images.Sort((file1, file2) =>
+            {
+                int order1 = imageOrder.TryGetValue(file1.PublicId, out int o1) ? o1 : imageOrder.TryGetValue(file1.Name, out int o2) ? o2 : int.MaxValue;
+                int order2 = imageOrder.TryGetValue(file2.PublicId, out int o3) ? o3 : imageOrder.TryGetValue(file2.Name, out int o4) ? o4 : int.MaxValue;
+                return order1.CompareTo(order2);
+            });
+        for (int i = 0; i < imageAdder.Images.Count; i++) imageAdder.Images[i].Order = i;
+        return Task.FromResult(imageAdder);
     }
-    public static async Task<bool> TestAdminRequest(User user, UserManager<User> userManager) 
+    public static async Task<bool> TestAdminRequest(User user, UserManager<User> userManager)
     {
         var roles = await userManager.GetRolesAsync(user);
         if (roles.Contains("Test"))
         {
-        user.AdminTokens += 1;
-        return user.AdminTokens <= 100;
+            user.AdminTokens += 1;
+            return user.AdminTokens <= 100;
         }
         return true;
 

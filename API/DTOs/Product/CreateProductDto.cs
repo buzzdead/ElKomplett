@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace API.DTOs
 {
-    public class CreateProductDto
+    public class CreateProductDto : Sortable
     {
         [Required]
         public string Name { get; set; }

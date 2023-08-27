@@ -135,7 +135,7 @@ const Configurations = ({ productId, configs }: Props) => {
       id: config.productId,
       quantityInStock: config.quantityInStock,
       price: config.price,
-      pictureUrl: config.pictureUrl,
+      pictureUrl: config.images[0].pictureUrl,
     })  
     }
   }

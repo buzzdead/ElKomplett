@@ -1,12 +1,15 @@
 import { Grid, Box, Button, Radio } from '@mui/material'
 import AppDropzone from 'app/components/AppDropzone'
 import AppTextInput from 'app/components/AppTextInput'
+import { DndList } from 'app/components/DndList'
+import { useDndList } from 'app/hooks/useDndList'
 import Render from 'app/layout/Render'
 import { Configurable } from 'app/models/product'
+import { Control, FieldValues } from 'react-hook-form'
 
 interface Props {
   config: Configurable
-  control: any
+  control: Control<FieldValues, any>
   setValue: any
   watch: any
   index: number
@@ -24,7 +27,8 @@ export default function Config({
   radioNumber,
   setRadioNumber,
 }: Props) {
-  const watchFile = watch(`${index}.file`, null)
+  const watchFiles = watch(`${index}.files`, [])
+  const {list, onDragEnd} = useDndList({images: config.images, watchFiles: watchFiles, control: control, name: `${index}.order`})
 
   const getConfigValue = (value: keyof Configurable, defaultValue?: string): string => {
     return String(defaultValue ?? config?.[value] ?? '')
@@ -62,24 +66,8 @@ export default function Config({
           />
         </Grid>
       ))}
-      <Grid item xs={3} sm={1}>
-        <Box display='flex' justifyContent='space-between' alignItems='center' sx={{ gap: 2 }}>
-          <AppDropzone
-            singular
-            height={60}
-            width={100}
-            iconSize={'30px'}
-            control={control}
-            name={`${index}.file`}
-          />
-          <Render condition={(config && config.pictureUrl) || watchFile}>
-            <img
-              src={getConfigValue('pictureUrl', watchFile?.preview)}
-              alt='preview'
-              style={{ maxHeight: 50 }}
-            />
-          </Render>
-        </Box>
+      <Grid item xs={2} sm={3} sx={{display: 'flex', flexDirection: 'row'}}>
+        <DndList name={`${index}.files`} small onDragEnd={onDragEnd} control={control} list={list} />
       </Grid>
     </Grid>
   )

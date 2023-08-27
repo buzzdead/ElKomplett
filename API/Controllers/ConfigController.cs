@@ -24,12 +24,16 @@ namespace API.Controllers
         [HttpPost(Name = "AddConfig")]
         public async Task<ActionResult<Config>> AddConfig([FromForm] CreateConfigDto createConfigDto)
         {
+            if(createConfigDto.Order[0] == "undefined") createConfigDto = (CreateConfigDto) await this.SortImagesPre(createConfigDto);
+
             var config = _mapper.Map<Config>(createConfigDto);
 
             var product = await _context.Products.FindAsync(createConfigDto.ProductId);
 
-            config = (Config)await this.AddImageAsync(createConfigDto.File, config, _imageService);
+            config = (Config)await this.AddImagesAsync(createConfigDto.Files, config, _imageService);
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            for (int i = 0; i < config.Images.Count; i++) config.Images[i].Order = i;
 
             product.AddConfig(config);
 
@@ -52,7 +56,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Config>> GetConfig(int id)
         {
-            var config = await _context.Config.FindAsync(id);
+            var config = await _context.Config.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
             return Ok(config);
         }
 
@@ -106,20 +110,24 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult<Product>> UpdateConfig([FromForm] UpdateConfigDto configDto)
         {
-            var config = await _context.Config.FindAsync(configDto.Id);
+            if(configDto.Files != null && configDto.Files[0] != null) configDto = (UpdateConfigDto) await this.SortImagesPre(configDto);
+
+            var config = await _context.Config.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == configDto.Id);
 
             if (config == null) return NotFound();
 
             _mapper.Map(configDto, config);
-            if (configDto.File != null)
+            if (configDto.Files != null && configDto.Files[0] != null)
             {
-                config = (Config)await this.AddImageAsync(configDto.File, config, _imageService);
+                config = (Config)await this.AddImagesAsync(configDto.Files, config, _imageService);
                 if (!ModelState.IsValid) return BadRequest(ModelState);
             }
 
+            config = (Config) await this.SortImagesPost(config, configDto);
+
             var result = await _context.SaveChangesAsync() > 0;
 
-            if (result) return Ok(config);
+            if (result || configDto.Order.Count > 0) return Ok(config);
 
             return BadRequest(new ProblemDetails { Title = "Problem updating product" });
         }
@@ -136,8 +144,11 @@ namespace API.Controllers
             var product = await _context.Products.FindAsync(productId);
             product.RemoveConfig(cfg);
 
-            if (!string.IsNullOrEmpty(cfg.PublicId) && cfg.PublicId != "0")
-                await _imageService.DeleteImageAsync(cfg.PublicId);
+            foreach (ImageDto image in cfg.Images)
+            {
+                if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
+                    await _imageService.DeleteImageAsync(image.PublicId);
+            }
 
             _context.Config.Remove(cfg);
 

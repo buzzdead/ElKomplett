@@ -2,7 +2,7 @@ using API.Entities.ConfigAggregate;
 
 namespace API.Entities
 {
-    public class Product
+    public class Product : ImageAdder
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,8 +24,7 @@ namespace API.Entities
                 Price = config.Price,
                 Key = config.Key,
                 Value = config.Value,
-                PublicId = config.PublicId,
-                PictureUrl = config.PictureUrl,
+                Images = config.Images
             });
         }
         public void RemoveConfig(Config config)
