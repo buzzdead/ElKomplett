@@ -29,7 +29,7 @@ To purchase a product, add it to the basket and navigate to the checkout page. Y
 
 ## Contributing
 
-If you would like to contribute to the project, please fork the repository and create a pull request with your changes.
+If you would like to contribute to the project, please fork the repository and create a pull request with your changes..
 
 ## License
 
