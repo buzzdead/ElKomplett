@@ -22,4 +22,3 @@ jobs:
           context: "{{defaultContext}}:API"
           push: true
           tags: buzzdead/restore:latest
-  deploy:
