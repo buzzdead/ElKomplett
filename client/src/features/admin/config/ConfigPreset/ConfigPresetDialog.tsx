@@ -30,8 +30,6 @@ export default function ConfigPresetDialog(props: Props) {
     reset()
     fields.forEach((field, id) => remove(id))}
  }, [loading, remove, reset])
-
- fields.forEach(field => console.log(field))
  
   return (
     <Dialog fullWidth maxWidth='sm' open={props.open}>

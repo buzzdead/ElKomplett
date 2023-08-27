@@ -87,6 +87,7 @@ export default function ProductDetails() {
     const currentConfig = product?.configurables?.find((e) => isTheRightOne(e.value, newConfigValue))
     if(currentConfig)
       setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
+    setCurrentPicture(currentConfig?.images[0])
   }
 
   if (productStatus.includes('pending')) return <LoadingComponent message='Loading product' />

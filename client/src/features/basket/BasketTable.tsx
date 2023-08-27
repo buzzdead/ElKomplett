@@ -94,7 +94,6 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   }
 
   const getConfig = async (configId: number | undefined) => {
-    console.log(configId);
     if (configId === undefined) return;
     const abc = await agent.Admin.getConfig(configId);
     return abc;
@@ -107,7 +106,6 @@ export default function BasketTable({ items, isBasket = true }: Props) {
 
   const tableData: TableData[][] = items.map((item) => {
     const cfg = config?.find(cfg => cfg.id === item.configId)
-    console.log(cfg)
     return [
       {
         key: 'Product',
