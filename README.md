@@ -23,7 +23,7 @@ Password: MyPa$$w0rd
 
 You can then log in to the inventory panel at `/inventory` to manage products and configurations.
 
-To browse the catalog, simply navigate to `/catalog` and use the pagination links to view more products.
+To browse the catalog, simply navigate to `/catalog` and use the pagination links to view more products..
 
 To purchase a product, add it to the basket and navigate to the checkout page. You can use the fake Stripe card details provided on the stripe testing site [Stripe Test](https://stripe.com/docs/testing) to complete the purchase.
 
