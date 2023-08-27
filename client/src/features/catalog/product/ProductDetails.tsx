@@ -188,7 +188,7 @@ export default function ProductDetails() {
           </Box>
         </Grid>
         <Grid container spacing={2}>
-          <Render condition={product?.configurables !== undefined}>
+          <Render condition={product?.configurables !== undefined && product.configurables.length > 0}>
           <ProductQuantity basketItem={basketItem} productId={product.id} newQuantity={newQuantity} setNewQuantity={setNewQuantity} config={config}/>
           <Grid xs={12} item sx={{display: 'flex', flexDirection: 'row'}}>
             {renderQuantityField()}

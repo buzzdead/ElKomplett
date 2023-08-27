@@ -2,6 +2,9 @@ name: docker-push
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'master'
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -22,3 +25,14 @@ jobs:
           context: "{{defaultContext}}:API"
           push: true
           tags: buzzdead/restore:latest
+  heroku-deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: your-heroku-app-name

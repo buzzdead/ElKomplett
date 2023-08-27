@@ -17,6 +17,7 @@ import { currencyFormat } from '../../app/util/util'
 import useView from '../../app/hooks/useView'
 import Render from '../../app/layout/Render'
 import LoadingComponent from '../../app/layout/LoadingComponent'
+import { EditCategory } from './EditCategory'
 
 export default function Inventory() {
   const { products, metaData, types, brands, filtersLoaded, productsLoaded } = useProducts()
@@ -24,6 +25,7 @@ export default function Inventory() {
   const dispatch = useAppDispatch()
   //State
   const [editMode, setEditMode] = useState(false)
+  const [editCategory, setEditCategory] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<IProduct | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState(0)
@@ -59,9 +61,12 @@ export default function Inventory() {
         <Typography sx={{ p: 2 }} variant='h4'>
           Inventory
         </Typography>
+        <Box>
+        <Button onClick={() => setEditCategory(true)} sx={{ m: 2 }} size='large' variant='contained'>Create category</Button>
         <Button onClick={() => setEditMode(true)} sx={{ m: 2 }} size='large' variant='contained'>
           Create
         </Button>
+        </Box>
       </Box>
     )
   }
@@ -132,6 +137,7 @@ export default function Inventory() {
   })
 
   if(!filtersLoaded || !productsLoaded) return <LoadingComponent message={'Loading products...'} />
+  if(editCategory) return <EditCategory onClose={() => setEditCategory(false)}/>
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
  
   return (

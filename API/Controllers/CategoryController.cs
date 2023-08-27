@@ -33,13 +33,24 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin, Test")]
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory(int id, string title, string pictureUrl, string description)
+        public async Task<ActionResult<Category>> CreateCategory([FromForm] CategoryDto categoryDto)
         {
+                var imageResult = await _imageService.AddImageAsync(categoryDto.File);
+
+                if (imageResult.Error != null)
+                {
+                    return BadRequest();
+                }
+            
+
+            var pictureUrl = imageResult.SecureUrl.ToString();
+
             var newCategory = new Category
             {
-                Id = id,
-                Title = title,
-                PictureUrl = pictureUrl
+                Id = categoryDto.Id,
+                Title = categoryDto.Title,
+                PictureUrl = pictureUrl,
+                Description = categoryDto.Description
             };
 
             _context.Categories.Add(newCategory);
@@ -48,18 +59,30 @@ namespace API.Controllers
             return Ok();
         }
         [Authorize(Roles = "Admin, Test")]
-        [HttpPut]
-        public async Task<ActionResult<Category>> EditCategory(int id, string description)
+        [HttpPut("{id}", Name = "EditCategory")]
+        public async Task<ActionResult<Category>> EditCategory([FromForm] CategoryDto categoryDto)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.FindAsync(categoryDto.Id);
+            if(categoryDto.Description != null) category.Description = categoryDto.Description;
+            if(categoryDto.Title != null) category.Title = categoryDto.Title;
+            if(categoryDto.File != null) {
+                 var imageResult = await _imageService.AddImageAsync(categoryDto.File);
+
+                if (imageResult.Error != null)
+                {
+                    return BadRequest();
+                }
             
-            category.Description = description;
+
+            category.PictureUrl = imageResult.SecureUrl.ToString();
+
+            }
 
             await _context.SaveChangesAsync();
 
             return Ok();
         }
-        [HttpDelete]
+        [HttpDelete("{id}", Name = "DeleteCategory")]
         public async Task<ActionResult> DeleteCategory(int id)
         {
             var category = await _context.Categories.FindAsync(id);

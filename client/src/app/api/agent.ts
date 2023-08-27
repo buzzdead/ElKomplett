@@ -125,7 +125,10 @@ const Catalog = {
   details: (id: number) => requests.get(`products/${id}`),
   fetchFilters: () => requests.get('products/filters'),
   categories: () => requests.get('category/getCategories'),
-  category: (id: number) => requests.get(`category/${id}`)
+  category: (id: number) => requests.get(`category/${id}`),
+  editCategory: (id: number, data: any) => requests.putForm(`category/${id}`, createFormData(data)),
+  createCategory: (data: any) => requests.postForm(`category`, createFormData(data)),
+  deleteCategory: (id: number) => requests.delete(`category/${id}`)
 }
 const promiseAndCatchError = (path: string) => {
   requests.get(path).catch((error) => console.log(error))
