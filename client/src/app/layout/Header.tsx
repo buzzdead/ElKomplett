@@ -3,6 +3,7 @@ import {
   AppBar,
   Badge,
   Box,
+  Button,
   IconButton,
   List,
   ListItem,
@@ -19,7 +20,9 @@ import Render from './Render'
 import SignedInMenu from './SignedInMenu'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
-import { yellow } from '@mui/material/colors'
+import { common, yellow } from '@mui/material/colors'
+import MenuIcon from '@mui/icons-material/Menu';
+import { LowResMenu } from './LowResMenu'
 
 interface Props {
   darkMode: boolean
@@ -30,10 +33,12 @@ const midLinks = [
   {
     title: 'katalog',
     path: '/catalog',
+    condition: true
   },
   {
     title: 'Kontakt',
     path: '/contact',
+    condition: true
   },
 ]
 
@@ -50,6 +55,7 @@ const rightLinks = [
 
 const navStyles = {
   color: 'inherit',
+  width: '100px',
   textDecoration: 'none',
   typography: 'h6',
   '&:hover': {
@@ -71,11 +77,10 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
         style={{ maxHeight: '10px' }}
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          width: '100%'
         }}
       >
-        <Box display='flex' alignItems='center'>
+        <Box display='flex' alignItems='center' justifyContent='flex-start'>
           <Typography variant='h6' component={NavLink} to='/' sx={navStyles}>
             ElKomplett
           </Typography>
@@ -93,7 +98,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             onChange={handleThemeChange}
           />
         </Box>
-        <List sx={{ display: 'flex' }}>
+        <List sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 5 }}>
           <Render condition={!view.ipad} ignoreTernary>
             {midLinks.map(({ title, path }) => (
               <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
@@ -111,10 +116,14 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             </ListItem>
           </Render>
         </List>
-        <Box display='flex' alignItems='center'>
+        <Render condition={view.ipad}>
+          <LowResMenu links={midLinks.concat({path: './inventory', title: 'INNHOLD', condition: user !== null && AuthorisedRoles.some((role) => user.roles?.includes(role))})}/>
+        </Render>
+        <Box display='flex' alignItems='center' justifyContent='flex-end'>
+          
           <IconButton component={Link} to='/basket' size='large' sx={{ color: 'inherit' }}>
             <Badge badgeContent={itemCount} color='secondary'>
-              <ShoppingCart />
+              <ShoppingCart fontSize='large' />
             </Badge>
           </IconButton>
           <Render condition={user !== null}>

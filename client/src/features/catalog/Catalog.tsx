@@ -13,12 +13,14 @@ import { useCategory } from 'app/hooks/useCategory'
 import { Link } from 'react-router-dom'
 import { useCategories } from 'app/hooks/useCategories'
 import './catalog.css'
+import useView from 'app/hooks/useView'
 
 export default function Catalog() {
   const { products, brands, types, filtersLoaded, metaData, productsLoaded } = useProducts()
   const dispatch = useAppDispatch()
   const {category, categoryLoading} = useCategory(0)
   const {categories, categoriesLoading} = useCategories()
+  const view = useView()
 
   if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading categories'} />
 
@@ -71,13 +73,15 @@ export default function Catalog() {
       
       <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={8}>
         <ProductSearch />
+        <Render condition={!view.view.mobile}>
         <SideBar brands={[]} types={[]} />
+        </Render>
       </Grid>
       <Grid item xs={12} md={9}>
         <ProductList loadingCondition={!filtersLoaded || categoryLoading || !productsLoaded} products={products} />
       </Grid>
       <Grid item xs={3} />
-      <Grid item xs={9} sx={{ mb: 2 }}>
+      <Grid item xs={12} md={9} sx={{ mb: 2 }}>
         <Render condition={metaData !== null}>
           <AppPagination
             metaData={metaData!}

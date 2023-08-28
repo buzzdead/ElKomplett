@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { signOut } from '../../features/account/accountSlice'
 import { clearBasket } from '../../features/basket/basketSlice'
 import { useAppDispatch, useAppSelector } from '../store/configureStore'
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 export default function SignedInMenu() {
   const dispatch = useAppDispatch()
@@ -19,7 +20,7 @@ export default function SignedInMenu() {
 
   return (
     <div>
-      <Button color='inherit' sx={{typography: 'h6'}} onClick={handleClick}>{user?.email}</Button>
+      <Button color='inherit' sx={{typography: 'h6'}} onClick={handleClick}><AccountBoxIcon fontSize='large'/></Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose} TransitionComponent={Fade}>
         <MenuItem onClick={handleClose}>Profile</MenuItem>
         <MenuItem component={Link} to='/orders'>My orders</MenuItem>

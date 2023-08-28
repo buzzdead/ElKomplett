@@ -13,13 +13,12 @@ interface Props {
 }
 
 export default function ProductList({ products, loadingCondition = false }: Props) {
-  const isMobileMatch = useMediaQuery('(max-width:900px)')
   const { productsLoaded } = useAppSelector((state: { catalog: any }) => state.catalog)
 
   return (
-    <Grid container spacing={4} className='center-on-small'>
+    <Grid container spacing={4} >
       {products.map((product) => (
-        <Grid key={product.id} item xs={10} xl={3} lg={3.5} md={5} sm={6} >
+        <Grid key={product.id} item xs={6} xl={3} lg={3.5} md={5} sm={6} >
           <Render condition={productsLoaded && !loadingCondition}>
             <ProductCard product={product} />
             <ProductCardSkeleton />

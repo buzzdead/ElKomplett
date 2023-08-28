@@ -22,7 +22,7 @@ export default function ProductSearch() {
   };
 
   return (
-    <Paper sx={{ mb: 2, bgcolor: 'special', minWidth: 225 }}>
+    <Paper sx={{ mb: 2, bgcolor: 'special', width: '100%' }}>
       <TextField
         label='Søk blant produkter'
         variant='outlined'

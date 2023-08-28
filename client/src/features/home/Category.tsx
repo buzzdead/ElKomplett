@@ -9,11 +9,13 @@ import Render from 'app/layout/Render'
 import { useCategories } from 'app/hooks/useCategories'
 import { Link } from 'react-router-dom'
 import './category.css'
+import useView from 'app/hooks/useView'
 
 export default function Category() {
   const { products, productsLoaded } = useProducts()
   const { category, categoryLoading } = useCategory()
   const { categories, categoriesLoading } = useCategories()
+  const view = useView()
 
   return (
     <Grid container columnSpacing={4}>
@@ -66,16 +68,17 @@ export default function Category() {
         </Grid>
       </Render>
       <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: 5}}>
-      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={6} className='center-on-small2'>
-        <Card sx={{ minWidth: 225, marginBottom: 2, bgcolor: 'special' }}>
+      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={10} className='center-on-small2'>
+        <Card sx={{ width: '100%', marginBottom: 2, bgcolor: 'special' }}>
           <Render condition={!categoryLoading}>
             <CardMedia
-              sx={{ height: 225, backgroundSize: 'cover' }}
+              sx={{ height: 200, backgroundSize: 'cover' }}
               image={category.pictureUrl || ''}
               title={category.title}
             />
             <Skeleton animation='wave' variant='rectangular' height={225} />
           </Render>
+          <Render condition={!view.view.mobile}>
           <CardContent>
             <Typography gutterBottom variant='h5' component='div'>
               {!categoryLoading ? (
@@ -92,9 +95,13 @@ export default function Category() {
               )}
             </Typography>
           </CardContent>
+          </Render>
         </Card>
+        
         <ProductSearch />
+        <Render condition={!view.view.mobile}>
         <SideBar brands={[]} types={[]} />
+        </Render>
       </Grid>
       <Grid item xs={12} >
         <ProductList loadingCondition={categoryLoading} products={products} />
