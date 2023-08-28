@@ -38,13 +38,12 @@ const ContactPage = () => {
   });
 
   const handleSubmit = async () => {
-    console.log("sending")
-    await agent.Admin.sendEmail(formData)
+    const res = await agent.Admin.sendEmail(formData)
+    console.log(res)
 
   };
 
   const handleInputChange = (event: any) => {
-    console.log(event.target.value)
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };

@@ -51,6 +51,7 @@ namespace API.Controllers
             {
                 Port = 587,
                 Credentials = new NetworkCredential(emailAddress, emailPassword),
+                EnableSsl = true
             };
 
             // Construct the email
