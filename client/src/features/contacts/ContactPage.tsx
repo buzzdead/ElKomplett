@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Box,
@@ -7,6 +7,7 @@ import {
   Button,
 } from '@mui/material';
 import { styled } from '@mui/system';
+import agent from 'app/api/agent';
 
 const FormContainer = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -30,6 +31,24 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 }));
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+
+  const handleSubmit = async () => {
+    console.log("sending")
+    await agent.Admin.sendEmail(formData)
+
+  };
+
+  const handleInputChange = (event: any) => {
+    console.log(event.target.value)
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   return (
     <Container maxWidth="sm">
       <FormContainer>
@@ -41,16 +60,22 @@ const ContactPage = () => {
         </Typography>
       </FormContainer>
       <Box mt={4}>
-        <Form noValidate autoComplete="off">
+        <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
           <FormTextField
             label="Fullt navn"
             variant="outlined"
             required
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
           />
           <FormTextField
             label="E-postadresse"
             variant="outlined"
             required
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
           />
           <FormTextField
             label="Beskjed"
@@ -58,8 +83,12 @@ const ContactPage = () => {
             multiline
             rows={6}
             required
+            name="message"
+            value={formData.message}
+            onChange={handleInputChange}
           />
           <SubmitButton
+            type="submit"
             variant="contained"
             color="primary"
           >
