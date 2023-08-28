@@ -8,6 +8,7 @@ import { useCategory } from 'app/hooks/useCategory'
 import Render from 'app/layout/Render'
 import { useCategories } from 'app/hooks/useCategories'
 import { Link } from 'react-router-dom'
+import './category.css'
 
 export default function Category() {
   const { products, productsLoaded } = useProducts()
@@ -17,53 +18,56 @@ export default function Category() {
   return (
     <Grid container columnSpacing={4}>
       <Render condition={!categoriesLoading}>
-      <Grid
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 2.5,
-          justifyContent: 'center',
-          marginBottom: 2.5,
-        }}
-        item
-        xs={12}
-      >
-        
-        {categories.map((c) => {
-          return (
-            <Link style={{ textDecoration: 'none' }} key={c.id} to={`/catalog/categories/${c.id}`}>
-              <Typography
-                variant='overline'
-                sx={{
-                  fontSize: 14,
-                  color: c.id === category.id ? 'blue' : 'neutral.main',
-                  fontWeight: 500,
-                }}
+        <Grid
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 2.5,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            marginBottom: 2.5,
+          }}
+          item
+          xs={12}
+        >
+          {categories.map((c) => {
+            return (
+              <Link
+                style={{ textDecoration: 'none' }}
+                key={c.id}
+                to={`/catalog/categories/${c.id}`}
               >
-                {c.title}
-              </Typography>
-            </Link>
-          )
-        })}
-        
-        
-      </Grid>
-      <Grid
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 2.5,
-          justifyContent: 'center',
-          marginBottom: 2.5,
-        }}
-        item
-        xs={12}
-      >
-      <Skeleton animation='wave' variant='rectangular' height={35}  width={'60%'} />
-          </Grid>
+                <Typography
+                  variant='overline'
+                  sx={{
+                    fontSize: 14,
+                    color: c.id === category.id ? 'blue' : 'neutral.main',
+                    fontWeight: 500,
+                  }}
+                >
+                  {c.title}
+                </Typography>
+              </Link>
+            )
+          })}
+        </Grid>
+        <Grid
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 2.5,
+            justifyContent: 'center',
+            marginBottom: 2.5,
+          }}
+          item
+          xs={12}
+        >
+          <Skeleton animation='wave' variant='rectangular' height={35} width={'60%'} />
+        </Grid>
       </Render>
-      <Grid item xs={2.65}>
-        <Card sx={{ width: 325, marginBottom: 2, bgcolor: 'special' }}>
+      <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: 5}}>
+      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={6} className='center-on-small2'>
+        <Card sx={{ minWidth: 225, marginBottom: 2, bgcolor: 'special' }}>
           <Render condition={!categoryLoading}>
             <CardMedia
               sx={{ height: 225, backgroundSize: 'cover' }}
@@ -80,7 +84,7 @@ export default function Category() {
                 <Skeleton animation='wave' height={60} width='80%' style={{}} />
               )}
             </Typography>
-            <Typography variant='h6' fontSize={14} >
+            <Typography variant='h6' fontSize={14}>
               {!categoryLoading ? (
                 category.description
               ) : (
@@ -92,8 +96,9 @@ export default function Category() {
         <ProductSearch />
         <SideBar brands={[]} types={[]} />
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={12} >
         <ProductList loadingCondition={categoryLoading} products={products} />
+      </Grid>
       </Grid>
     </Grid>
   )

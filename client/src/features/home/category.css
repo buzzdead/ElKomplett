@@ -1,0 +1,19 @@
+@media (max-width: 900px) {
+    .center-on-small {
+      width: 100%; /* Take full width */
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+    }
+  }
+
+  @media (max-width: 900px) {
+    .center-on-small2 {
+      width: 100%; /* Take full width */
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important; /* Center horizontally */
+      align-items: center !important; /* Center vertically */
+    }
+  }

@@ -23,7 +23,7 @@ export default function SideBar(props: Props) {
 
   return (
     <div>
-      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special' }}>
+      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special' , minWidth: 225}}>
         <RadioButtonGroup
           selectedValue={productParams.orderBy}
           flexDirection='column'
@@ -32,7 +32,7 @@ export default function SideBar(props: Props) {
         />
       </Paper>
       <Render condition={props.brands.length > 0}>
-      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special'  }}>
+      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special', minWidth: 225  }}>
         <CheckboxButtons
           items={props.brands}
           checked={productParams.brands}
@@ -41,7 +41,7 @@ export default function SideBar(props: Props) {
       </Paper>
       </Render>
       <Render condition={props.types.length > 0}>
-      <Paper sx={{ mb: 2, p: 2 }}>
+      <Paper sx={{ mb: 2, p: 2, minWidth: 250 }}>
         <CheckboxButtons
           items={props.types}
           checked={productParams.types}

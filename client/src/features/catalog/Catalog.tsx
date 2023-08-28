@@ -12,6 +12,7 @@ import ProductList from './product/ProductList'
 import { useCategory } from 'app/hooks/useCategory'
 import { Link } from 'react-router-dom'
 import { useCategories } from 'app/hooks/useCategories'
+import './catalog.css'
 
 export default function Catalog() {
   const { products, brands, types, filtersLoaded, metaData, productsLoaded } = useProducts()
@@ -22,7 +23,7 @@ export default function Catalog() {
   if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading categories'} />
 
   return (
-    <Grid container columnSpacing={4}>
+    <Grid container columnSpacing={4} className='center-on-small'>
       <Render condition={!categoriesLoading}>
       <Grid
         sx={{
@@ -31,6 +32,7 @@ export default function Catalog() {
           gap: 2.5,
           justifyContent: 'center',
           marginBottom: 2.5,
+          flexWrap: 'wrap'
         }}
         item
         xs={12}
@@ -67,11 +69,11 @@ export default function Catalog() {
           </Grid>
         </Render>
       
-      <Grid item xs={2}>
+      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={8}>
         <ProductSearch />
-        <SideBar brands={brands} types={[]} />
+        <SideBar brands={[]} types={[]} />
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={12} md={9}>
         <ProductList loadingCondition={!filtersLoaded || categoryLoading || !productsLoaded} products={products} />
       </Grid>
       <Grid item xs={3} />
