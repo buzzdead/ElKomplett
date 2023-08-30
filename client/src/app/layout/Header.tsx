@@ -3,7 +3,6 @@ import {
   AppBar,
   Badge,
   Box,
-  Button,
   IconButton,
   List,
   ListItem,
@@ -20,8 +19,7 @@ import Render from './Render'
 import SignedInMenu from './SignedInMenu'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
-import { common, yellow } from '@mui/material/colors'
-import MenuIcon from '@mui/icons-material/Menu';
+import { yellow } from '@mui/material/colors'
 import { LowResMenu } from './LowResMenu'
 
 interface Props {
@@ -33,29 +31,31 @@ const midLinks = [
   {
     title: 'katalog',
     path: '/catalog',
-    condition: true
+    condition: true,
   },
   {
     title: 'Kontakt',
     path: '/contact',
-    condition: true
+    condition: true,
   },
 ]
 
-const rightLinks = [
+const rightLinks = (condition: any) => [
   {
     title: 'logg inn',
     path: '/login',
+    condition: condition
   },
   {
     title: 'registrer',
     path: '/register',
+    condition: condition
   },
 ]
 
 const navStyles = {
   color: 'inherit',
-  width: '100px',
+  width: '125px',
   textDecoration: 'none',
   typography: 'h6',
   '&:hover': {
@@ -77,7 +77,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
         style={{ maxHeight: '10px' }}
         sx={{
           display: 'flex',
-          width: '100%'
+          width: '100%',
         }}
       >
         <Box display='flex' alignItems='center' justifyContent='flex-start'>
@@ -117,10 +117,16 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
           </Render>
         </List>
         <Render condition={view.ipad}>
-          <LowResMenu links={midLinks.concat({path: './inventory', title: 'INNHOLD', condition: user !== null && AuthorisedRoles.some((role) => user.roles?.includes(role))})}/>
+          <LowResMenu
+            links={midLinks.concat({
+              path: './inventory',
+              title: 'INNHOLD',
+              condition:
+                user !== null && AuthorisedRoles.some((role) => user.roles?.includes(role)),
+            }).concat(rightLinks(user === null))}
+          />
         </Render>
-        <Box display='flex' alignItems='center' justifyContent='flex-end'>
-          
+        <Box display='flex' alignItems='center' justifyContent='flex-end' sx={{}}>
           <IconButton component={Link} to='/basket' size='large' sx={{ color: 'inherit' }}>
             <Badge badgeContent={itemCount} color='secondary'>
               <ShoppingCart fontSize='large' />
@@ -128,10 +134,10 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
           </IconButton>
           <Render condition={user !== null}>
             <SignedInMenu />
-            <List sx={{ display: 'flex' }}>
-              {rightLinks.map(({ title, path }) => (
+            <List sx={{ display: 'flex'}}>
+              {rightLinks(!view.ipad).map(({title, condition, path }) => (
                 <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
-                  {title.toUpperCase()}
+                  {condition && title.toUpperCase()}
                 </ListItem>
               ))}
             </List>

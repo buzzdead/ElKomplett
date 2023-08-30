@@ -79,7 +79,7 @@ export const ProductQuantity = ({setNewQuantity, newQuantity, basketItem, config
         )
       }
       const renderUpdateCartButton = () => {
-        const configsQuantity = configList.find(c => c.id === currentConfig?.id)?.currentQuantity || 0
+        const configsQuantity = configList?.find(c => c.id === currentConfig?.id)?.currentQuantity || 0
         const quantityChanged =
           configsQuantity === newQuantity || (!basketItem && newQuantity === 0)
         return (

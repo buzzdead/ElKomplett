@@ -18,6 +18,7 @@ import useView from '../../app/hooks/useView'
 import Render from '../../app/layout/Render'
 import LoadingComponent from '../../app/layout/LoadingComponent'
 import { EditCategory } from './EditCategory'
+import { ContactMessages } from './ContactMessages'
 
 export default function Inventory() {
   const { products, metaData, types, brands, filtersLoaded, productsLoaded } = useProducts()
@@ -26,6 +27,7 @@ export default function Inventory() {
   //State
   const [editMode, setEditMode] = useState(false)
   const [editCategory, setEditCategory] = useState(false)
+  const [messages, showMessages] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<IProduct | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState(0)
@@ -62,6 +64,7 @@ export default function Inventory() {
           Inventory
         </Typography>
         <Box>
+        <Button onClick={() => showMessages(true)} sx={{ m: 2 }} size='large' variant='contained'>Show messages</Button>
         <Button onClick={() => setEditCategory(true)} sx={{ m: 2 }} size='large' variant='contained'>Create category</Button>
         <Button onClick={() => setEditMode(true)} sx={{ m: 2 }} size='large' variant='contained'>
           Create
@@ -137,6 +140,7 @@ export default function Inventory() {
   })
 
   if(!filtersLoaded || !productsLoaded) return <LoadingComponent message={'Loading products...'} />
+  if(messages) return <ContactMessages onClose={() => showMessages(false)} />
   if(editCategory) return <EditCategory onClose={() => setEditCategory(false)}/>
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
  

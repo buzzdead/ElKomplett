@@ -19,7 +19,7 @@ namespace API.Data
         public DbSet<ConfigPresetComposition> ConfigPresetCompositions { get; set; }
 
         public DbSet<Category> Categories { get; set; }
-
+        public DbSet<ContactMessage> ContactMessages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

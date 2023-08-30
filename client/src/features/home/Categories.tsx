@@ -10,7 +10,7 @@ export default function Categories() {
   return (
     <Grid container spacing={2} sx={{ width: '100%' }}>
       {categories.map((category) => (
-        <Grid key={category.id} item xs={12} xl={2} lg={2} md={3} sm={6}>
+        <Grid key={category.id} item xs={6} xl={2} lg={2} md={3} sm={6}>
           <CategoryCard title={category.title} pictureUrl={category.pictureUrl} id={category.id}/>
         </Grid>
       ))}

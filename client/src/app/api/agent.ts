@@ -117,7 +117,8 @@ const Admin = {
   createConfigPresetComposition: (configPreset: any) => requests.post(`config/CreateConfigPresetComposition/`, configPreset),
   setDefaultProduct: (defaultProduct: any) => requests.putForm(`products/SetDefaultConfig`, createFormData(defaultProduct)),
   getConfig: (id: any) => requests.get(`config/${id}`),
-  sendEmail: (formData: any) => requests.postForm(`buggy`, createFormData(formData))
+  sendEmail: (formData: any) => requests.postForm(`buggy`, createFormData(formData)),
+  getMessages: () => requests.get('buggy/messages')
 }
   
 

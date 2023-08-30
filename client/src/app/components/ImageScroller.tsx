@@ -12,9 +12,10 @@ interface ImageScrollerProps {
   images: Image[]
   onPress: (img: Image) => void
   selectedImageUrl: string
+  horizontal?: boolean
 }
 
-const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selectedImageUrl }) => {
+const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selectedImageUrl, horizontal }) => {
   const [scrollIndex, setScrollIndex] = useState(0)
   const divRef = useRef<HTMLDivElement | null>(null);
 
@@ -75,7 +76,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
         <ArrowDropUpIcon fontSize='large'/>
       </Button>
       </Render>
-      <List style={{overflow: 'hidden', maxHeight: 375, height: 450 }}>
+      <List style={{overflow: 'hidden', maxHeight: horizontal ? 150 : 375, height: horizontal ? 150 : 450, flexDirection: horizontal ? 'row' : 'column', display: 'flex' }}>
         {images.slice(scrollIndex, scrollIndex + (images.length)).map((image, index) => (
           <ListItem style={{justifyContent: 'center'}} key={index}>
             <img

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Mail;
+using API.Entities;
 using API.Entities.ConfigAggregate;
 
 namespace API.Controllers
@@ -7,9 +8,11 @@ namespace API.Controllers
     public class BuggyController : BaseApiController
     {
         private readonly IConfiguration _config;
-        public BuggyController(IConfiguration config)
+        private readonly StoreContext _context;
+        public BuggyController(IConfiguration config, StoreContext context)
         {
             _config = config;
+            _context = context;
         }
         [HttpGet("not-found")]
         public ActionResult GetNotFound()
@@ -43,38 +46,39 @@ namespace API.Controllers
             throw new System.Exception("This is a server error");
         }
         [HttpPost]
-        public IActionResult SendMessage([FromForm] ContactFormDataDto formData)
+        public async Task<ActionResult<ContactMessage>> SendMessage([FromForm] ContactFormDataDto formData)
         {
-            var emailAddress =  _config["Email:Address"];
-            var emailPassword = _config["Email:Password"];
-            var smtpClient = new SmtpClient("smtp.gmail.com")
-            {
-                Port = 587,
-                Credentials = new NetworkCredential(emailAddress, emailPassword),
-                EnableSsl = true
-            };
+            var contactMessage = new ContactMessage{Name = formData.Name, Email = formData.Email, Message = formData.Message};
 
-            // Construct the email
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(formData.Email),
-                Subject = "Message from Contact Form",
-                Body = $"Name: {formData.Name}\nEmail: {formData.Email}\nMessage: {formData.Message}",
-            };
+             _context.ContactMessages.Add(contactMessage);
 
-            mailMessage.To.Add(emailAddress); // Your email address
+             var result = await _context.SaveChangesAsync() > 0;
 
-            // Send the email
-            try
-            {
-                smtpClient.Send(mailMessage);
-                return Ok("Message sent successfully");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while sending the message.");
-            }
+            if (result) return Ok(contactMessage);
 
+            return BadRequest(new ProblemDetails { Title = "Problem adding contact message" });
+
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteMessage(int id)
+        {
+            var contactMessage = await _context.ContactMessages.FindAsync(id);
+
+            if(contactMessage == null) return NotFound();
+            _context.ContactMessages.Remove(contactMessage);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if (result) return Ok();
+
+            return BadRequest("Problem deleting contact message");
+        }
+        [HttpGet("Messages")]
+        public async Task<ActionResult<List<ContactMessage>>> GetMessages()
+        {
+            var messages = await _context.ContactMessages.ToListAsync();
+            return messages;
         }
 
     }

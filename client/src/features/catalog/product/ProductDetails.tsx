@@ -18,6 +18,7 @@ import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
 import { grey } from '@mui/material/colors'
 import { ProductQuantity } from './ProductQuantity'
+import useView from 'app/hooks/useView'
 
 type Config = {
   id?: number
@@ -37,6 +38,7 @@ export default function ProductDetails() {
   const [newQuantity, setNewQuantity] = useState(0)
   const [config, setConfig] = useState<Config | null>(product?.configurables ? {config: product.configurables[0], id: product.configurables[0]?.id || 0, value: product.configurables[0]?.value} : null)
   const [bottomValue, setBottomValue] = useState(0)
+  const view = useView()
 
   const basketItem = basket?.items.find(
     (i: { productId: number | undefined }) => i.productId === product?.id,
@@ -54,6 +56,15 @@ export default function ProductDetails() {
       setNewQuantity(parseInt(event.target.value))
     }
   }
+
+  const cellStyle = {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxHeight: '60px'
+  };
 
   function handleUpdateCart() {
     const quantity = Math.abs(newQuantity - (basketItem?.quantity || 0))
@@ -115,7 +126,7 @@ export default function ProductDetails() {
 
   const renderQuantityField = () => {
     return (
-      <Grid item xs={3}>
+      <Grid item xs={6} md={4}>
         <TextField
           variant='outlined'
           type='number'
@@ -132,7 +143,7 @@ export default function ProductDetails() {
     const quantityChanged =
       basketItem?.quantity === newQuantity || (!basketItem && newQuantity === 0)
     return (
-      <Grid item xs={3}>
+      <Grid item xs={6} md={4}>
         <LoadingButton
           disabled={quantityChanged}
           loading={status.includes('pending')}
@@ -155,14 +166,15 @@ export default function ProductDetails() {
   }
 
   return (
-    <Grid container spacing={6} sx={{marginTop: 0}}>
+    <Grid container spacing={6} xs={12} sx={{marginTop: 0, marginLeft: 0}}>
+      <Grid container xs={12} md={6} sx={{display : 'flex', flexDirection: view.view.ipad ? 'column' : 'row', width: '100%', height: '100%'}}>
       <Render condition={product.images.length > 1}>
-      <Grid item xs={1.5} sx={{overflow: 'hidden'}}>
-        <ImageScroller selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={config && config?.config ? config.config.images : product.images}/>
+      <Grid item xs={12} md={4} sx={{overflow: 'hidden'}}>
+        <ImageScroller horizontal={view.view.ipad} selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={config && config?.config ? config.config.images : product.images}/>
       </Grid>
       </Render>
-      <Grid style={{padding: 40}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={4}>
-        <Card style={{height: 475, width: '100%' }}>
+      <Grid style={{padding: view.view.ipad ? 0 : 40}} sx={{ alignSelf: 'center', display: 'flex'}} item xs={12} md={8}>
+        <Card style={{height: view.view.ipad ? 300 : 475, width: '100%' }}>
         <CardMedia
         title="asdf"
           component={Paper}
@@ -172,10 +184,9 @@ export default function ProductDetails() {
         />
         </Card>
       </Grid>
-      
-      <Grid item xs={6}>
-      
-        <Typography variant='h3' sx={{paddingBottom: 2}}>{product.name}</Typography>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography variant='h3' sx={{paddingBottom: 2, ...cellStyle}}>{product.name}</Typography>
         <Typography variant='h4' color='secondary'>
           {currencyFormat(config?.config?.price || product.price)}
         </Typography>
@@ -184,11 +195,11 @@ export default function ProductDetails() {
           container
           sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}
         >
-          <Box sx={{position: 'absolute', height: '100%', marginTop: -6}}>
+          <Box sx={{position: 'absolute', marginTop: -6}}>
           <ProductConfigs product={product} onConfigChange={onConfigChange} defaultConfig={config && config.config ? {key: config.config.key, checkedValue: config?.value} : {key: '', checkedValue: ''}} />
           </Box>
         </Grid>
-        <Grid container spacing={2}>
+        <Grid xs={12} container spacing={2}>
           <Render condition={product?.configurables !== undefined && product.configurables.length > 0}>
           <ProductQuantity basketItem={basketItem} productId={product.id} newQuantity={newQuantity} setNewQuantity={setNewQuantity} config={config}/>
           <Grid xs={12} item sx={{display: 'flex', flexDirection: 'row'}}>
@@ -198,7 +209,8 @@ export default function ProductDetails() {
           </Render>
         </Grid>
       </Grid>
-      <Grid component={Paper}  marginBottom={5} marginTop={5} elevation={1} item xs={12} sx={{ backgroundImage: 'none', bgcolor: 'background.paper', borderRadius: 15, minHeight: 250, display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 30, marginRight: 10}}>
+      
+      <Grid component={Paper}  marginBottom={5} marginTop={5} elevation={1} item xs={12}  sx={{ backgroundImage: 'none', bgcolor: 'background.paper', borderRadius: 15, minHeight: 250, display: 'flex', flexDirection: 'column', width: '100%', marginLeft: view.view.ipad ? 0 : 30, marginRight: view.view.ipad ? 0 : 10}}>
 
         <ProductBottom onChangeValue={setBottomValue} />
         <Typography variant='subtitle1' sx={{marginBottom: 5, marginTop: 2, marginRight: 5}}>{bottomValue === 0 ? product.description : bottomValue === 1 ? "Spesifikasjoner kommer" : "Dokumentasjon kommer"}</Typography>

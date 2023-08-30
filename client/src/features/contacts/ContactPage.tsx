@@ -37,10 +37,12 @@ const ContactPage = () => {
     message: '',
   });
 
-  const handleSubmit = async () => {
-    const res = await agent.Admin.sendEmail(formData)
-    console.log(res)
-
+  const handleSubmit = async (e: any) => {
+    try {
+      const res = await agent.Admin.sendEmail(formData);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
 
   const handleInputChange = (event: any) => {

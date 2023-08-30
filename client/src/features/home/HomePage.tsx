@@ -3,9 +3,11 @@ import Slider from 'react-slick'
 import './sliderStyles.css'
 import Categories from './Categories'
 import { Box, Divider } from '@mui/material'
+import useView from 'app/hooks/useView'
 
 export default function HomePage() {
   const sliderRef = useRef<Slider | null>(null)
+  const view = useView()
 
   const settings = {
     dots: true,
@@ -35,7 +37,7 @@ export default function HomePage() {
           />
         </div>
       </Slider>
-      <Box sx={{ marginLeft: 12.5, marginRight: 12.5 }}>
+      <Box sx={{ marginLeft: view.view.ipad ? 1 : 12.5, marginRight: view.view.ipad ? 1 : 12.5 }}>
         <Categories />
       </Box>
       </div>
