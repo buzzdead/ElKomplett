@@ -7,8 +7,8 @@ import { setProductParams } from './catalog/catalogSlice'
 import Render from 'app/layout/Render'
 
 interface Props {
-    brands: string[]
-    types: string[]
+    producers: string[]
+    productTypes: string[]
 }
 
 const sortOptions = [
@@ -31,21 +31,21 @@ export default function SideBar(props: Props) {
           onChange={(e) => dispatch(setProductParams({ orderBy: e.target.value }))}
         />
       </Paper>
-      <Render condition={props.brands.length > 0}>
+      <Render condition={props.producers?.length > 0}>
       <Paper sx={{ mb: 2, p: 2, bgcolor: 'special', minWidth: 225  }}>
         <CheckboxButtons
-          items={props.brands}
-          checked={productParams.brands}
-          onChange={(items: string[]) => dispatch(setProductParams({ brands: items }))}
+          items={props.producers}
+          checked={productParams.producers}
+          onChange={(items: string[]) => dispatch(setProductParams({ producers: items }))}
         />
       </Paper>
       </Render>
-      <Render condition={props.types.length > 0}>
+      <Render condition={props.productTypes?.length > 0}>
       <Paper sx={{ mb: 2, p: 2, minWidth: 250 }}>
         <CheckboxButtons
-          items={props.types}
-          checked={productParams.types}
-          onChange={(items: string[]) => dispatch(setProductParams({ types: items }))}
+          items={props.productTypes}
+          checked={productParams.productTypes}
+          onChange={(items: string[]) => dispatch(setProductParams({ productTypes: items }))}
         />
       </Paper>
       </Render>

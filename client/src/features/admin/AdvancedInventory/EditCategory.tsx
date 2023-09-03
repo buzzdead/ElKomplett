@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   Paper,
@@ -19,17 +18,12 @@ import AppDropzone from 'app/components/AppDropzone';
 import { useForm } from 'react-hook-form';
 import agent from 'app/api/agent';
 
-interface Props {
-  onClose: () => void;
-}
-
-export const EditCategory = ({ onClose }: Props) => {
+export const EditCategory = () => {
   const { categories, categoriesLoading } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<{pictureUrl: string, title: string, id: number, description: string}>();
   const [modalOpen, setModalOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
-  const abc = Math.max(...categories.map(c => c.id))
   const [maxId, setMaxId] = useState(0)
 
   useEffect(() => {
@@ -42,12 +36,10 @@ export const EditCategory = ({ onClose }: Props) => {
     reset,
     handleSubmit,
     watch,
-    formState: { isDirty, isSubmitting, isValid },
   } = useForm()
   const watchFile = watch('file')
 
   const handleEditClick = (category: any) => {
-    console.log(maxId)
     if(category === null) {
         setSelectedCategory({id: maxId + 1, title: '', description: '', pictureUrl:''})
         setEditedTitle("");
@@ -70,7 +62,6 @@ export const EditCategory = ({ onClose }: Props) => {
     data.id = selectedCategory.id
     data.description = editedDescription
 
-    const c = selectedCategory.id === maxId + 1 ? await agent.Catalog.createCategory(data) : await agent.Catalog.editCategory(selectedCategory.id, data)
     selectedCategory.id === maxId + 1  && setMaxId(maxId + 1)
     setModalOpen(false);
   };
@@ -89,7 +80,7 @@ export const EditCategory = ({ onClose }: Props) => {
   }
 
   return (
-    <Grid container xs={12} gap={10}>
+    <Grid container gap={10} sx={{padding: 5}}>
         <Card sx={{minWidth: 200}} onClick={() => handleEditClick(null)}>
             <CardHeader
               title={"+"}

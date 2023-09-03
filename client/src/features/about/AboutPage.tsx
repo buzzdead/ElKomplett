@@ -8,7 +8,6 @@ export default function AboutPage() {
 
     function getValidationError() {
         agent.TestErrors.getValidationerror()
-        .then(() => console.log('should not see this'))
         .catch(error => setvalidationErrors(error))
     }
 

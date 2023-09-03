@@ -1,9 +1,7 @@
-import { Grid, Box, Button, Radio } from '@mui/material'
-import AppDropzone from 'app/components/AppDropzone'
+import { Grid, Button, Radio } from '@mui/material'
 import AppTextInput from 'app/components/AppTextInput'
 import { DndList } from 'app/components/DndList'
 import { useDndList } from 'app/hooks/useDndList'
-import Render from 'app/layout/Render'
 import { Configurable } from 'app/models/product'
 import { Control, FieldValues } from 'react-hook-form'
 

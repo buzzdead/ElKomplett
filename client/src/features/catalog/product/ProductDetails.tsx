@@ -1,5 +1,5 @@
-import { Box, Card, CardMedia, Divider, Grid, Paper, TextField, Typography } from '@mui/material'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Box, Card, CardMedia, Grid, Paper, TextField, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
 import NotFound from '../../../app/errors/NotFound'
@@ -16,7 +16,6 @@ import { IRadioButton, ProductConfigs } from './ProductConfigs'
 import ImageScroller from 'app/components/ImageScroller'
 import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
-import { grey } from '@mui/material/colors'
 import { ProductQuantity } from './ProductQuantity'
 import useView from 'app/hooks/useView'
 
@@ -116,8 +115,10 @@ export default function ProductDetails() {
     },
     {
       key: 'Produsent',
-      value: product.brand,
+      value: product.producer?.name || "produktnavn",
     },
+      {key: 'Produkttype',
+      value: product.productType?.name},
     {
       key: 'Lagerstatus',
       value: config && config.config && config.config.quantityInStock ? config?.config.quantityInStock : product.quantityInStock,
@@ -162,12 +163,11 @@ export default function ProductDetails() {
 
   const handleOnPress = (img: {pictureUrl: string}) => {
     setCurrentPicture(img)
-    
   }
 
   return (
-    <Grid container spacing={6} xs={12} sx={{marginTop: 0, marginLeft: 0}}>
-      <Grid container xs={12} md={6} sx={{display : 'flex', flexDirection: view.view.ipad ? 'column' : 'row', width: '100%', height: '100%'}}>
+    <Grid container spacing={6} sx={{marginTop: 0, marginLeft: 0}}>
+      <Grid item xs={12} md={6} sx={{display : 'flex', flexDirection: view.view.ipad ? 'column' : 'row', width: '100%', height: '100%'}}>
       <Render condition={product.images.length > 1}>
       <Grid item xs={12} md={4} sx={{overflow: 'hidden'}}>
         <ImageScroller horizontal={view.view.ipad} selectedImageUrl={currentPicture?.pictureUrl || ''} onPress={handleOnPress} images={config && config?.config ? config.config.images : product.images}/>
@@ -192,14 +192,14 @@ export default function ProductDetails() {
         </Typography>
         <AppTable tableData={tableData} />
         <Grid
-          container
+          item
           sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}
         >
           <Box sx={{position: 'absolute', marginTop: -6}}>
           <ProductConfigs product={product} onConfigChange={onConfigChange} defaultConfig={config && config.config ? {key: config.config.key, checkedValue: config?.value} : {key: '', checkedValue: ''}} />
           </Box>
         </Grid>
-        <Grid xs={12} container spacing={2}>
+        <Grid xs={12} item>
           <Render condition={product?.configurables !== undefined && product.configurables.length > 0}>
           <ProductQuantity basketItem={basketItem} productId={product.id} newQuantity={newQuantity} setNewQuantity={setNewQuantity} config={config}/>
           <Grid xs={12} item sx={{display: 'flex', flexDirection: 'row'}}>

@@ -8,8 +8,8 @@ interface CatalogState {
     productsLoaded: boolean
     filtersLoaded: boolean
     status: string
-    brands: string[]
-    types: string[]
+    producers: string[]
+    productTypes: string[]
     productParams: ProductParams
     metaData: MetaData | null
 }
@@ -23,8 +23,8 @@ function getAxiosParams(productParams: ProductParams) {
     params.append('orderBy', productParams.orderBy)
     if(productParams.searchTerm) params.append('searchTerm', productParams.searchTerm)
     if(productParams.categoryId) params.append('categoryId', productParams.categoryId.toString())
-    if(productParams.brands.length > 0) params.append('brands', productParams.brands.toString())
-    if(productParams.types.length > 0) params.append('types', productParams.types.toString())
+    if(productParams.producers.length > 0) params.append('producers', productParams.producers.toString())
+    if(productParams.productTypes.length > 0) params.append('productTypes', productParams.productTypes.toString())
     return params
     
 }
@@ -74,8 +74,8 @@ function initParams() {
         pageSize: 12,
         categoryId: 0,
         orderBy: 'name',
-        brands: [],
-        types: []
+        producers: [],
+        productTypes: []
     }
 }
 
@@ -85,8 +85,8 @@ export const catalogSlice = createSlice({
         productsLoaded: false,
         filtersLoaded: false,
         status: 'idle',
-        brands: [],
-        types: [],
+        producers: [],
+        productTypes: [],
         productParams: initParams(),
         metaData: null
     }),
@@ -142,8 +142,8 @@ export const catalogSlice = createSlice({
             state.status = 'pendingFetchFilters'
         })
         builder.addCase(fetchFilters.fulfilled, (state, action) => {
-            state.brands = action.payload.brands
-            state.types = action.payload.types
+            state.producers = action.payload.producers?.map((e: { name: any; }) => e.name)
+            state.productTypes = action.payload.productTypes?.map((e: { name: any; }) => e.name)
             state.filtersLoaded = true
         })
         builder.addCase(fetchFilters.rejected, (state, action) => {

@@ -5,7 +5,6 @@ const REQ = "Field is required"
 export const validationSchema = (imageRequired?: Boolean) =>
   yup.object({
     name: yup.string().required(REQ),
-    brand: yup.string().required(REQ),
     price: yup.number().required("Price must be a number greater than 100").moreThan(100),
     quantityInStock: yup.number().min(0).required("Quantity in stock must be a positive number"),
     description: yup.string().required(REQ),

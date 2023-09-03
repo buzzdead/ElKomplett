@@ -16,7 +16,7 @@ import './catalog.css'
 import useView from 'app/hooks/useView'
 
 export default function Catalog() {
-  const { products, brands, types, filtersLoaded, metaData, productsLoaded } = useProducts()
+  const { products, producers, productTypes, filtersLoaded, metaData, productsLoaded } = useProducts()
   const dispatch = useAppDispatch()
   const {category, categoryLoading} = useCategory(0)
   const {categories, categoriesLoading} = useCategories()
@@ -74,7 +74,7 @@ export default function Catalog() {
       <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={8}>
         <ProductSearch />
         <Render condition={!view.view.mobile}>
-        <SideBar brands={[]} types={[]} />
+        <SideBar producers={producers} productTypes={productTypes} />
         </Render>
       </Grid>
       <Grid item xs={12} md={9}>

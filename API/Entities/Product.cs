@@ -8,13 +8,13 @@ namespace API.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public long Price { get; set; }
-        public string Type { get; set; }
-        public string Brand { get; set; }
         public int QuantityInStock { get; set; }
         public int categoryId { get; set; }
         public List<Config> Configurables { get; set; } = new ();
         public List<Image> Images { get; set; } = new();
         public List<ConfigPreset> ConfigPresets { get; set; } = new();
+        public Producer Producer { get; set; }
+        public ProductType ProductType { get; set; }
 
         public void AddConfig(Config config) 
         {

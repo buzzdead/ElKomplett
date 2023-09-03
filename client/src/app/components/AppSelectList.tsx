@@ -10,7 +10,6 @@ interface Props extends UseControllerProps {
 
 export default function AppSelectList(props: Props) {
     const {fieldState, field} = useController({...props, defaultValue: props.defaultValue || ''})
-    if(props.defaultValue) field.value = props.defaultValue
   return (
     <FormControl fullWidth error={!!fieldState.error}>
       <InputLabel>{props.label}</InputLabel>
@@ -19,7 +18,7 @@ export default function AppSelectList(props: Props) {
         label={props.label}
         onChange={field.onChange}
       >
-        {props.items.map((item, index) => (
+        {props.items?.map((item, index) => (
             <MenuItem key={index} value={item}>{item}</MenuItem>
         ))}
       </Select>

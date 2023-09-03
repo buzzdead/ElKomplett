@@ -15,9 +15,10 @@ namespace API.DTOs
         public long Price { get; set; }
         [Required]
         public List<IFormFile> Files { get; set; } = new();
-        public string Type { get; set; }
         [Required]
-        public string Brand { get; set; }
+        public ProductType Type { get; set; }
+        [Required]
+        public Producer Producer { get; set; }
         [Required]
         [Range(0, 200)]
         public int QuantityInStock { get; set; }

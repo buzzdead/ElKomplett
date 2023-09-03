@@ -21,8 +21,10 @@ export interface IProduct {
     description: string;
     price: number;
     images: {pictureUrl: string, publicId?: string}[];
-    type?: string;
-    brand: string;
+    productType?: {id: number, name: string};
+    producer: {id: number, name: string};
+    producerName: string
+    productTypeName: string
     quantityInStock?: number;
     configurable?: boolean;
     configurables?: Configurable[]
@@ -35,8 +37,8 @@ export interface IProduct {
     orderBy: string
     searchTerm?: string
     categoryId: number
-    types: string[]
-    brands: string[]
+    productTypes: string[]
+    producers: string[]
     pageNumber: number
     pageSize: number
   }

@@ -2,23 +2,22 @@ import { Typography, Grid, Paper, Box, Button, Tab, Tabs } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../app/components/AppTextInput'
 import { IProduct } from '../../app/models/product'
-import { Key, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useProducts from '../../app/hooks/useProducts'
 import AppSelectList from '../../app/components/AppSelectList'
-import AppDropzone from '../../app/components/AppDropzone'
 import { FieldValues } from 'react-hook-form/dist/types'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { validationSchema } from './productValidation'
+import { validationSchema } from './AdvancedInventory/productValidation'
 import agent from '../../app/api/agent'
 import { useAppDispatch } from '../../app/store/configureStore'
 import { setProduct } from '../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
 import Configurations from './config/Configurations'
 import { useCategories } from 'app/hooks/useCategories'
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useDndList } from '../../app/hooks/useDndList'
 import { DndList } from '../../app/components/DndList'
-import ProductSpecification from './ProductSpecifications'
+import ProductSpecification from './AdvancedInventory/ProductSpecifications'
+import { indexOf } from 'lodash'
 
 
 interface Props {
@@ -36,7 +35,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   } = useForm({
     resolver: yupResolver(validationSchema(product === undefined || product === null)),
   })
-  const { brands, types } = useProducts()
+  const { producers, productTypes } = useProducts()
   const watchFiles = watch('files', [])
   const dispatch = useAppDispatch()
   const [selectedTab, setSelectedTab] = useState(0)
@@ -46,10 +45,9 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const {list, onDragEnd, reordered} = useDndList({images: product?.images, watchFiles: watchFiles, control: control, name: 'order'})
 
   const handleTabChange = (e: any, v: any) => {
-    console.log(v)
     setSelectedTab(v)
   }
-
+  
   useEffect(() => {
     if (product && watchFiles?.length === 0 && !isDirty) {
       reset({
@@ -64,6 +62,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   }, [product, reset, isDirty])
 
   async function handleSubmitData(data: FieldValues) {
+    console.log(data)
+    return
     const cat =  categories.find((e) => e.title === data.categoryId)
     const newId = !cat ? product?.categoryId : cat?.id
     data.categoryId = newId
@@ -82,6 +82,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   }
 
   const catTitle = categories.find((c) => c.id === product?.categoryId)?.title || categories[0].title
+  var catIndex = indexOf(categories.map(e => e.title), catTitle)
+
   if(categoriesLoading) return null
   return (
     <Box component={Paper} sx={{ p: 4 }}>
@@ -102,7 +104,10 @@ export default function ProductForm({ product, cancelEdit }: Props) {
                 <AppTextInput control={control} name='name' label='Product name' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <AppSelectList control={control} items={brands} name='brand' label='Brand' />
+                <AppSelectList control={control} items={producers} name='producerName' label='Producer Name' defaultValue={product?.producer?.name} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <AppSelectList control={control} items={productTypes} name='productTypeName' label='Product Type' defaultValue={product?.productType?.name} />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <AppTextInput control={control} type='number' name='price' label='Price' />
@@ -114,7 +119,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
                   name='categoryId'
                   label='CategoryId'
                   dValue={catTitle}
-                  defaultValue={0}
+                  defaultValue={catIndex}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>

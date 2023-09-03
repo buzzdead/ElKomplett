@@ -20,6 +20,8 @@ namespace API.Data
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<Producer> Producers { get; set; }
+        public DbSet<ProductType> ProductTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

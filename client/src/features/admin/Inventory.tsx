@@ -17,17 +17,14 @@ import { currencyFormat } from '../../app/util/util'
 import useView from '../../app/hooks/useView'
 import Render from '../../app/layout/Render'
 import LoadingComponent from '../../app/layout/LoadingComponent'
-import { EditCategory } from './EditCategory'
-import { ContactMessages } from './ContactMessages'
+import { Link } from 'react-router-dom'
 
 export default function Inventory() {
-  const { products, metaData, types, brands, filtersLoaded, productsLoaded } = useProducts()
+  const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } = useProducts()
   const { view } = useView()
   const dispatch = useAppDispatch()
   //State
   const [editMode, setEditMode] = useState(false)
-  const [editCategory, setEditCategory] = useState(false)
-  const [messages, showMessages] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<IProduct | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState(0)
@@ -64,8 +61,11 @@ export default function Inventory() {
           Inventory
         </Typography>
         <Box>
-        <Button onClick={() => showMessages(true)} sx={{ m: 2 }} size='large' variant='contained'>Show messages</Button>
-        <Button onClick={() => setEditCategory(true)} sx={{ m: 2 }} size='large' variant='contained'>Create category</Button>
+          <Link to={'/inventory/advanced'}>
+          <Button sx={{ m: 2 }} size='large' variant='contained'>
+            Advanced
+          </Button>
+          </Link>
         <Button onClick={() => setEditMode(true)} sx={{ m: 2 }} size='large' variant='contained'>
           Create
         </Button>
@@ -103,12 +103,12 @@ export default function Inventory() {
       },
       {
         key: 'Type',
-        value: product.type,
+        value: product.productType?.name,
         dontRender: view.ipad,
       },
       {
         key: 'Brand',
-        value: product.brand,
+        value: product.producer?.name,
         dontRender: view.ipad,
       },
       {
@@ -140,8 +140,6 @@ export default function Inventory() {
   })
 
   if(!filtersLoaded || !productsLoaded) return <LoadingComponent message={'Loading products...'} />
-  if(messages) return <ContactMessages onClose={() => showMessages(false)} />
-  if(editCategory) return <EditCategory onClose={() => setEditCategory(false)}/>
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
  
   return (
@@ -150,7 +148,7 @@ export default function Inventory() {
         <Render condition={!view.mobile}>
           <Grid item xs={3} minWidth='175px'>
             <ProductSearch />
-            <SideBar brands={brands} types={types} />
+            <SideBar producers={producers} productTypes={productTypes} />
           </Grid>
         </Render>
 

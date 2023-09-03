@@ -8,7 +8,7 @@ import { useAppSelector, useAppDispatch } from '../store/configureStore'
 
 export default function useProducts() {
   const products = useAppSelector(productSelectors.selectAll)
-  const { productsLoaded, filtersLoaded, brands, types, metaData } = useAppSelector(
+  const { productsLoaded, filtersLoaded, producers, productTypes, metaData } = useAppSelector(
     (state) => state.catalog,
   )
   const dispatch = useAppDispatch()
@@ -25,8 +25,8 @@ export default function useProducts() {
     products,
     productsLoaded,
     filtersLoaded,
-    brands,
-    types,
+    producers,
+    productTypes,
     metaData,
   }
 }

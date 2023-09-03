@@ -42,7 +42,8 @@ var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
 string connStr;
 
-if (env == "Development")
+//if (env == "Development")
+if(true)
 {
     // Use connection string from file.
     connStr = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -96,6 +97,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<EntityMappingCache>();
 
 var app = builder.Build();
 

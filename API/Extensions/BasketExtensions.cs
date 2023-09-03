@@ -21,7 +21,7 @@ namespace API.Extensions
                     Name = item.Product.Name,
                     Price = item.Product.Price,
                     PictureUrl = item.Product.Images[0].PictureUrl,
-                    Brand = item.Product.Brand,
+                    Producer = item.Product.Producer,
                     Quantity = item.Quantity,
                     ConfigId = item.ConfigId,
                     Configurables = item.Product.Configurables

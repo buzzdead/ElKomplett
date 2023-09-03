@@ -118,7 +118,11 @@ const Admin = {
   setDefaultProduct: (defaultProduct: any) => requests.putForm(`products/SetDefaultConfig`, createFormData(defaultProduct)),
   getConfig: (id: any) => requests.get(`config/${id}`),
   sendEmail: (formData: any) => requests.postForm(`buggy`, createFormData(formData)),
-  getMessages: () => requests.get('buggy/messages')
+  getMessages: () => requests.get('buggy/messages'),
+  createProducer: (data: any) => requests.postForm('products/AddProducer', createFormData(data)),
+  deleteProducer: (name: string) => requests.delete(`products/DeleteProducer/${name}`),
+  deleteProductType: (name: string) => requests.delete(`products/DeleteProductType/${name}`),
+  createProductType: (data: any) => requests.postForm('products/AddProductType', createFormData(data))
 }
   
 

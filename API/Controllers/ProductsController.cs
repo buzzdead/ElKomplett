@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using API.DTOs.Product;
 using AutoMapper;
 
@@ -9,12 +10,14 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
         private readonly UserManager<User> _userManager;
-        public ProductsController(StoreContext context, IMapper mapper, ImageService imageService, UserManager<User> userManager)
+        private readonly EntityMappingCache _mappingCache;
+        public ProductsController(StoreContext context, IMapper mapper, ImageService imageService, UserManager<User> userManager, EntityMappingCache mappingCache)
         {
             _userManager = userManager;
             _imageService = imageService;
             _mapper = mapper;
             _context = context;
+            _mappingCache = mappingCache;
 
         }
 
@@ -26,9 +29,11 @@ namespace API.Controllers
             .ThenInclude(p => p.Images)
             .Include(p => p.ConfigPresets)
             .Include(p => p.Images)
+            .Include(p => p.Producer)
+            .Include(p => p.ProductType)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
-            .Filter(productParams.Brands, productParams.Types, productParams.categoryId)
+            .Filter(productParams.Producers, productParams.ProductTypes, productParams.categoryId, _mappingCache)
             .AsQueryable();
 
             var products = await PagedList<Product>
@@ -64,12 +69,58 @@ namespace API.Controllers
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilters()
         {
-            var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
-            var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+            var producers = await _context.Producers.ToListAsync();
+            var productTypes = await _context.ProductTypes.ToListAsync();
 
-            return Ok(new { brands, types });
+            return Ok(new { producers, productTypes });
         }
 
+        [HttpPost("AddProducer")]
+        public async Task<ActionResult<Producer>> CreateProducer([FromForm] ProdcuerOrProductType createProducerOrType)
+        {
+            var producer = new Producer { Name = createProducerOrType.Name };
+            _context.Producers.Add(producer);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok(producer);
+
+            return BadRequest(new ProblemDetails { Title = "Problem creating new producer" });
+        }
+
+        [HttpPost("AddProductType")]
+        public async Task<ActionResult<ProductType>> CreateProductType([FromForm] ProdcuerOrProductType createProducerOrType)
+        {
+            var productType = new ProductType{ Name = createProducerOrType.Name };
+            _context.ProductTypes.Add(productType);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok(productType);
+            return BadRequest(new ProblemDetails { Title = "Problem creating new product type" });
+        }
+        [HttpDelete("DeleteProducer/{name}")]
+        public async Task<ActionResult> DeleteProducer(string name)
+        {
+            var producerId = _mappingCache.GetProducerIdFromName(name);
+            var myProducts = _context.Products.Where(p => p.Producer.Id == producerId);
+            await myProducts.ForEachAsync(p => p.Producer = null);
+            var producer = await _context.Producers.FindAsync(producerId);
+            _context.Producers.Remove(producer);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok();
+
+            return BadRequest(new ProblemDetails { Title = "Problem deleting producer" });
+        }
+         [HttpDelete("DeleteProductType/{name}")]
+        public async Task<ActionResult> DeleteProductType(string name)
+        {
+            var productTypeId = _mappingCache.GetProductTypeIdFromName(name);
+            var myProducts = _context.Products.Where(p => p.ProductType.Id == productTypeId);
+            await myProducts.ForEachAsync(p => p.ProductType = null);
+            var productType = await _context.ProductTypes.FindAsync(productTypeId);
+            _context.ProductTypes.Remove(productType);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok();
+
+            return BadRequest(new ProblemDetails { Title = "Problem deleting product type" });
+        }
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
@@ -96,6 +147,17 @@ namespace API.Controllers
             productDto = (UpdateProductDto) await this.SortImagesPre(productDto);
 
             var product = await _context.Products.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDto.Id);
+
+            var producerId = _mappingCache.GetProducerIdFromName(productDto.ProducerName);
+
+            var productTypeId = _mappingCache.GetProductTypeIdFromName(productDto.ProductTypeName);
+
+            var producer = await _context.Producers.FindAsync(producerId);
+
+            var productType = await _context.ProductTypes.FindAsync(productTypeId);
+
+            product.Producer = producer;
+            product.ProductType = productType;
  
             if (product == null) return NotFound();
 

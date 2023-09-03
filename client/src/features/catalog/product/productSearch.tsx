@@ -26,6 +26,7 @@ export default function ProductSearch() {
       <TextField
         label='Søk blant produkter'
         variant='outlined'
+        type='search'
         fullWidth
         value={searchTerm || ''}
         onChange={handleInputChange}

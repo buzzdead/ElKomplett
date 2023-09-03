@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Button, TextField } from '@mui/material';
-import { useFieldArray, Controller, useForm } from 'react-hook-form';
-import AppTextInput from 'app/components/AppTextInput';
+import { Box, Button } from '@mui/material';
+import { useFieldArray, useForm } from 'react-hook-form';
 import ProductSpecification from './ProductSpecification';
 
 interface ProductSpecificationsProps {

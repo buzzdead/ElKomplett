@@ -127,7 +127,6 @@ const Configurations = ({ productId, configs }: Props) => {
 
   const setDefaultConfig = async () => {
     const config = configurations.find(cfg => cfg.id === configurations[radioButton].id)
-    console.log(config)
     if(!config) {
       toast.warning("not possible")
     }

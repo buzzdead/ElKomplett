@@ -42,8 +42,6 @@ namespace API.Data
                 PublicId = "0"
             }
         },
-                    Brand = "Angular",
-                    Type = "Boards",
                     QuantityInStock = 100
                 },
                 /* new Product
