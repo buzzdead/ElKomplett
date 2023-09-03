@@ -62,8 +62,6 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   }, [product, reset, isDirty])
 
   async function handleSubmitData(data: FieldValues) {
-    console.log(data)
-    return
     const cat =  categories.find((e) => e.title === data.categoryId)
     const newId = !cat ? product?.categoryId : cat?.id
     data.categoryId = newId
