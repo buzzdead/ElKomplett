@@ -4,7 +4,7 @@ import { PaginatedResponse } from '../models/pagination'
 import { router } from '../router/Routes'
 import { store } from '../store/configureStore'
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 50))
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 250))
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL
 axios.defaults.withCredentials = true

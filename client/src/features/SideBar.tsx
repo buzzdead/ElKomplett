@@ -20,7 +20,7 @@ const sortOptions = [
 export default function SideBar(props: Props) {
   const { productParams } = useAppSelector((state) => state.catalog)
   const dispatch = useAppDispatch()
-
+  console.log("sidebaring")
   return (
     <div>
       <Paper sx={{ mb: 2, p: 2, bgcolor: 'special' , minWidth: 225}}>
@@ -37,15 +37,17 @@ export default function SideBar(props: Props) {
           items={props.producers}
           checked={productParams.producers}
           onChange={(items: string[]) => dispatch(setProductParams({ producers: items }))}
+          resetFunction={() => dispatch(setProductParams({producers: []}))}
         />
       </Paper>
       </Render>
       <Render condition={props.productTypes?.length > 0}>
-      <Paper sx={{ mb: 2, p: 2, minWidth: 250 }}>
+      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special', minWidth: 225  }}>
         <CheckboxButtons
           items={props.productTypes}
           checked={productParams.productTypes}
           onChange={(items: string[]) => dispatch(setProductParams({ productTypes: items }))}
+          resetFunction={() => dispatch(setProductParams({productTypes: []}))}
         />
       </Paper>
       </Render>

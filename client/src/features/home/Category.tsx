@@ -12,7 +12,7 @@ import './category.css'
 import useView from 'app/hooks/useView'
 
 export default function Category() {
-  const { products, productsLoaded } = useProducts()
+  const { products, productsLoaded, producers, productTypes } = useProducts()
   const { category, categoryLoading } = useCategory()
   const { categories, categoriesLoading } = useCategories()
   const view = useView()
@@ -100,7 +100,7 @@ export default function Category() {
         
         <ProductSearch />
         <Render condition={!view.view.mobile}>
-        <SideBar brands={[]} types={[]} />
+        <SideBar producers={producers} productTypes={productTypes} />
         </Render>
       </Grid>
       <Grid item xs={12} >

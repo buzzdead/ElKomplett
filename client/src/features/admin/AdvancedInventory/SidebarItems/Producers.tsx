@@ -16,21 +16,26 @@ import agent from 'app/api/agent'
 import useProducts from 'app/hooks/useProducts'
 import { useState } from 'react'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useAppDispatch } from 'app/store/configureStore';
+import { fetchFilters } from 'features/catalog/catalogSlice';
 
 export const Producers = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editedName, setEditedName] = useState('')
   const { producers } = useProducts()
+  const dispatch = useAppDispatch()
 
   const handleSave = async () => {
     const data = { name: editedName }
     if (editedName === '') return
-    const res = agent.Admin.createProducer(data)
+    const res = await agent.Admin.createProducer(data)
     console.log(res)
+    dispatch(fetchFilters())
     setModalOpen(false)
   }
   const handleDelete = async (producer: string) => {
     const res = await agent.Admin.deleteProducer(producer)
+    dispatch(fetchFilters())
     console.log(res)
   }
   return (

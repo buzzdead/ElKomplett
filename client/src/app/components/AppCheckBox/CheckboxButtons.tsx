@@ -1,4 +1,5 @@
-import { FormGroup, FormControlLabel, Checkbox } from '@mui/material'
+import { FormGroup, FormControlLabel, Checkbox, Button } from '@mui/material'
+import Render from 'app/layout/Render'
 import React, { useRef, useState, useEffect } from 'react'
 import { useUpdateEffect } from 'usehooks-ts'
 
@@ -8,9 +9,10 @@ interface Props {
     flexRow?: boolean
     onChange: (items: string[]) => void
     onStateUpdate?: (loading: boolean) => void
+    resetFunction?: () => void
 }
 
-export default function CheckboxButtons({items, checked, onChange, flexRow = false, onStateUpdate}: Props) {
+export default function CheckboxButtons({items, checked, onChange, flexRow = false, onStateUpdate, resetFunction}: Props) {
     const [checkedItems, setCheckedItems] = useState(checked || [])
     const [loading, setLoading] = useState(false)
     const timer = useRef<NodeJS.Timeout>()
@@ -47,11 +49,22 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
         setCheckedItems(newChecked)
     }
 
+    const reset = () => {
+        setCheckedItems([])
+    }
+
     return (
+        <div style={{ position: 'relative' }}>
+            <div style={{position: 'absolute', right: 0, display: 'flex'}}>
+            <Render condition={resetFunction !== undefined && checkedItems.length > 0}>
+                <Button style={{padding: 0, minWidth: 0}} onClick={reset}>X</Button>
+            </Render>
+            </div>
         <FormGroup sx={{display: 'flex', flexDirection: flexRow ? 'row' : 'column' }}>
             {items.map(item => (
               <FormControlLabel control={<Checkbox checked={checkedItems.indexOf(item) !== -1} onClick={() => handleChecked(item)} />} label={item} key={item} />
             ))}
           </FormGroup>
+          </div>
     )
 }
