@@ -86,7 +86,7 @@ export const ProductQuantity = ({setNewQuantity, newQuantity, basketItem, config
           <Grid item xs={3}>
             <LoadingButton
               disabled={quantityChanged}
-              loading={productStatus.includes('pending')}
+              loading={productStatus.includes('pendingFetchProduct')}
               onClick={handleUpdateCart}
               sx={{ height: '55px' }}
               color='primary'

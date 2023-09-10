@@ -147,7 +147,7 @@ export default function ProductDetails() {
       <Grid item xs={6} md={4}>
         <LoadingButton
           disabled={quantityChanged}
-          loading={status.includes('pending')}
+          loading={status.includes('pendingFetchProduct')}
           onClick={handleUpdateCart}
           sx={{ height: '55px' }}
           color='primary'

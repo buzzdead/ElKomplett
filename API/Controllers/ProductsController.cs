@@ -31,9 +31,9 @@ namespace API.Controllers
             .Include(p => p.Images)
             .Include(p => p.Producer)
             .Include(p => p.ProductType)
+            .Filter(productParams.Producers, productParams.ProductTypes, productParams.categoryId, _mappingCache)
             .Sort(productParams.OrderBy)
             .Search(productParams.SearchTerm)
-            .Filter(productParams.Producers, productParams.ProductTypes, productParams.categoryId, _mappingCache)
             .AsQueryable();
 
             var products = await PagedList<Product>
