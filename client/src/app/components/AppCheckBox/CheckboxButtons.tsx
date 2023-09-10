@@ -22,7 +22,7 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
     useEffect(() => {
         const newChecked = checkedItems.filter(c => items.includes(c));
         const hasChanged = checkedItems.some(c => !newChecked.includes(c))
-        if(hasChanged) {setCheckedItems(newChecked); halt.current = true}
+        if(hasChanged) {setCheckedItems(newChecked); halt.current = true; onChange(newChecked);}
     }, [items])
 
     useEffect(() => {
