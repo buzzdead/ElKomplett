@@ -18,8 +18,9 @@ const sortOptions = [
   ]
 
 export default function SideBar(props: Props) {
-  const { productParams } = useAppSelector((state) => state.catalog)
+  const { productParams, filtersLoaded } = useAppSelector((state) => state.catalog)
   const dispatch = useAppDispatch()
+  if(!filtersLoaded) return null;
   console.log("sidebaring")
   return (
     <div>

@@ -31,16 +31,17 @@ namespace API.Extensions
             var typeList = new List<string>();
             var cId = categoryId != 0;
             if (categoryId != 0) query = query.Where(p => p.categoryId == categoryId);
+            var (producerNames, productTypeNames) = mappingCache.GetProducersAndProductTypes(categoryId);
             if (!string.IsNullOrEmpty(producers))
             {
-                var producerNameList = producers.Split(",").ToList();
+                var producerNameList = producers.Split(",").Where(producerNames.Contains).ToList();
                 var producerIds = producerNameList.Select(mappingCache.GetProducerIdFromName).ToList();
                 query = query.Where(p => producerNameList.Count == 0 || producerIds.Contains(p.Producer.Id));
             }
 
             if (!string.IsNullOrEmpty(productTypes))
             {
-                typeList.AddRange(productTypes.Split(",").ToList());
+                typeList.AddRange(productTypes.Split(",").Where(productTypeNames.Contains).ToList());
                 var productTypeIds = typeList.Select(mappingCache.GetProductTypeIdFromName).ToList();
                 query = query.Where(p => typeList.Count == 0 || productTypeIds.Contains(p.ProductType.Id));
             }

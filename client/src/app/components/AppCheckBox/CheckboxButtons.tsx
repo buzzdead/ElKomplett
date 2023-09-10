@@ -16,7 +16,14 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
     const [checkedItems, setCheckedItems] = useState(checked || [])
     const [loading, setLoading] = useState(false)
     const timer = useRef<NodeJS.Timeout>()
+    const halt = useRef(false)
     const onStateUpdateRef = useRef(onStateUpdate)
+
+    useEffect(() => {
+        const newChecked = checkedItems.filter(c => items.includes(c));
+        const hasChanged = checkedItems.some(c => !newChecked.includes(c))
+        if(hasChanged) {setCheckedItems(newChecked); halt.current = true}
+    }, [items])
 
     useEffect(() => {
         onStateUpdateRef.current = onStateUpdate
@@ -32,6 +39,7 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
     }
 
     useUpdateEffect(() => {
+        if(halt.current) {halt.current = false; return;}
         debouncedOnChange()
     }, [checkedItems])
 
