@@ -58,9 +58,10 @@ export const fetchProductAsync = createAsyncThunk<IProduct, number>(
 
 export const fetchFilters = createAsyncThunk(
     'catalog/fetchFilters',
-    async (_, thunkAPI) => {
+    async (id: number, thunkAPI) => {
         try {
-            return agent.Catalog.fetchFilters()
+            console.log(id)
+            return agent.Catalog.fetchFilters(id)
         }
         catch (error: any) {
             return thunkAPI.rejectWithValue({error: error.data})

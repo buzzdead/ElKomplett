@@ -6,11 +6,13 @@ namespace API.Controllers
         private readonly StoreContext _context;
         private readonly ImageService _imageService;
         private readonly UserManager<User> _userManager;
-        public CategoryController(StoreContext context, ImageService imageService, UserManager<User> userManager)
+        private readonly EntityMappingCache _mappingCache;
+        public CategoryController(StoreContext context, ImageService imageService, UserManager<User> userManager, EntityMappingCache mappingCache)
         {
             _userManager = userManager;
             _imageService = imageService;
             _context = context;
+            _mappingCache = mappingCache;
 
         }
 
@@ -18,6 +20,8 @@ namespace API.Controllers
         public async Task<ActionResult<Category>> GetCategories()
         {
             var categories = await _context.Categories.ToListAsync(); // Make sure to await the async operation
+
+            if(_mappingCache.CategoriesIsEmpty()) _mappingCache.InitializeCategories();
 
             return Ok(categories); // Return an OkObjectResult with the categories
         }

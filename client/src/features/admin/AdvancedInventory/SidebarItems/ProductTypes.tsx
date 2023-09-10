@@ -29,13 +29,13 @@ export const ProductTypes = () => {
     const data = { name: editedName }
     if (editedName === '') return
     const res = await agent.Admin.createProductType(data)
-    dispatch(fetchFilters())
+    dispatch(fetchFilters(0))
     console.log(res)
     setModalOpen(false)
   }
   const handleDelete = async (producer: string) => {
     const res = await agent.Admin.deleteProductType(producer)
-    dispatch(fetchFilters())
+    dispatch(fetchFilters(0))
     console.log(res)
   }
   return (

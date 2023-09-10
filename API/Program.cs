@@ -38,8 +38,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-
-
 string connStr;
 
 if (env == "Development")

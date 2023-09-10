@@ -6,7 +6,7 @@ import {
 } from '../../features/catalog/catalogSlice'
 import { useAppSelector, useAppDispatch } from '../store/configureStore'
 
-export default function useProducts() {
+export default function useProducts(categoryId = 0, categoryLoading = false) {
   const products = useAppSelector(productSelectors.selectAll)
   const { productsLoaded, filtersLoaded, producers, productTypes, metaData } = useAppSelector(
     (state) => state.catalog,
@@ -18,8 +18,9 @@ export default function useProducts() {
   }, [productsLoaded, dispatch])
 
   React.useEffect(() => {
-    if (!filtersLoaded) dispatch(fetchFilters())
-  }, [dispatch, filtersLoaded])
+    if(categoryLoading) return
+    dispatch(fetchFilters(categoryId))
+  }, [dispatch, filtersLoaded, categoryId])
 
   return {
     products,

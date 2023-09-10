@@ -22,7 +22,7 @@ import { fetchFilters } from 'features/catalog/catalogSlice';
 export const Producers = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editedName, setEditedName] = useState('')
-  const { producers } = useProducts()
+  const { producers } = useProducts(0)
   const dispatch = useAppDispatch()
 
   const handleSave = async () => {
@@ -30,12 +30,12 @@ export const Producers = () => {
     if (editedName === '') return
     const res = await agent.Admin.createProducer(data)
     console.log(res)
-    dispatch(fetchFilters())
+    dispatch(fetchFilters(0))
     setModalOpen(false)
   }
   const handleDelete = async (producer: string) => {
     const res = await agent.Admin.deleteProducer(producer)
-    dispatch(fetchFilters())
+    dispatch(fetchFilters(0))
     console.log(res)
   }
   return (

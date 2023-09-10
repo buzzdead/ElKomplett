@@ -12,11 +12,12 @@ import './category.css'
 import useView from 'app/hooks/useView'
 
 export default function Category() {
-  const { products, productsLoaded, producers, productTypes } = useProducts()
+ 
   const { category, categoryLoading } = useCategory()
+  const { products, productsLoaded, producers, productTypes } = useProducts(category.id, categoryLoading)
   const { categories, categoriesLoading } = useCategories()
   const view = useView()
-
+  if(categoryLoading) return null;
   return (
     <Grid container columnSpacing={4}>
       <Render condition={!categoriesLoading}>

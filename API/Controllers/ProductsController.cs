@@ -66,11 +66,17 @@ namespace API.Controllers
             return product;
         }
 
-        [HttpGet("filters")]
-        public async Task<IActionResult> GetFilters()
+        [HttpGet("GetFilters/{id}")]
+        public async Task<IActionResult> GetFilters(int id)
         {
             var producers = await _context.Producers.ToListAsync();
             var productTypes = await _context.ProductTypes.ToListAsync();
+            if(id != 0)
+            {
+                var (producerNames, productTypeNames) = _mappingCache.GetProducersAndProductTypes(id);
+                producers = producers.Where(p => producerNames.Contains(p.Name)).ToList();
+                productTypes = productTypes.Where(p => productTypeNames.Contains(p.Name)).ToList();
+            }
 
             return Ok(new { producers, productTypes });
         }
@@ -126,13 +132,29 @@ namespace API.Controllers
         {
             if(productDto.Order.Count > 0)  productDto = (CreateProductDto) await this.SortImagesPre(productDto);
 
+            var producerId = _mappingCache.GetProducerIdFromName(productDto.ProducerName);
+
+            var productTypeId = _mappingCache.GetProductTypeIdFromName(productDto.ProductTypeName);
+
+            var producer = await _context.Producers.FindAsync(producerId);
+
+            var productType = await _context.ProductTypes.FindAsync(productTypeId);
+
             var product = _mapper.Map<Product>(productDto);
+
+            product.Producer = producer;
+
+            product.ProductType = productType;
+
             product = (Product) await this.AddImagesAsync(productDto.Files, product, _imageService);
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
             for (int i = 0; i < product.Images.Count; i++) product.Images[i].Order = i;
 
             _context.Products.Add(product);
 
+            _mappingCache.ProductUpdate(product.categoryId, product);
 
             var result = await _context.SaveChangesAsync() > 0;
 
@@ -146,7 +168,9 @@ namespace API.Controllers
         {
             productDto = (UpdateProductDto) await this.SortImagesPre(productDto);
 
-            var product = await _context.Products.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == productDto.Id);
+            var product = await _context.Products.Include(p => p.Images).Include(p => p.Producer).Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == productDto.Id);
+
+            _mappingCache.ProductUpdate(product.categoryId, product, true);
 
             var producerId = _mappingCache.GetProducerIdFromName(productDto.ProducerName);
 
@@ -158,6 +182,8 @@ namespace API.Controllers
 
             product.Producer = producer;
             product.ProductType = productType;
+
+            _mappingCache.ProductUpdate(product.categoryId, product);
  
             if (product == null) return NotFound();
 
@@ -198,7 +224,9 @@ namespace API.Controllers
         public async Task<ActionResult> DeleteProduct(int id)
         {
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.Producer).Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id);
+
+            _mappingCache.ProductUpdate(product.categoryId, product, true);
 
             if (product == null) return NotFound();
 
