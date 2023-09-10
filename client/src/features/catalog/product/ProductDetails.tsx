@@ -100,7 +100,7 @@ export default function ProductDetails() {
     setCurrentPicture(currentConfig?.images[0])
   }
 
-  if (productStatus.includes('pending')) return <LoadingComponent message='Loading product' />
+  if (productStatus.includes('pendingFetchProduct')) return <LoadingComponent message='Loading product' />
 
   if (!product) return <NotFound />
 
