@@ -15,6 +15,8 @@ namespace API.Entities
         public List<ConfigPreset> ConfigPresets { get; set; } = new();
         public Producer Producer { get; set; }
         public ProductType ProductType { get; set; }
+        public string RichDescription { get; set; }
+        public string RichSpecification { get; set; }
 
         public void AddConfig(Config config) 
         {

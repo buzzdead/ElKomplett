@@ -18,6 +18,7 @@ import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
 import { ProductQuantity } from './ProductQuantity'
 import useView from 'app/hooks/useView'
+import { ContentState, Editor, EditorState, convertFromHTML } from 'draft-js'
 
 type Config = {
   id?: number
@@ -99,6 +100,27 @@ export default function ProductDetails() {
       setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
     setCurrentPicture(currentConfig?.images[0])
   }
+  const blockStyleFn = (contentBlock: { getType: () => any }) => {
+    const type = contentBlock.getType();
+    console.log(type === 'blockquote')
+    if (type === 'blockquote') {
+      return 'custom-blockquote';
+    }
+    // You can add more custom block styles here if needed
+    return '';
+  };
+  const RichTextDisplay = () => {
+    console.log(product?.richDescription)
+    if(!product?.richDescription || product?.richDescription === undefined) return null
+    const contentBlocks = convertFromHTML(product.richDescription);
+    const contentState2 = ContentState.createFromBlockArray(
+      contentBlocks.contentBlocks,
+      contentBlocks.entityMap
+    );
+    const editorState = EditorState.createWithContent(contentState2)
+  
+    return <Editor onChange={() => console.log()} editorState={editorState} readOnly blockStyleFn={blockStyleFn} />;
+  };
 
   if (productStatus.includes('pendingFetchProduct')) return <LoadingComponent message='Loading product' />
 
@@ -111,7 +133,7 @@ export default function ProductDetails() {
     },
     {
       key: 'Beskrivelse',
-      value: product.description,
+      value:  product.description,
     },
     {
       key: 'Produsent',
@@ -178,7 +200,7 @@ export default function ProductDetails() {
         <CardMedia
         title="asdf"
           component={Paper}
-          image={currentPicture?.pictureUrl}
+          image={currentPicture?.pictureUrl || product.images[0].pictureUrl}
           
           sx={{padding: 20, width: '100%', height: '100%', alignSelf: 'center',  backgroundSize: 'cover',}}
         />
@@ -213,7 +235,7 @@ export default function ProductDetails() {
       <Grid component={Paper}  marginBottom={5} marginTop={5} elevation={1} item xs={12}  sx={{ backgroundImage: 'none', bgcolor: 'background.paper', borderRadius: 15, minHeight: 250, display: 'flex', flexDirection: 'column', width: '100%', marginLeft: view.view.ipad ? 0 : 30, marginRight: view.view.ipad ? 0 : 10}}>
 
         <ProductBottom onChangeValue={setBottomValue} />
-        <Typography variant='subtitle1' sx={{marginBottom: 5, marginTop: 2, marginRight: 5}}>{bottomValue === 0 ? product.description : bottomValue === 1 ? "Spesifikasjoner kommer" : "Dokumentasjon kommer"}</Typography>
+        <Typography variant='subtitle1' sx={{marginBottom: 5, marginTop: 2, marginRight: 5}}>{bottomValue === 0 ? RichTextDisplay() || product.description : bottomValue === 1 ? "Spesifikasjoner kommer" : "Dokumentasjon kommer"}</Typography>
 
       </Grid>
     </Grid>

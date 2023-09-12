@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using API.DTOs.Product;
+using API.Entities.ConfigAggregate;
 using AutoMapper;
 
 namespace API.Controllers
@@ -130,6 +131,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
         {
+            
             if(productDto.Order.Count > 0)  productDto = (CreateProductDto) await this.SortImagesPre(productDto);
 
             var producerId = _mappingCache.GetProducerIdFromName(productDto.ProducerName);
@@ -224,7 +226,7 @@ namespace API.Controllers
         public async Task<ActionResult> DeleteProduct(int id)
         {
 
-            var product = await _context.Products.Include(p => p.Producer).Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products.Include(p => p.Producer).Include(p => p.Images).Include(p => p.ProductType).Include(p => p.Configurables).ThenInclude(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
 
             _mappingCache.ProductUpdate(product.categoryId, product, true);
 
@@ -235,6 +237,16 @@ namespace API.Controllers
             {
                 if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
                     await _imageService.DeleteImageAsync(image.PublicId);
+            }
+            foreach(Config cfg in product.Configurables) 
+            {
+                foreach(ImageDto image in cfg.Images)
+                {
+                      if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
+                    await _imageService.DeleteImageAsync(image.PublicId);
+                }
+                product.RemoveConfig(cfg);
+                _context.Config.Remove(cfg);
             }
 
             _context.Products.Remove(product);

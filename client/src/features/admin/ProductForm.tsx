@@ -159,7 +159,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
         ) : selectedTab === 1 ? (
           <Configurations configs={product?.configurables} productId={product?.id!} />
         )
-        : <ProductSpecification control={control} specifications={[]} />
+        : <ProductSpecification selectedProduct={product} control={control} specifications={[]} />
       }
     </Box>
   )

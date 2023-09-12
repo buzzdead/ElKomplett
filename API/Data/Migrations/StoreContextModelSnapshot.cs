@@ -320,9 +320,6 @@ namespace API.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Brand")
-                        .HasColumnType("text");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -341,7 +338,10 @@ namespace API.Data.Migrations
                     b.Property<int>("QuantityInStock")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("RichDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RichSpecification")
                         .HasColumnType("text");
 
                     b.Property<int>("categoryId")

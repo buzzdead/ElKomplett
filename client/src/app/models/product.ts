@@ -30,6 +30,7 @@ export interface IProduct {
     configurables?: Configurable[]
     configPresets?: {key: string, value: string}[]
     categoryId?: number
+    richDescription?: string
 
   }
 

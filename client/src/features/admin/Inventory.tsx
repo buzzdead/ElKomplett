@@ -18,9 +18,11 @@ import useView from '../../app/hooks/useView'
 import Render from '../../app/layout/Render'
 import LoadingComponent from '../../app/layout/LoadingComponent'
 import { Link } from 'react-router-dom'
+import { useCategory } from 'app/hooks/useCategory'
 
 export default function Inventory() {
-  const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } = useProducts()
+  const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } = useProducts(0)
+  const {category, categoryLoading} = useCategory(0);
   const { view } = useView()
   const dispatch = useAppDispatch()
   //State
@@ -139,7 +141,7 @@ export default function Inventory() {
     ]
   })
 
-  if(!filtersLoaded || !productsLoaded) return <LoadingComponent message={'Loading products...'} />
+  if(!filtersLoaded || !productsLoaded || categoryLoading) return <LoadingComponent message={'Loading products...'} />
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
  
   return (

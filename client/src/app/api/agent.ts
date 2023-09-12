@@ -122,7 +122,8 @@ const Admin = {
   createProducer: (data: any) => requests.postForm('products/AddProducer', createFormData(data)),
   deleteProducer: (name: string) => requests.delete(`products/DeleteProducer/${name}`),
   deleteProductType: (name: string) => requests.delete(`products/DeleteProductType/${name}`),
-  createProductType: (data: any) => requests.postForm('products/AddProductType', createFormData(data))
+  createProductType: (data: any) => requests.postForm('products/AddProductType', createFormData(data)),
+  createDescription: (data: any) => requests.postForm('editor', createFormData(data))
 }
   
 
