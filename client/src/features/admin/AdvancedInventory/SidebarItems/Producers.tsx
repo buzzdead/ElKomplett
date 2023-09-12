@@ -28,15 +28,13 @@ export const Producers = () => {
   const handleSave = async () => {
     const data = { name: editedName }
     if (editedName === '') return
-    const res = await agent.Admin.createProducer(data)
-    console.log(res)
+    await agent.Admin.createProducer(data)
     dispatch(fetchFilters(0))
     setModalOpen(false)
   }
   const handleDelete = async (producer: string) => {
-    const res = await agent.Admin.deleteProducer(producer)
+    await agent.Admin.deleteProducer(producer)
     dispatch(fetchFilters(0))
-    console.log(res)
   }
   return (
     <Box sx={{padding: 5}}>

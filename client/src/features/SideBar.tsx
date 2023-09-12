@@ -21,7 +21,6 @@ export default function SideBar(props: Props) {
   const { productParams, filtersLoaded } = useAppSelector((state) => state.catalog)
   const dispatch = useAppDispatch()
   if(!filtersLoaded) return null;
-  console.log("sidebaring")
   return (
     <div>
       <Paper sx={{ mb: 2, p: 2, bgcolor: 'special' , minWidth: 225}}>

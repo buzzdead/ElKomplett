@@ -60,7 +60,6 @@ export const fetchFilters = createAsyncThunk(
     'catalog/fetchFilters',
     async (id: number, thunkAPI) => {
         try {
-            console.log(id)
             return agent.Catalog.fetchFilters(id)
         }
         catch (error: any) {
