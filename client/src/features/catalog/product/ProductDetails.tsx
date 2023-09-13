@@ -207,13 +207,8 @@ export default function ProductDetails() {
             />
           </Grid>
         </Render>
-        <Grid
-          style={{ padding: view.view.ipad ? 0 : 40}}
-          item
-          xs={10}
-          md={8}
-        >
-          <Card style={{ height: view.view.ipad ? 350 : 475}}>
+        <Grid style={{ padding: view.view.ipad ? 0 : 40 }} item xs={10} md={8}>
+          <Card style={{ height: view.view.ipad ? 350 : 475 }}>
             <CardMedia
               title='asdf'
               component={Paper}
@@ -236,7 +231,7 @@ export default function ProductDetails() {
           {currencyFormat(config?.config?.price || product.price)}
         </Typography>
         <AppTable tableData={tableData} />
-        <Grid item sx={{ marginTop: 4, marginBottom: 4, p: 1, gap: 1, flexDirection: 'column' }}>
+        <Grid item sx={{ marginTop: config ? 4 : 2, marginBottom: config ? 4 : 2, p: 1, gap: 1, flexDirection: 'column' }}>
           <Box sx={{ position: 'absolute', marginTop: -6 }}>
             <ProductConfigs
               product={product}
@@ -249,7 +244,7 @@ export default function ProductDetails() {
             />
           </Box>
         </Grid>
-        <Grid xs={10} item>
+        <Grid xs={12} item>
           <Render
             condition={product?.configurables !== undefined && product.configurables.length > 0}
           >
@@ -260,14 +255,14 @@ export default function ProductDetails() {
               setNewQuantity={setNewQuantity}
               config={config}
             />
-            <Grid xs={12} item sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Grid xs={12} item sx={{ display: 'flex', flexDirection: 'row', gap: 1.5}}>
               {renderQuantityField()}
               {renderUpdateCartButton()}
             </Grid>
           </Render>
         </Grid>
       </Grid>
-      
+
       <Grid
         component={Paper}
         marginBottom={5}
@@ -284,22 +279,24 @@ export default function ProductDetails() {
           justifyContent: 'center',
           flexDirection: 'column',
           width: '100%',
-          marginLeft: view.view.ipad ? 2.5 : 20,
-          marginRight: view.view.ipad ? 0 : 20,
+          marginLeft: view.view.ipad ? 2 : 20,
+          marginRight: view.view.ipad ? 2 : 20,
         }}
       >
         <ProductBottom onChangeValue={setBottomValue} />
-        {bottomValue === 0 ? (
-          product.richDescription !== null ? (
-            <RichTextDisplay richText={product.richDescription} />
+        <Typography variant='subtitle1' sx={{ marginBottom: 5, marginTop: 2, marginRight: 5 }}>
+          {bottomValue === 0 ? (
+            product.richDescription !== null ? (
+              <RichTextDisplay richText={product.richDescription} />
+            ) : (
+              product.description
+            )
+          ) : bottomValue === 1 ? (
+            'Spesifikasjoner kommer'
           ) : (
-            product.description
-          )
-        ) : (
-          <Typography variant='subtitle1' sx={{ marginBottom: 5, marginTop: 2, marginRight: 5 }}>
-            {bottomValue === 1 ? 'Spesifikasjoner kommer' : 'Dokumentasjon kommer'}
-          </Typography>
-        )}
+            'Dokumentasjon kommer'
+          )}
+        </Typography>
       </Grid>
     </Grid>
   )
