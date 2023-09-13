@@ -1,16 +1,16 @@
-# ReStore - Your One Stop Shop
+# ElKomplett
 
-ReStore is a webshop application that allows you to add, view, and purchase products with ease. With CRUD operations, you can add, edit, and delete products, as well as create configurations for each product.
+ElKomplett is a webshop application that allows you to add, view, and purchase products with ease. With CRUD operations, you can add, edit, and delete products, as well as create configurations for each product.
 
 This application is built with React, TypeScript, .NET, and C#. It is hosted on Heroku, so there is no need for installation or setup.
 
 ## Key Features
 
-- CRUD operations for products
+- CRUD operations for products, categories, and product types\producers
 - Create configurations with a key and multiple values
 - Create presets for compositions with multiple keys and values
 - Each configuration has its own pictures, quantity, and price
-- Browsable catalog page with pagination
+- Browsable catalog page with pagination, flexible filter and search field
 - Add products to a basket
 - Purchase products with a fake Stripe card
 
