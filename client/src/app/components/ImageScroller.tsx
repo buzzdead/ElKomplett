@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { List, ListItem, Button, Box } from '@mui/material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowLeft from '@mui/icons-material/ArrowLeft';
+import ArrowRight from '@mui/icons-material/ArrowRight';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Render from 'app/layout/Render';
 
@@ -66,19 +68,23 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
   }, []);
 
   return (
-    <div ref={divRef} onWheel={handleMouseScroll}>
+    <div ref={divRef} onWheel={handleMouseScroll} style={{display: 'flex', flexDirection: horizontal ? 'row' : 'column', justifyContent: 'center', width: '85%'}}>
       <Render condition={images.length > 3}>
       <Button
-        sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}
+        sx={{ display: 'flex', width: horizontal ? '0' : '100%', justifyContent: 'center' }}
         onClick={() => handleScroll('up')}
         disabled={scrollIndex === 0}
       >
-        <ArrowDropUpIcon fontSize='large'/>
+        <Render condition={horizontal}>
+          <ArrowLeft fontSize='large'/>
+          <ArrowDropUpIcon fontSize='large'/>
+        </Render>
+        
       </Button>
       </Render>
       <List style={{overflow: 'hidden', maxHeight: horizontal ? 150 : 375, height: horizontal ? 150 : 450, flexDirection: horizontal ? 'row' : 'column', display: 'flex' }}>
         {images.slice(scrollIndex, scrollIndex + (images.length)).map((image, index) => (
-          <ListItem style={{justifyContent: 'center'}} key={index}>
+          <ListItem style={{justifyContent: 'center', paddingLeft: 5, paddingRight: 5}} key={index}>
             <img
               onClick={() => onPress(image)}
               src={image.pictureUrl}
@@ -88,7 +94,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
                 minHeight: 110,
                 opacity: selectedImageUrl === image.pictureUrl ? 1 : 0.5,
                 cursor: 'pointer',
-                maxWidth: '80%',
+                maxWidth: horizontal ? 75 : 150
               }}
             />
           </ListItem>
@@ -96,11 +102,15 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
       </List>
       <Render condition={images.length > 3}>
       <Button
-        sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}
+        sx={{ display: 'flex', width: horizontal ? '0' : '100%', justifyContent: 'center' }}
         onClick={() => handleScroll('down')}
         disabled={scrollIndex === images.length - 3}
       >
-        <ArrowDropDownIcon fontSize={'large'} />
+         <Render condition={horizontal}>
+          <ArrowRight fontSize='large'/>
+          <ArrowDropDownIcon fontSize={'large'} />
+        </Render>
+       
       </Button>
       </Render>
     </div>

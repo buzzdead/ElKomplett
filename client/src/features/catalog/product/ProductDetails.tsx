@@ -210,17 +210,16 @@ export default function ProductDetails() {
         <Grid
           style={{ padding: view.view.ipad ? 0 : 40}}
           item
-          xs={12}
+          xs={10}
           md={8}
         >
-          <Card style={{ height: view.view.ipad ? 300 : 475, width: '100%'}}>
+          <Card style={{ height: view.view.ipad ? 350 : 475}}>
             <CardMedia
               title='asdf'
               component={Paper}
               image={currentPicture?.pictureUrl || product.images[0].pictureUrl}
               sx={{
                 padding: 20,
-                width: '100%',
                 height: '100%',
                 alignSelf: 'center',
                 backgroundSize: 'cover',
@@ -229,7 +228,7 @@ export default function ProductDetails() {
           </Card>
         </Grid>
       </Grid>
-      <Grid item xs={12} md={5}>
+      <Grid item xs={10} md={4.5}>
         <Typography variant='h3' sx={{ paddingBottom: 2, ...cellStyle }}>
           {product.name}
         </Typography>
@@ -250,7 +249,7 @@ export default function ProductDetails() {
             />
           </Box>
         </Grid>
-        <Grid xs={12} item>
+        <Grid xs={10} item>
           <Render
             condition={product?.configurables !== undefined && product.configurables.length > 0}
           >
@@ -268,23 +267,24 @@ export default function ProductDetails() {
           </Render>
         </Grid>
       </Grid>
-
+      
       <Grid
         component={Paper}
         marginBottom={5}
         marginTop={5}
         elevation={1}
         item
-        xs={12}
+        xs={10}
         sx={{
           backgroundImage: 'none',
           bgcolor: 'background.paper',
           borderRadius: 15,
           minHeight: 250,
           display: 'flex',
+          justifyContent: 'center',
           flexDirection: 'column',
           width: '100%',
-          marginLeft: view.view.ipad ? 0 : 20,
+          marginLeft: view.view.ipad ? 2.5 : 20,
           marginRight: view.view.ipad ? 0 : 20,
         }}
       >

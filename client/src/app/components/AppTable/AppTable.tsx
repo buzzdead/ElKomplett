@@ -23,7 +23,8 @@ const cellStyle = {
   WebkitLineClamp: 2,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-  maxHeight: '60px'
+  maxHeight: '60px',
+  minHeight: '60px'
 };
 
 export default function AppTable({tableData, sx, component}: Props) {
