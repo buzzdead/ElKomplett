@@ -77,7 +77,7 @@ export default function Catalog() {
         <SideBar producers={producers} productTypes={productTypes} />
         </Render>
       </Grid>
-      <Grid item xs={12} md={9}>
+      <Grid item xs={11} md={9}>
         <ProductList loadingCondition={!filtersLoaded || categoryLoading || !productsLoaded} products={products} />
       </Grid>
       <Grid item xs={3} />

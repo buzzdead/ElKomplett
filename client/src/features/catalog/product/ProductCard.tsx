@@ -22,6 +22,7 @@ import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { blue, green, lightGreen } from '@mui/material/colors'
 import Render from 'app/layout/Render'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import useView from 'app/hooks/useView'
 
 interface Props {
   product: IProduct
@@ -30,6 +31,7 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const { status } = useAppSelector(state => state.basket)
   const dispatch = useAppDispatch()
+  const view = useView()
   const { basket } = useAppSelector((state) => state.basket)
   const cellStyle = {
     display: '-webkit-box',
@@ -61,7 +63,7 @@ export default function ProductCard({ product }: Props) {
       <CardContent sx={{paddingTop: 1, paddingBottom: 0}}>
         <Box sx={{display: 'flex', flexDirection: 'row', gap: 2}}>
         <Typography sx={{textDecoration: 'line-through'}} gutterBottom variant='h5' color='text.primary'>
-          {currencyFormat(product.price)}
+          {view.view.ipad ? '' : currencyFormat(product.price)}
         </Typography>
         <Typography gutterBottom variant='h6' color='secondary'>
           {currencyFormat(product.price  * 0.9)}

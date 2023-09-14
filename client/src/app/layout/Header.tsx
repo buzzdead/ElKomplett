@@ -55,7 +55,6 @@ const rightLinks = (condition: any) => [
 
 const navStyles = {
   color: 'inherit',
-  width: '125px',
   textDecoration: 'none',
   typography: 'h6',
   '&:hover': {
@@ -101,7 +100,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
         <List sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 5 }}>
           <Render condition={!view.ipad} ignoreTernary>
             {midLinks.map(({ title, path }) => (
-              <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
+              <ListItem component={NavLink} to={path} key={path} sx={{...navStyles, width: '125px'}}>
                 {title.toUpperCase()}
               </ListItem>
             ))}
@@ -136,7 +135,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             <SignedInMenu />
             <List sx={{ display: 'flex'}}>
               {rightLinks(!view.ipad).map(({title, condition, path }) => (
-                <ListItem component={NavLink} to={path} key={path} sx={navStyles}>
+                <ListItem component={NavLink} to={path} key={path} sx={{...navStyles, width: !view.ipad ? '125px' : ''}}>
                   {condition && title.toUpperCase()}
                 </ListItem>
               ))}

@@ -104,7 +104,7 @@ export default function Category() {
         <SideBar producers={producers} productTypes={productTypes} />
         </Render>
       </Grid>
-      <Grid item xs={12} >
+      <Grid item xs={11} >
         <ProductList loadingCondition={categoryLoading} products={products} />
       </Grid>
       </Grid>

@@ -24,7 +24,7 @@ export const LowResMenu = ({links}: Props) => {
     return (
         <div>
           <Button color='inherit' sx={{typography: 'h6'}} onClick={handleClick}><MenuIcon sx={{color: 'white'}} fontSize='large'/></Button>
-          <Menu anchorEl={anchorEl} open={open} onClose={handleClose} TransitionComponent={Fade}>
+          <Menu disableScrollLock anchorEl={anchorEl} open={open} onClose={handleClose} TransitionComponent={Fade}>
             {links.map(l => {return l.condition && <MenuItem key={l.title} component={Link} to={l.path}>{l.title}</MenuItem>})}
           </Menu>
         </div>
