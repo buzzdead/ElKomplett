@@ -5,6 +5,7 @@ import RadioButtonGroup from '../app/components/RadioButtonGroup'
 import { useAppDispatch, useAppSelector } from '../app/store/configureStore'
 import { setProductParams } from './catalog/catalogSlice'
 import Render from 'app/layout/Render'
+import './catalog/catalog.css'
 
 interface Props {
     producers: string[]

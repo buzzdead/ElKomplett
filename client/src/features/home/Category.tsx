@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardMedia, Grid, Skeleton, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, CardMedia, Grid, Skeleton, Typography } from '@mui/material'
 import useProducts from 'app/hooks/useProducts'
 import LoadingComponent from 'app/layout/LoadingComponent'
 import SideBar from 'features/SideBar'
@@ -10,12 +10,20 @@ import { useCategories } from 'app/hooks/useCategories'
 import { Link } from 'react-router-dom'
 import './category.css'
 import useView from 'app/hooks/useView'
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { SidebarModal } from 'features/catalog/SidebarModal'
+import { useState } from 'react'
 
 export default function Category() {
  
   const { category, categoryLoading } = useCategory()
   const { products, productsLoaded, producers, productTypes } = useProducts(category.id, categoryLoading)
   const { categories, categoriesLoading } = useCategories()
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
+  const toggleFilterModal = () => {
+    setShowFilterModal(!showFilterModal);
+  };
   const view = useView()
   if(categoryLoading) return null;
   return (
@@ -98,11 +106,20 @@ export default function Category() {
           </CardContent>
           </Render>
         </Card>
+        <Box display='flex' flexDirection={view.view.ipad ? 'row' : 'column'}>
+
         
         <ProductSearch />
         <Render condition={!view.view.mobile}>
         <SideBar producers={producers} productTypes={productTypes} />
+        <Button onClick={toggleFilterModal}>
+        <FilterListIcon sx={{ height: 40, width: 40, display: 'flex', alignSelf: 'center', marginBottom: 2, position: 'absolute', right: 15}} fontSize='large' />
+        </Button>
         </Render>
+        <Render condition={view.view.ipad}>
+          <SidebarModal onClose={toggleFilterModal} producers={producers} productTypes={productTypes} showModal={showFilterModal}/>
+        </Render>
+        </Box>
       </Grid>
       <Grid item xs={11} >
         <ProductList loadingCondition={categoryLoading} products={products} />

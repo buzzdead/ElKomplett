@@ -1,8 +1,8 @@
-import { Grid, Skeleton, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import { Button, Grid, Skeleton, Typography } from '@mui/material'
+import React from 'react'
 import LoadingComponent from '../../app/layout/LoadingComponent'
 import { useAppDispatch } from '../../app/store/configureStore'
-import { setPageNumber, setProductParams } from './catalogSlice'
+import { setPageNumber } from './catalogSlice'
 import AppPagination from '../../app/components/AppPagination'
 import useProducts from '../../app/hooks/useProducts'
 import SideBar from '../SideBar'
@@ -14,6 +14,8 @@ import { Link } from 'react-router-dom'
 import { useCategories } from 'app/hooks/useCategories'
 import './catalog.css'
 import useView from 'app/hooks/useView'
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { SidebarModal } from './SidebarModal'
 
 export default function Catalog() {
   const { products, producers, productTypes, filtersLoaded, metaData, productsLoaded } = useProducts()
@@ -21,6 +23,11 @@ export default function Catalog() {
   const {category, categoryLoading} = useCategory(0)
   const {categories, categoriesLoading} = useCategories()
   const view = useView()
+  const [showFilterModal, setShowFilterModal] = React.useState(false);
+
+  const toggleFilterModal = () => {
+    setShowFilterModal(!showFilterModal);
+  };
 
   if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading categories'} />
 
@@ -71,10 +78,16 @@ export default function Catalog() {
           </Grid>
         </Render>
       
-      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={8}>
+      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={8} display={'flex'} flexDirection={view.view.mobile ? 'row' : 'column'}>
         <ProductSearch />
         <Render condition={!view.view.mobile}>
         <SideBar producers={producers} productTypes={productTypes} />
+        <Button onClick={toggleFilterModal}>
+        <FilterListIcon sx={{ height: 40, width: 40, display: 'flex', alignSelf: 'center', marginBottom: 2, position: 'absolute', right: 15}} fontSize='large' />
+        </Button>
+        </Render>
+        <Render condition={view.view.ipad}>
+          <SidebarModal onClose={toggleFilterModal} producers={producers} productTypes={productTypes} showModal={showFilterModal}/>
         </Render>
       </Grid>
       <Grid item xs={11} md={9}>
