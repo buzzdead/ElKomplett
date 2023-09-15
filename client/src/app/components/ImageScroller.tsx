@@ -82,7 +82,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
         
       </Button>
       </Render>
-      <List style={{overflow: 'hidden', maxHeight: horizontal ? 150 : 375, height: horizontal ? 150 : 450, flexDirection: horizontal ? 'row' : 'column', display: 'flex' }}>
+      <List style={{overflow: 'hidden', maxWidth: horizontal ? 220 : 400, maxHeight: horizontal ? 150 : 375, height: horizontal ? 150 : 450, flexDirection: horizontal ? 'row' : 'column', display: 'flex' }}>
         {images.slice(scrollIndex, scrollIndex + (images.length)).map((image, index) => (
           <ListItem style={{justifyContent: 'center', paddingLeft: 5, paddingRight: 5}} key={index}>
             <img
@@ -94,7 +94,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
                 minHeight: 110,
                 opacity: selectedImageUrl === image.pictureUrl ? 1 : 0.5,
                 cursor: 'pointer',
-                maxWidth: horizontal ? 75 : 150
+                maxWidth: horizontal ? 62.5 : 150
               }}
             />
           </ListItem>

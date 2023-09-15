@@ -110,7 +110,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               !view.ipad && user && AuthorisedRoles.some((role) => user.roles?.includes(role))
             }
           >
-            <ListItem component={NavLink} to={'/inventory'} sx={navStyles}>
+            <ListItem component={NavLink} to={'/inventory'} sx={{...navStyles, width: ''}}>
               INNHOLD
             </ListItem>
           </Render>
