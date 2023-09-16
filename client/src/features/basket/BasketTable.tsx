@@ -42,17 +42,20 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   }
 
   const quantity = (item: BasketItem) => {
+    const stat = item.configId ? 'pendingRemoveItem' + item.productId + '-' + item.configId + 'rem' : 'pendingRemoveItem' + item.productId +  'rem'
+    const addStat = item.configId ? 'pendingAddItem' + item.productId + '-' + item.configId : 'pendingAddItem' + item.productId
     return (
       <>
         <LoadingButton
-          loading={status === 'pendingRemoveItem' + item.productId + 'rem'}
+          loading={status === stat}
           color='error'
           onClick={() =>
             dispatch(
               removeBasketItemAsync({
                 productId: item.productId,
                 quantity: 1,
-                name: 'rem',
+                configId: item.configId,
+                name: item.configId ? '-' + item.configId + 'rem' : 'rem',
               }),
             )
           }
@@ -62,9 +65,9 @@ export default function BasketTable({ items, isBasket = true }: Props) {
         {item.quantity}
         {isBasket && (
           <LoadingButton
-            loading={status === 'pendingAddItem' + item.productId}
+            loading={status === addStat}
             color='secondary'
-            onClick={() => dispatch(addBasketItemAsync({ productId: item.productId, quantity: 1 }))}
+            onClick={() => dispatch(addBasketItemAsync({ productId: item.productId, quantity: 1, configId: item.configId }))}
           >
             <Add />
           </LoadingButton>

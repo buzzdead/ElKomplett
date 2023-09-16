@@ -64,7 +64,8 @@ export const basketSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(addBasketItemAsync.pending, (state, action) => {
-      state.status = 'pendingAddItem' + action.meta.arg.productId
+      const stat = action.meta.arg.configId ? 'pendingAddItem' + action.meta.arg.productId + '-' + action.meta.arg.configId : 'pendingAddItem' + action.meta.arg.productId
+      state.status = stat
     })
     builder.addCase(removeBasketItemAsync.pending, (state, action) => {
       state.status = 'pendingRemoveItem' + action.meta.arg.productId + action.meta.arg.name
