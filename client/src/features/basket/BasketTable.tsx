@@ -74,16 +74,18 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   }
 
   const deleteButton = (item: BasketItem) => {
+    const stat = item.configId ? 'pendingRemoveItem' + item.productId + '-' + item.configId + 'del' : 'pendingRemoveItem' + item.productId + 'del'  
     return (
       <LoadingButton
-        loading={status === 'pendingRemoveItem' + item.productId + 'del'}
+        loading={status === stat}
         color='error'
         onClick={() =>
           dispatch(
             removeBasketItemAsync({
               productId: item.productId,
               quantity: item.quantity,
-              name: 'del',
+              configId: item.configId,
+              name: item.configId ? '-' + item.configId + 'del' : 'del',
             }),
           )
         }

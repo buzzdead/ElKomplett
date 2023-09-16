@@ -24,15 +24,26 @@ namespace API.Entities
             }
 
             else {
-            var existingItem = Items.FirstOrDefault(item => item.ProductId == product.Id);
-            if(existingItem != null && existingItem.ConfigId != configId) Items.Add(new BasketItem{Product = product, Quantity = quantity, ConfigId = configId});
-            else existingItem.Quantity += quantity;
+            var existingItems = Items.Where(item => item.ProductId == product.Id).ToList();
+            if(configId > 0) {
+                if(existingItems.All(eI => eI.ConfigId != configId)){
+                   Items.Add(new BasketItem{Product = product, Quantity = quantity, ConfigId = configId});
+                    
+                   }
+                 else 
+                 {
+                 var EI = existingItems.Find(eI => eI.ConfigId == configId);
+                 EI.Quantity += quantity;
+                 }
+            }
+            else existingItems[0].Quantity += quantity;
+
             }
         }
 
-        public void RemoveItem(int productId, int quantity) 
+        public void RemoveItem(int productId, int quantity, int configId) 
         {
-            var item = Items.FirstOrDefault(item => item.ProductId == productId);
+            var item = configId > 0 ? Items.FirstOrDefault(item => item.ProductId == productId && item.ConfigId == configId) : Items.FirstOrDefault(item => item.ProductId == productId);
             if (item == null) return;
             item.Quantity -= quantity;
             if(item.Quantity <= 0) Items.Remove(item);

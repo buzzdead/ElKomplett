@@ -16,9 +16,9 @@ import { IRadioButton, ProductConfigs } from './ProductConfigs'
 import ImageScroller from 'app/components/ImageScroller'
 import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
-import { ProductQuantity } from './ProductQuantity'
 import useView from 'app/hooks/useView'
 import { RichTextDisplay } from 'app/components/RichTextDisplay'
+import { BasketItem } from 'app/models/basket'
 
 type Config = {
   id?: number
@@ -50,18 +50,27 @@ export default function ProductDetails() {
       : null,
   )
   const [bottomValue, setBottomValue] = useState(0)
-  const view = useView()
-
-  const basketItem = basket?.items.find(
-    (i: { productId: number | undefined }) => i.productId === product?.id,
+  const [basketItem, setBasketItem] = useState<BasketItem | undefined>(
+    basket?.items.find((i: { productId: number | undefined }) => i.productId === product?.id),
   )
 
+  const view = useView()
+
   useEffect(() => {
-    if (basketItem && !basketItem.configurables) {
+    if (basketItem) {
       setNewQuantity(basketItem.quantity)
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))
   }, [id, basketItem, dispatch, product])
+  useEffect(() => {
+    const basketI = basket?.items.filter(
+      (i: { productId: number | undefined }) => i.productId === product?.id,
+    )
+
+    if (basketI !== undefined && basketI.length > 0)
+      setBasketItem(basketI.find((e) => e.configId === config?.id))
+    else basketI !== undefined && setBasketItem(basketI[0])
+  }, [basket])
 
   function handleInputChange(event: any) {
     if (event.target.value >= 0) {
@@ -84,10 +93,8 @@ export default function ProductDetails() {
     const addToCart = !basketItem || newQuantity > basketItem.quantity
 
     addToCart
-      ? config
-        ? dispatch(addBasketItemAsync({ productId, quantity, configId: config.id }))
-        : dispatch(addBasketItemAsync({ productId, quantity }))
-      : dispatch(removeBasketItemAsync({ productId, quantity }))
+      ? dispatch(addBasketItemAsync({ productId, quantity, configId: config?.id }))
+      : dispatch(removeBasketItemAsync({ productId, quantity, configId: config?.id }))
   }
 
   const isTheRightOne = (a: string, b: string) => {
@@ -110,8 +117,15 @@ export default function ProductDetails() {
     const currentConfig = product?.configurables?.find((e) =>
       isTheRightOne(e.value, newConfigValue),
     )
-    if (currentConfig)
+    if (currentConfig) {
       setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
+    }
+    const basketItems = basket?.items.filter(
+      (i: { productId: number | undefined }) => i.productId === product?.id,
+    )
+    const bItem = basketItems?.find((e) => e.configId === currentConfig?.id)
+    setBasketItem(bItem)
+    setNewQuantity(bItem?.quantity || 0)
     setCurrentPicture(currentConfig?.images[0])
   }
 
@@ -165,7 +179,7 @@ export default function ProductDetails() {
       <Grid item xs={6} md={4}>
         <LoadingButton
           disabled={quantityChanged}
-          loading={status.includes('pendingFetchProduct')}
+          loading={status.includes('pending')}
           onClick={handleUpdateCart}
           sx={{ height: '55px' }}
           color='primary'
@@ -231,7 +245,16 @@ export default function ProductDetails() {
           {currencyFormat(config?.config?.price || product.price)}
         </Typography>
         <AppTable tableData={tableData} />
-        <Grid item sx={{ marginTop: config ? 4 : 2, marginBottom: config ? 4 : 2, p: 1, gap: 1, flexDirection: 'column' }}>
+        <Grid
+          item
+          sx={{
+            marginTop: config ? 4 : 2,
+            marginBottom: config ? 4 : 2,
+            p: 1,
+            gap: 1,
+            flexDirection: 'column',
+          }}
+        >
           <Box sx={{ position: 'absolute', marginTop: -6 }}>
             <ProductConfigs
               product={product}
@@ -245,21 +268,10 @@ export default function ProductDetails() {
           </Box>
         </Grid>
         <Grid xs={12} item>
-          <Render
-            condition={product?.configurables !== undefined && product.configurables.length > 0}
-          >
-            <ProductQuantity
-              basketItem={basketItem}
-              productId={product.id}
-              newQuantity={newQuantity}
-              setNewQuantity={setNewQuantity}
-              config={config}
-            />
-            <Grid xs={12} item sx={{ display: 'flex', flexDirection: 'row', gap: 1.5}}>
-              {renderQuantityField()}
-              {renderUpdateCartButton()}
-            </Grid>
-          </Render>
+          <Grid xs={12} item sx={{ display: 'flex', flexDirection: 'row', gap: 1.5 }}>
+            {renderQuantityField()}
+            {renderUpdateCartButton()}
+          </Grid>
         </Grid>
       </Grid>
 

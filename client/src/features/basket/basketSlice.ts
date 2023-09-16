@@ -37,10 +37,10 @@ export const addBasketItemAsync = createAsyncThunk<
 
 export const removeBasketItemAsync = createAsyncThunk<
   void,
-  { productId: number; quantity: number; name?: string }
->('basket/removeBasketItemAsync', async ({ productId, quantity }, thunkAPI) => {
+  { productId: number; quantity: number; name?: string, configId?: number }
+>('basket/removeBasketItemAsync', async ({ productId, quantity, configId }, thunkAPI) => {
   try {
-    await agent.Basket.removeItem(productId, quantity)
+    await agent.Basket.removeItem(productId, quantity, configId)
   } catch (error: any) {
     return thunkAPI.rejectWithValue({ error: error.data })
   }
@@ -70,9 +70,10 @@ export const basketSlice = createSlice({
       state.status = 'pendingRemoveItem' + action.meta.arg.productId + action.meta.arg.name
     })
     builder.addCase(removeBasketItemAsync.fulfilled, (state, action) => {
-      const { productId, quantity } = action.meta.arg
+      const { productId, quantity, configId } = action.meta.arg
 
-      const itemIndex = state.basket?.items.findIndex((i) => i.productId === productId)
+      var itemIndex = state.basket?.items.findIndex((i) => i.productId === productId && i.configId === configId)
+      
       if (itemIndex === -1 || itemIndex === undefined) return
       state.basket!.items[itemIndex].quantity -= quantity
       if (state.basket?.items[itemIndex].quantity === 0) state.basket.items.splice(itemIndex, 1)
