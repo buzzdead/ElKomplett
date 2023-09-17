@@ -6,7 +6,7 @@ import React from 'react'
 interface Props {
   newQuantity: number
   handleUpdateCart: () => void
-  updateState: (newQuantity: 'newQuantity', n: number) => void
+  updateState: (newQuantity: 'newQuantity', n: number | string) => void
   basketItem: BasketItem | undefined
   quantityChanged: boolean
   status: string
@@ -22,7 +22,7 @@ export const ShoppingField = ({
 }: Props) => {
 
     function handleInputChange(event: any) {
-       updateState('newQuantity', parseInt(event.target.value))
+       parseInt(event.target.value) > 0 ? updateState('newQuantity', parseInt(event.target.value)) : updateState('newQuantity', '')
     }
 
   return (

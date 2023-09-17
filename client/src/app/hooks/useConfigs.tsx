@@ -18,7 +18,7 @@ export interface ConfigsState {
           publicId?: string | undefined
         }
       | undefined
-    newQuantity: number
+    newQuantity: number | string
   }
 
 interface Props {

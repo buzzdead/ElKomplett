@@ -29,9 +29,11 @@ export const Configuring = React.forwardRef(({ basket, product, status, modal=fa
   };
   const dispatch = useAppDispatch()
   function handleUpdateCart() {
-    const quantity = Math.abs(state.newQuantity - (state.basketItem?.quantity || 0))
+    const abc = state.newQuantity as number
+    if (typeof abc !== 'number' || abc < 0) {updateState('newQuantity', state.basketItem?.quantity || 0); return;}
+    const quantity = Math.abs(state.newQuantity as number - (state.basketItem?.quantity || 0))
     const productId: number = product?.id as number
-    const addToCart = !state.basketItem || state.newQuantity > state.basketItem.quantity
+    const addToCart = !state.basketItem || state.newQuantity as number > state.basketItem.quantity
 
     addToCart
       ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
@@ -77,10 +79,10 @@ export const Configuring = React.forwardRef(({ basket, product, status, modal=fa
             state.basketItem?.quantity === state.newQuantity ||
             (!state.basketItem && state.newQuantity === 0)
           }
-          newQuantity={state.newQuantity}
+          newQuantity={state.newQuantity as number}
           status={status}
           handleUpdateCart={handleUpdateCart}
-          updateState={(newQuantity: 'newQuantity', n: number) => updateState('newQuantity', n)}
+          updateState={(newQuantity: 'newQuantity', n: number | string) => updateState('newQuantity', n)}
           basketItem={state.basketItem}
         />
         </Box>
