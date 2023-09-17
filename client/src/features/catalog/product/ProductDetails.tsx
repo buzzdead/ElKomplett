@@ -93,7 +93,6 @@ export default function ProductDetails() {
   const handleOnPress = (img: { pictureUrl: string }) => {
     updateState('currentPicture', img)
   }
-
   return (
     <Grid container spacing={6} sx={{ marginTop: 0, marginLeft: 0 }}>
       <Grid

@@ -32,8 +32,8 @@ export const useConfigs = ({basket, product}: Props) => {
   )
 
     const [state, setState] = useState<ConfigsState>({
-        basketItem: basketI,
-        newQuantity: basketI?.quantity || 0,
+        basketItem: undefined,
+        newQuantity: product?.configurables && basketI?.configId === product?.configurables[0]?.id ? basketI?.quantity || 0 : 0,
         currentPicture:
           product?.configurables && product.configurables.length > 0
             ? product.configurables[0].images[0]

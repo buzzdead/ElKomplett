@@ -15,78 +15,100 @@ interface Props {
   modal?: boolean
 }
 
-export const Configuring = React.forwardRef(({ basket, product, status, modal=false }: Props, ref) => {
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
-  const dispatch = useAppDispatch()
-  function handleUpdateCart() {
-    const abc = state.newQuantity as number
-    if (typeof abc !== 'number' || abc < 0) {updateState('newQuantity', state.basketItem?.quantity || 0); return;}
-    const quantity = Math.abs(state.newQuantity as number - (state.basketItem?.quantity || 0))
-    const productId: number = product?.id as number
-    const addToCart = !state.basketItem || state.newQuantity as number > state.basketItem.quantity
-
-    addToCart
-      ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
-      : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
-  }
-  const { state, setState, updateState } = useConfigs({ basket: basket, product: product })
-  useEffect(() => {
-    if (state.basketItem) {
-      updateState('newQuantity', state.basketItem.quantity)
+export const Configuring = React.forwardRef(
+  ({ basket, product, status, modal = false }: Props, ref) => {
+    const style = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: 400,
+      bgcolor: 'background.paper',
+      border: '2px solid #000',
+      boxShadow: 24,
+      p: 4,
     }
-  }, [state.basketItem, dispatch, product])
-  useEffect(() => {
-    const basketI = basket?.items.filter(
-      (i: { productId: number | undefined }) => i.productId === product?.id,
-    )
-
-    if (basketI !== undefined && basketI.length > 0)
-      updateState(
-        'basketItem',
-        basketI.find((e) => e.configId === state.config?.id),
-      )
-    else basketI !== undefined && updateState('basketItem', basketI[0])
-  }, [basket])
-  
-  return (
-    <Box sx={style}>
-    <ProductConfigs
-      product={product}
-      modal={modal}
-      updateState={setState}
-      defaultConfig={
-        state.config && state.config.config
-          ? { key: state.config.config.key, checkedValue: state.config?.value }
-          : { key: '', checkedValue: '' }
+    const dispatch = useAppDispatch()
+    function handleUpdateCart() {
+      const abc = state.newQuantity as number
+      if (typeof abc !== 'number' || abc < 0) {
+        updateState('newQuantity', state.basketItem?.quantity || 0)
+        return
       }
-      basket={basket}
-    />
-    <Box sx={{display: 'flex', width: '100%', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
-    <img style={{marginBottom: 20}} width={200} height={200} src={product.configurables?.find(e => e.id === state.config?.id)?.images[0].pictureUrl}/>
-    
-    <ShoppingField
-          quantityChanged={
-            state.basketItem?.quantity === state.newQuantity ||
-            (!state.basketItem && state.newQuantity === 0)
-          }
-          newQuantity={state.newQuantity as number}
-          status={status}
-          handleUpdateCart={handleUpdateCart}
-          updateState={(newQuantity: 'newQuantity', n: number | string) => updateState('newQuantity', n)}
-          basketItem={state.basketItem}
-        />
-        </Box>
-    </Box>
+      const quantity = Math.abs((state.newQuantity as number) - (state.basketItem?.quantity || 0))
+      const productId: number = product?.id as number
+      const addToCart =
+        !state.basketItem || (state.newQuantity as number) > state.basketItem.quantity
 
-  )
-})
+      addToCart
+        ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
+        : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
+    }
+    const { state, setState, updateState } = useConfigs({ basket: basket, product: product })
+    useEffect(() => {
+      if (state.basketItem) {
+        updateState('newQuantity', state.basketItem.quantity)
+      }
+    }, [state.basketItem, dispatch, product])
+    useEffect(() => {
+      const basketI = basket?.items.filter(
+        (i: { productId: number | undefined }) => i.productId === product?.id,
+      )
+
+      if (basketI !== undefined && basketI.length > 0)
+        updateState(
+          'basketItem',
+          basketI.find((e) => e.configId === state.config?.id),
+        )
+      else basketI !== undefined && updateState('basketItem', basketI[0])
+    }, [basket])
+
+    return (
+      <Box sx={style}>
+        <ProductConfigs
+          product={product}
+          modal={modal}
+          updateState={setState}
+          defaultConfig={
+            state.config && state.config.config
+              ? { key: state.config.config.key, checkedValue: state.config?.value }
+              : { key: '', checkedValue: '' }
+          }
+          basket={basket}
+        />
+        <Box
+          sx={{
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            style={{ marginBottom: 20 }}
+            width={200}
+            height={200}
+            src={
+              product.configurables?.find((e) => e.id === state.config?.id)?.images[0].pictureUrl
+            }
+          />
+
+          <ShoppingField
+            quantityChanged={
+              state.basketItem?.quantity === state.newQuantity ||
+              (!state.basketItem && state.newQuantity === 0)
+            }
+            newQuantity={state.newQuantity as number}
+            status={status}
+            handleUpdateCart={handleUpdateCart}
+            updateState={(newQuantity: 'newQuantity', n: number | string) =>
+              updateState('newQuantity', n)
+            }
+            basketItem={state.basketItem}
+          />
+        </Box>
+      </Box>
+    )
+  },
+)
