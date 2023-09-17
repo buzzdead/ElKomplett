@@ -22,7 +22,7 @@ export const ShoppingField = ({
 }: Props) => {
 
     function handleInputChange(event: any) {
-       parseInt(event.target.value) > 0 ? updateState('newQuantity', parseInt(event.target.value)) : updateState('newQuantity', '')
+       parseInt(event.target.value) >= 0 ? updateState('newQuantity', parseInt(event.target.value)) : updateState('newQuantity', '')
     }
 
   return (
