@@ -1,30 +1,23 @@
-import { Box, Card, CardMedia, Grid, Paper, TextField, Typography } from '@mui/material'
+import { Box, Card, CardMedia, Grid, Paper, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
 import NotFound from '../../../app/errors/NotFound'
 import LoadingComponent from '../../../app/layout/LoadingComponent'
-import { LoadingButton } from '@mui/lab'
 import { useAppDispatch, useAppSelector } from '../../../app/store/configureStore'
 import { addBasketItemAsync, removeBasketItemAsync } from '../../basket/basketSlice'
 import { fetchProductAsync, productSelectors } from '.././catalogSlice'
 import { currencyFormat } from '../../../app/util/util'
 import AppTable, { TableData } from '../../../app/components/AppTable/AppTable'
-import { Configurable } from '../../../app/models/product'
 import './Product.css'
-import { IRadioButton, ProductConfigs } from './ProductConfigs'
+import { ProductConfigs } from './ProductConfigs'
 import ImageScroller from 'app/components/ImageScroller'
 import Render from 'app/layout/Render'
 import ProductBottom from './ProductBottom'
 import useView from 'app/hooks/useView'
 import { RichTextDisplay } from 'app/components/RichTextDisplay'
-import { BasketItem } from 'app/models/basket'
-
-type Config = {
-  id?: number
-  value: string
-  config: Configurable
-}
+import { useConfigs } from 'app/hooks/useConfigs'
+import { ShoppingField } from './ShoppingField'
 
 export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
@@ -33,100 +26,38 @@ export default function ProductDetails() {
 
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
-  const [currentPicture, setCurrentPicture] = useState(
-    product?.configurables && product.configurables.length > 0
-      ? product.configurables[0].images[0]
-      : product?.images[0],
-  )
 
-  const [newQuantity, setNewQuantity] = useState(0)
-  const [config, setConfig] = useState<Config | null>(
-    product?.configurables
-      ? {
-          config: product.configurables[0],
-          id: product.configurables[0]?.id || 0,
-          value: product.configurables[0]?.value,
-        }
-      : null,
-  )
   const [bottomValue, setBottomValue] = useState(0)
-  const [basketItem, setBasketItem] = useState<BasketItem | undefined>(
-    basket?.items.find((i: { productId: number | undefined }) => i.productId === product?.id),
-  )
-
   const view = useView()
+  const { state, setState, updateState } = useConfigs({ basket: basket, product: product })
 
   useEffect(() => {
-    if (basketItem) {
-      setNewQuantity(basketItem.quantity)
+    if (state.basketItem) {
+      updateState('newQuantity', state.basketItem.quantity)
     }
     if (!product) dispatch(fetchProductAsync(parseInt(id!)))
-  }, [id, basketItem, dispatch, product])
+  }, [id, state.basketItem, dispatch, product])
   useEffect(() => {
     const basketI = basket?.items.filter(
       (i: { productId: number | undefined }) => i.productId === product?.id,
     )
 
     if (basketI !== undefined && basketI.length > 0)
-      setBasketItem(basketI.find((e) => e.configId === config?.id))
-    else basketI !== undefined && setBasketItem(basketI[0])
+      updateState(
+        'basketItem',
+        basketI.find((e) => e.configId === state.config?.id),
+      )
+    else basketI !== undefined && updateState('basketItem', basketI[0])
   }, [basket])
 
-  function handleInputChange(event: any) {
-    if (event.target.value >= 0) {
-      setNewQuantity(parseInt(event.target.value))
-    }
-  }
-
-  const cellStyle = {
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 2,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    maxHeight: '60px',
-  }
-
   function handleUpdateCart() {
-    const quantity = Math.abs(newQuantity - (basketItem?.quantity || 0))
+    const quantity = Math.abs(state.newQuantity - (state.basketItem?.quantity || 0))
     const productId: number = product?.id as number
-    const addToCart = !basketItem || newQuantity > basketItem.quantity
+    const addToCart = !state.basketItem || state.newQuantity > state.basketItem.quantity
 
     addToCart
-      ? dispatch(addBasketItemAsync({ productId, quantity, configId: config?.id }))
-      : dispatch(removeBasketItemAsync({ productId, quantity, configId: config?.id }))
-  }
-
-  const isTheRightOne = (a: string, b: string) => {
-    const arrayA = a.split(' ')
-    const arrayB = b.split(' ')
-
-    if (arrayA.length !== arrayB.length) {
-      return false
-    }
-
-    const sortedArrayA = arrayA.sort()
-    const sortedArrayB = arrayB.sort()
-
-    return sortedArrayA.every((value, index) => value === sortedArrayB[index])
-  }
-
-  function onConfigChange(updatedWithNewValue: IRadioButton[]) {
-    const newConfig = updatedWithNewValue.filter((e) => e.checkedValue !== '')
-    const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
-    const currentConfig = product?.configurables?.find((e) =>
-      isTheRightOne(e.value, newConfigValue),
-    )
-    if (currentConfig) {
-      setConfig({ config: currentConfig, value: currentConfig.value, id: currentConfig.id })
-    }
-    const basketItems = basket?.items.filter(
-      (i: { productId: number | undefined }) => i.productId === product?.id,
-    )
-    const bItem = basketItems?.find((e) => e.configId === currentConfig?.id)
-    setBasketItem(bItem)
-    setNewQuantity(bItem?.quantity || 0)
-    setCurrentPicture(currentConfig?.images[0])
+      ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
+      : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
   }
 
   if (productStatus.includes('pendingFetchProduct'))
@@ -151,50 +82,14 @@ export default function ProductDetails() {
     {
       key: 'Lagerstatus',
       value:
-        config && config.config && config.config.quantityInStock
-          ? config?.config.quantityInStock
+        state.config && state.config.config && state.config.config.quantityInStock
+          ? state.config?.config.quantityInStock
           : product.quantityInStock,
     },
   ]
 
-  const renderQuantityField = () => {
-    return (
-      <Grid item xs={6} md={4}>
-        <TextField
-          variant='outlined'
-          type='number'
-          label='Quantity in Cart'
-          onChange={handleInputChange}
-          fullWidth
-          value={newQuantity}
-        />
-      </Grid>
-    )
-  }
-
-  const renderUpdateCartButton = () => {
-    const quantityChanged =
-      basketItem?.quantity === newQuantity || (!basketItem && newQuantity === 0)
-    return (
-      <Grid item xs={6} md={4}>
-        <LoadingButton
-          disabled={quantityChanged}
-          loading={status.includes('pending')}
-          onClick={handleUpdateCart}
-          sx={{ height: '55px' }}
-          color='primary'
-          size='large'
-          variant='contained'
-          fullWidth
-        >
-          {basketItem ? 'Update Quantity' : 'Add to cart'}
-        </LoadingButton>
-      </Grid>
-    )
-  }
-
   const handleOnPress = (img: { pictureUrl: string }) => {
-    setCurrentPicture(img)
+    updateState('currentPicture', img)
   }
 
   return (
@@ -215,9 +110,11 @@ export default function ProductDetails() {
           <Grid item xs={12} md={4} sx={{ overflow: 'hidden' }}>
             <ImageScroller
               horizontal={view.view.ipad}
-              selectedImageUrl={currentPicture?.pictureUrl || ''}
+              selectedImageUrl={state.currentPicture?.pictureUrl || ''}
               onPress={handleOnPress}
-              images={config && config?.config ? config.config.images : product.images}
+              images={
+                state.config && state.config?.config ? state.config.config.images : product.images
+              }
             />
           </Grid>
         </Render>
@@ -226,7 +123,7 @@ export default function ProductDetails() {
             <CardMedia
               title='asdf'
               component={Paper}
-              image={currentPicture?.pictureUrl || product.images[0].pictureUrl}
+              image={state.currentPicture?.pictureUrl || product.images[0].pictureUrl}
               sx={{
                 padding: 20,
                 height: '100%',
@@ -238,18 +135,18 @@ export default function ProductDetails() {
         </Grid>
       </Grid>
       <Grid item xs={10} md={4.5}>
-        <Typography variant='h3' sx={{ paddingBottom: 2, ...cellStyle }}>
+        <Typography variant='h3' className='cellStyle' sx={{ paddingBottom: 2 }}>
           {product.name}
         </Typography>
         <Typography variant='h4' color='secondary'>
-          {currencyFormat(config?.config?.price || product.price)}
+          {currencyFormat(state.config?.config?.price || product.price)}
         </Typography>
         <AppTable tableData={tableData} />
         <Grid
           item
           sx={{
-            marginTop: config ? 4 : 2,
-            marginBottom: config ? 4 : 2,
+            marginTop: state.config ? 4 : 2,
+            marginBottom: state.config ? 4 : 2,
             p: 1,
             gap: 1,
             flexDirection: 'column',
@@ -258,21 +155,27 @@ export default function ProductDetails() {
           <Box sx={{ position: 'absolute', marginTop: -6 }}>
             <ProductConfigs
               product={product}
-              onConfigChange={onConfigChange}
+              updateState={setState}
               defaultConfig={
-                config && config.config
-                  ? { key: config.config.key, checkedValue: config?.value }
+                state.config && state.config.config
+                  ? { key: state.config.config.key, checkedValue: state.config?.value }
                   : { key: '', checkedValue: '' }
               }
+              basket={basket}
             />
           </Box>
         </Grid>
-        <Grid xs={12} item>
-          <Grid xs={12} item sx={{ display: 'flex', flexDirection: 'row', gap: 1.5 }}>
-            {renderQuantityField()}
-            {renderUpdateCartButton()}
-          </Grid>
-        </Grid>
+        <ShoppingField
+          quantityChanged={
+            state.basketItem?.quantity === state.newQuantity ||
+            (!state.basketItem && state.newQuantity === 0)
+          }
+          newQuantity={state.newQuantity}
+          status={status}
+          handleUpdateCart={handleUpdateCart}
+          updateState={(newQuantity: 'newQuantity', n: number) => updateState('newQuantity', n)}
+          basketItem={state.basketItem}
+        />
       </Grid>
 
       <Grid

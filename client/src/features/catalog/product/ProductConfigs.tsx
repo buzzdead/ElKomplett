@@ -1,13 +1,18 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import RadioButtonGroup from 'app/components/RadioButtonGroup'
+import { ConfigsState } from 'app/hooks/useConfigs'
+import useView from 'app/hooks/useView'
 import Render from 'app/layout/Render'
+import { Basket } from 'app/models/basket'
 import { IProduct } from 'app/models/product'
 import { useState } from 'react'
 
 interface Props {
-  onConfigChange: (btns: any) => void
   product: IProduct
   defaultConfig: IRadioButton
+  basket: Basket | null
+  updateState: (state: ConfigsState) => void
+  modal?: boolean
 }
 
 interface ConfigMap {
@@ -22,10 +27,11 @@ export interface IRadioButton {
   checkedValue: string
 }
 
-export function ProductConfigs({ onConfigChange, product, defaultConfig }: Props) {
+export function ProductConfigs({  product, defaultConfig, basket, updateState, modal=false }: Props) {
   const [checkedRadioButton, setCheckedRadioButton] = useState<IRadioButton[]>([
     defaultConfig,
   ])
+  const view = useView()
   function onRadioButtonChange(value: string, key: string = '') {
     const currentRadioButtons = checkedRadioButton.map((checked) =>
       checked.key === key ? { key: key, checkedValue: value } : checked,
@@ -51,13 +57,41 @@ export function ProductConfigs({ onConfigChange, product, defaultConfig }: Props
       ? product.configPresets
       : product.configurables,
   )
+
+  const isTheRightOne = (a: string, b: string) => {
+    const arrayA = a.split(' ')
+    const arrayB = b.split(' ')
+
+    if (arrayA.length !== arrayB.length) {
+      return false
+    }
+
+    const sortedArrayA = arrayA.sort()
+    const sortedArrayB = arrayB.sort()
+
+    return sortedArrayA.every((value, index) => value === sortedArrayB[index])
+  }
+
+  function onConfigChange(updatedWithNewValue: IRadioButton[]) {
+    const newConfig = updatedWithNewValue.filter((e) => e.checkedValue !== '')
+    const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
+    const currentConfig = product?.configurables?.find((e) =>
+      isTheRightOne(e.value, newConfigValue),
+    )
+    const basketItems = basket?.items.filter(
+      (i: { productId: number | undefined }) => i.productId === product?.id,
+    )
+    const bItem = basketItems?.find((e) => e.configId === currentConfig?.id)
+    currentConfig && updateState({basketItem: bItem, newQuantity: bItem?.quantity || 0, currentPicture: currentConfig?.images[0], config:  { config: currentConfig, value: currentConfig.value, id: currentConfig.id }})
+
+  }
   return (
     <Render condition={radioButtons.length > 0}>
       <>
         {radioButtons.map((cfg) => {
           return (
-            <Box key={cfg.key}>
-              <Box marginTop={1}>Choose {cfg.key}:</Box>
+            <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 2, mb: modal ? 2 : 0}} key={cfg.key}>
+              <Typography sx={{ alignSelf: 'center'}} variant='body2'>{cfg.key}:</Typography>
               <RadioButtonGroup
                 flexDirection='row'
                 selectedValue={

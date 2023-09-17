@@ -2,7 +2,7 @@ import { Box, Button, Card, CardContent, CardMedia, Grid, Skeleton, Typography }
 import useProducts from 'app/hooks/useProducts'
 import LoadingComponent from 'app/layout/LoadingComponent'
 import SideBar from 'features/SideBar'
-import ProductList from 'features/catalog/product/ProductList'
+import ProductList from 'features/catalog/product/List/ProductList'
 import ProductSearch from 'features/catalog/product/productSearch'
 import { useCategory } from 'app/hooks/useCategory'
 import Render from 'app/layout/Render'
