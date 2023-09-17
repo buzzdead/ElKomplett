@@ -33,6 +33,7 @@ export const ShoppingField = ({
           type='number'
           label='Quantity in Cart'
           onChange={handleInputChange}
+          autoComplete='off'
           fullWidth
           value={newQuantity}
         />
