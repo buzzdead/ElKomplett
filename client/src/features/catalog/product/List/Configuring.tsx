@@ -44,24 +44,11 @@ export const Configuring = React.forwardRef(
         ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
         : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
     }
-    const { state, setState, updateState } = useConfigs({ basket: basket, product: product })
-    useEffect(() => {
-      if (state.basketItem) {
-        updateState('newQuantity', state.basketItem.quantity)
-      }
-    }, [state.basketItem, dispatch, product])
-    useEffect(() => {
-      const basketI = basket?.items.filter(
-        (i: { productId: number | undefined }) => i.productId === product?.id,
-      )
-
-      if (basketI !== undefined && basketI.length > 0)
-        updateState(
-          'basketItem',
-          basketI.find((e) => e.configId === state.config?.id),
-        )
-      else basketI !== undefined && updateState('basketItem', basketI[0])
-    }, [basket])
+    const { state, setState, updateState } = useConfigs({
+      basket: basket,
+      product: product,
+      id: undefined,
+    })
 
     return (
       <Box sx={style}>
@@ -69,11 +56,7 @@ export const Configuring = React.forwardRef(
           product={product}
           modal={modal}
           updateState={setState}
-          defaultConfig={
-            state.config && state.config.config
-              ? { key: state.config.config.key, checkedValue: state.config?.value }
-              : { key: '', checkedValue: '' }
-          }
+          config={state.config}
           basket={basket}
         />
         <Box
@@ -95,15 +78,11 @@ export const Configuring = React.forwardRef(
           />
 
           <ShoppingField
-            quantityChanged={
-              state.basketItem?.quantity === state.newQuantity ||
-              (!state.basketItem && state.newQuantity === 0)
-            }
             newQuantity={state.newQuantity as number}
             status={status}
             handleUpdateCart={handleUpdateCart}
             updateState={(newQuantity: 'newQuantity', n: number | string) =>
-              updateState('newQuantity', n)
+              updateState(newQuantity, n)
             }
             basketItem={state.basketItem}
           />

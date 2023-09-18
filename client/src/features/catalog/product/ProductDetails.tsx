@@ -1,12 +1,12 @@
 import { Box, Card, CardMedia, Grid, Paper, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
 import NotFound from '../../../app/errors/NotFound'
 import LoadingComponent from '../../../app/layout/LoadingComponent'
 import { useAppDispatch, useAppSelector } from '../../../app/store/configureStore'
 import { addBasketItemAsync, removeBasketItemAsync } from '../../basket/basketSlice'
-import { fetchProductAsync, productSelectors } from '.././catalogSlice'
+import { productSelectors } from '.././catalogSlice'
 import { currencyFormat } from '../../../app/util/util'
 import AppTable, { TableData } from '../../../app/components/AppTable/AppTable'
 import './Product.css'
@@ -19,47 +19,46 @@ import { RichTextDisplay } from 'app/components/RichTextDisplay'
 import { useConfigs } from 'app/hooks/useConfigs'
 import { ShoppingField } from './ShoppingField'
 
+const gridStyle = {
+  backgroundImage: 'none',
+  bgcolor: 'background.paper',
+  borderRadius: 15,
+  minHeight: 250,
+  display: 'flex',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  width: '100%',
+  mt: 5,
+  mb: 5,
+}
+
 export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
   const { status: productStatus } = useAppSelector((state) => state.catalog)
-
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, id!))
-
+  const { state, setState, updateState } = useConfigs({ basket: basket, product: product, id: id })
   const [bottomValue, setBottomValue] = useState(0)
   const view = useView()
-  const { state, setState, updateState } = useConfigs({ basket: basket, product: product })
-
-  useEffect(() => {
-    if (state.basketItem) {
-      updateState('newQuantity', state.basketItem.quantity)
-    }
-    if (!product) dispatch(fetchProductAsync(parseInt(id!)))
-  }, [id, state.basketItem, dispatch, product])
-  useEffect(() => {
-    const basketI = basket?.items.filter(
-      (i: { productId: number | undefined }) => i.productId === product?.id,
-    )
-
-    if (basketI !== undefined && basketI.length > 0)
-      updateState(
-        'basketItem',
-        basketI.find((e) => e.configId === state.config?.id),
-      )
-    else basketI !== undefined && updateState('basketItem', basketI[0])
-  }, [basket])
 
   function handleUpdateCart() {
-    const abc = state.newQuantity as number
-    if (typeof abc !== 'number' || abc < 0) {updateState('newQuantity', state.basketItem?.quantity || 0); return;}
-    const quantity = Math.abs(state.newQuantity as number - (state.basketItem?.quantity || 0))
+    const quantity = state.newQuantity as number
+    if (typeof quantity !== 'number' || quantity < 0) {
+      updateState('newQuantity', state.basketItem?.quantity || 0)
+      return
+    }
+    const newQuantity = Math.abs(quantity - (state.basketItem?.quantity || 0))
     const productId: number = product?.id as number
-    const addToCart = !state.basketItem || state.newQuantity as number > state.basketItem.quantity
+    const addToCart = !state.basketItem || quantity > state.basketItem.quantity
 
     addToCart
-      ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
-      : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
+      ? dispatch(
+          addBasketItemAsync({ productId, quantity: newQuantity, configId: state.config?.id }),
+        )
+      : dispatch(
+          removeBasketItemAsync({ productId, quantity: newQuantity, configId: state.config?.id }),
+        )
   }
 
   if (productStatus.includes('pendingFetchProduct'))
@@ -147,7 +146,7 @@ export default function ProductDetails() {
           item
           sx={{
             marginTop: state.config ? 4 : 2,
-            marginBottom: state.config ? 4 : 2,
+            marginBottom: product.configPresets && product.configPresets.length > 0 ? 10 : state.config ? 4 : 2,
             p: 1,
             gap: 1,
             flexDirection: 'column',
@@ -157,47 +156,26 @@ export default function ProductDetails() {
             <ProductConfigs
               product={product}
               updateState={setState}
-              defaultConfig={
-                state.config && state.config.config
-                  ? { key: state.config.config.key, checkedValue: state.config?.value }
-                  : { key: '', checkedValue: '' }
-              }
+              config={state.config}
               basket={basket}
             />
           </Box>
         </Grid>
         <ShoppingField
-          quantityChanged={
-            state.basketItem?.quantity === state.newQuantity ||
-            (!state.basketItem && state.newQuantity === 0)
-          }
           newQuantity={state.newQuantity as number}
           status={status}
           handleUpdateCart={handleUpdateCart}
-          updateState={(newQuantity: 'newQuantity', n: number | string) => updateState('newQuantity', n)}
+          updateState={(newQuantity: 'newQuantity', n: number | string) => updateState(newQuantity, n)}
           basketItem={state.basketItem}
         />
       </Grid>
 
       <Grid
         component={Paper}
-        marginBottom={5}
-        marginTop={5}
         elevation={1}
         item
         xs={10}
-        sx={{
-          backgroundImage: 'none',
-          bgcolor: 'background.paper',
-          borderRadius: 15,
-          minHeight: 250,
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          width: '100%',
-          marginLeft: view.view.ipad ? 2 : 20,
-          marginRight: view.view.ipad ? 2 : 20,
-        }}
+        sx={{ ...gridStyle, ml: view.view.ipad ? 2 : 20, mr: view.view.ipad ? 2 : 20 }}
       >
         <ProductBottom onChangeValue={setBottomValue} />
         <Typography variant='subtitle1' sx={{ marginBottom: 5, marginTop: 2, marginRight: 5 }}>

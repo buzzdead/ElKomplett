@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import RadioButtonGroup from 'app/components/RadioButtonGroup'
-import { ConfigsState } from 'app/hooks/useConfigs'
+import { Config, ConfigsState } from 'app/hooks/useConfigs'
 import useView from 'app/hooks/useView'
 import Render from 'app/layout/Render'
 import { Basket } from 'app/models/basket'
@@ -9,7 +9,7 @@ import { useState } from 'react'
 
 interface Props {
   product: IProduct
-  defaultConfig: IRadioButton
+  config: Config | null
   basket: Basket | null
   updateState: (state: ConfigsState) => void
   modal?: boolean
@@ -27,9 +27,11 @@ export interface IRadioButton {
   checkedValue: string
 }
 
-export function ProductConfigs({  product, defaultConfig, basket, updateState, modal=false }: Props) {
+export function ProductConfigs({  product, config, basket, updateState, modal=false }: Props) {
   const [checkedRadioButton, setCheckedRadioButton] = useState<IRadioButton[]>([
-    defaultConfig,
+    config && config.config
+                  ? { key: config.config.key, checkedValue: config?.value }
+                  : { key: '', checkedValue: '' },
   ])
   const view = useView()
   function onRadioButtonChange(value: string, key: string = '') {
@@ -59,8 +61,10 @@ export function ProductConfigs({  product, defaultConfig, basket, updateState, m
   )
 
   const isTheRightOne = (a: string, b: string) => {
+    
     const arrayA = a.split(' ')
     const arrayB = b.split(' ')
+
 
     if (arrayA.length !== arrayB.length) {
       return false
@@ -73,8 +77,9 @@ export function ProductConfigs({  product, defaultConfig, basket, updateState, m
   }
 
   function onConfigChange(updatedWithNewValue: IRadioButton[]) {
-    const newConfig = updatedWithNewValue.filter((e) => e.checkedValue !== '')
+    const newConfig = updatedWithNewValue.filter((e, id) => product.configPresets && product.configPresets.length > 0 ? id > 0 && e.checkedValue !== '' : e.checkedValue !== '')
     const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
+    console.log(newConfigValue)
     const currentConfig = product?.configurables?.find((e) =>
       isTheRightOne(e.value, newConfigValue),
     )

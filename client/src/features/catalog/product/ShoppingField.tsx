@@ -8,7 +8,6 @@ interface Props {
   handleUpdateCart: () => void
   updateState: (newQuantity: 'newQuantity', n: number | string) => void
   basketItem: BasketItem | undefined
-  quantityChanged: boolean
   status: string
 }
 
@@ -17,11 +16,13 @@ export const ShoppingField = ({
   handleUpdateCart,
   updateState,
   basketItem,
-  quantityChanged,
   status,
 }: Props) => {
 
+  const quantityChanged =  basketItem?.quantity === newQuantity || (!basketItem && newQuantity === 0)
+
     function handleInputChange(event: any) {
+      console.log(event.target.value)
        parseInt(event.target.value) >= 0 ? updateState('newQuantity', parseInt(event.target.value)) : updateState('newQuantity', '')
     }
 

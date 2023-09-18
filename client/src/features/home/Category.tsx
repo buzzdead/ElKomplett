@@ -51,8 +51,8 @@ export default function Category() {
                 <Typography
                   variant='overline'
                   sx={{
-                    fontSize: 14,
-                    color: c.id === category.id ? 'blue' : 'neutral.main',
+                    fontSize: c.id === category.id ? 15 : 14,
+                    color: c.id === category.id ? 'primary.main' : 'neutral.main',
                     fontWeight: 500,
                   }}
                 >
