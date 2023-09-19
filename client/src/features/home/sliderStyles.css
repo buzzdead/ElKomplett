@@ -21,6 +21,6 @@
   .slider-image {
     object-fit: cover;
     width: 90%;
-    height: 50vh;
+    height: 'inherit';
     margin: 0 auto;
   }

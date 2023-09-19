@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import RadioButtonGroup from 'app/components/RadioButtonGroup'
+import SelectButtonGroup from 'app/components/SelectButtonGroup'
 import { Config, ConfigsState } from 'app/hooks/useConfigs'
 import useView from 'app/hooks/useView'
 import Render from 'app/layout/Render'
@@ -92,12 +93,13 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
   }
   return (
     <Render condition={radioButtons.length > 0}>
-      <>
-        {radioButtons.map((cfg) => {
+      <Box sx={{display: 'flex', flexDirection: 'row',}}>
+        {radioButtons.map((cfg, id) => {
           return (
             <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 2, mb: modal ? 2 : 0}} key={cfg.key}>
-              <Typography sx={{ alignSelf: 'center'}} variant='body2'>{cfg.key}:</Typography>
-              <RadioButtonGroup
+              {id === 0 && <Typography fontSize={20} variant='h4' sx={{display: 'flex', alignSelf: 'center', marginLeft: 1}}>Select: </Typography>}
+              <SelectButtonGroup
+                label={cfg.key}
                 flexDirection='row'
                 selectedValue={
                   checkedRadioButton.find((b) => b.key === cfg.key)?.checkedValue || ''
@@ -108,7 +110,7 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
             </Box>
           )
         })}
-      </>
+      </Box>
     </Render>
   )
 }

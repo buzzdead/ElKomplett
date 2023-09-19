@@ -29,7 +29,7 @@ interface Props {
 
 const midLinks = [
   {
-    title: 'katalog',
+    title: 'Katalog',
     path: '/catalog',
     condition: true,
   },
@@ -42,12 +42,12 @@ const midLinks = [
 
 const rightLinks = (condition: any) => [
   {
-    title: 'logg inn',
+    title: 'Logg inn',
     path: '/login',
     condition: condition
   },
   {
-    title: 'registrer',
+    title: 'Registrer',
     path: '/register',
     condition: condition
   },
@@ -111,7 +111,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             }
           >
             <ListItem component={NavLink} to={'/inventory'} sx={{...navStyles, width: ''}}>
-              INNHOLD
+              Inventar
             </ListItem>
           </Render>
         </List>
@@ -119,7 +119,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
           <LowResMenu
             links={midLinks.concat({
               path: './inventory',
-              title: 'INNHOLD',
+              title: 'Inventar',
               condition:
                 user !== null && AuthorisedRoles.some((role) => user.roles?.includes(role)),
             }).concat(rightLinks(user === null))}
