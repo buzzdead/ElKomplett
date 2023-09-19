@@ -111,7 +111,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             }
           >
             <ListItem component={NavLink} to={'/inventory'} sx={{...navStyles, width: ''}}>
-              Inventar
+              INVENTAR
             </ListItem>
           </Render>
         </List>

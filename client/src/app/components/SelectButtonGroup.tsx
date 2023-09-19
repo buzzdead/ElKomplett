@@ -24,11 +24,12 @@ export default function SelectButtonGroup({ options, onChange, selectedValue, fl
         onChange={onChange}
       sx={{
         width: 120,
+        height: 50
       }}
     >
         
         {options.map(({ value, label }) => (
-          <MenuItem value={value}>{label}</MenuItem>
+          <MenuItem key={value} value={value}>{label}</MenuItem>
         ))}
     </Select>
       

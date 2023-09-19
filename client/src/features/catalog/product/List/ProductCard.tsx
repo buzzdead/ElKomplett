@@ -62,7 +62,7 @@ export default function ProductCard({ product }: Props) {
         avatar={<Avatar sx={{ backgroundColor: 'secondary.darker', fontSize: 14 }}>-10%</Avatar>}
         title={product.name}
         titleTypographyProps={{
-          sx: { ...cellStyle, fontWeight: 'bold', color: 'primary.default', fontSize: 15 },
+          sx: { ...cellStyle, fontWeight: 'bold', color: 'primary.default', fontSize: 15, minHeight: '75px' },
         }}
       />
       <CardMedia
@@ -78,7 +78,7 @@ export default function ProductCard({ product }: Props) {
         title={product.name}
       />
       <CardContent sx={{ paddingTop: 1, paddingBottom: 0 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: view.view.ipad ? 0 : 2, justifyContent: 'center', width: '100%' }}>
           <Typography
             sx={{ textDecoration: 'line-through' }}
             gutterBottom

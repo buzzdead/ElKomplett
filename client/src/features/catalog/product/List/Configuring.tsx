@@ -2,7 +2,7 @@ import { useConfigs } from 'app/hooks/useConfigs'
 import { Basket } from 'app/models/basket'
 import { IProduct } from 'app/models/product'
 import { ProductConfigs } from '../ProductConfigs'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { ShoppingField } from '../ShoppingField'
 import { addBasketItemAsync, removeBasketItemAsync } from 'features/basket/basketSlice'
 import { useAppDispatch } from 'app/store/configureStore'
@@ -52,13 +52,10 @@ export const Configuring = React.forwardRef(
 
     return (
       <Box sx={style}>
-        <ProductConfigs
-          product={product}
-          modal={modal}
-          updateState={setState}
-          config={state.config}
-          basket={basket}
-        />
+        <Typography sx={{  justifyContent: 'center', display: 'flex' }} variant='h4'>
+          {product.name}
+        </Typography>
+
         <Box
           sx={{
             display: 'flex',
@@ -69,14 +66,19 @@ export const Configuring = React.forwardRef(
           }}
         >
           <img
-            style={{ marginBottom: 20 }}
-            width={200}
-            height={200}
+            style={{ margin: 30, marginBottom: 40 }}
+            width={250}
             src={
               product.configurables?.find((e) => e.id === state.config?.id)?.images[0].pictureUrl
             }
           />
-
+          <ProductConfigs
+            product={product}
+            modal={modal}
+            updateState={setState}
+            config={state.config}
+            basket={basket}
+          />
           <ShoppingField
             newQuantity={state.newQuantity as number}
             status={status}

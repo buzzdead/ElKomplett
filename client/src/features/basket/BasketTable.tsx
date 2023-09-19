@@ -3,6 +3,7 @@ import { LoadingButton } from '@mui/lab'
 import {
   Paper,
   Box,
+  Typography,
 } from '@mui/material'
 import agent from 'app/api/agent'
 import { Configurable } from 'app/models/product'
@@ -27,19 +28,32 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   const [config, setConfig] = React.useState<Configurable[]>()
   const view = useView();
 
+  const renderConfigs = (cfg: Configurable | undefined) => {
+    if(cfg === undefined) return null;
+    const cfgKeys = cfg.key?.replace(',', '').split(' ')
+    const cfgValues = cfg.value.split(' ')
+    return cfgKeys.map((e, id) => {
+      return <Typography variant='caption' fontWeight={500}>{e}: {cfgValues[id]}</Typography>
+    })
+  }
+
   const product = (item: BasketItem, cfg?: Configurable) => {
     return (
+      <Box display='flex' flexDirection={'column'}>
       <Box display='flex' alignItems='center'>
         <img
           src={cfg?.images[0]?.pictureUrl || item.pictureUrl}
           alt={item.name}
           style={{
-            height: 50,
+            height: view.view.mobile ? 50 : 75,
             marginRight: 20,
+            marginBottom: 5,
           }}
         />
         <span>{item.name}</span>
-      </Box>  
+      </Box>
+      {renderConfigs(cfg)}
+      </Box>
     )
   }
 

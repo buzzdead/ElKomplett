@@ -146,7 +146,7 @@ export default function ProductDetails() {
           item
           sx={{
             marginTop: state.config ? 4 : 2,
-            marginBottom: product.configPresets && product.configPresets.length > 0 ? 10 : state.config ? 4 : 2,
+            marginBottom: state.config ? 4 : 2,
             p: 1,
             gap: 1,
             flexDirection: 'column',

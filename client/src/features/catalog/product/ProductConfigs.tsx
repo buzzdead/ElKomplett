@@ -80,7 +80,6 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
   function onConfigChange(updatedWithNewValue: IRadioButton[]) {
     const newConfig = updatedWithNewValue.filter((e, id) => product.configPresets && product.configPresets.length > 0 ? id > 0 && e.checkedValue !== '' : e.checkedValue !== '')
     const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
-    console.log(newConfigValue)
     const currentConfig = product?.configurables?.find((e) =>
       isTheRightOne(e.value, newConfigValue),
     )
@@ -93,7 +92,7 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
   }
   return (
     <Render condition={radioButtons.length > 0}>
-      <Box sx={{display: 'flex', flexDirection: 'row',}}>
+      <Box sx={{display: 'flex', flexDirection: 'row'}}>
         {radioButtons.map((cfg, id) => {
           return (
             <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 2, mb: modal ? 2 : 0}} key={cfg.key}>
