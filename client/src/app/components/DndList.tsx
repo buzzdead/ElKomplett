@@ -27,14 +27,13 @@ export const DndList = ({control, onDragEnd, list, small = false, name='files'}:
   return (
     <Box
       display='flex'
-      justifyContent='space-between'
       alignItems='center'
       gap={5}
-      flexDirection={small ? 'row' : 'column'}
+      flexDirection={small ? 'column' : 'row'}
     >
       <Render condition={small}>
       <AppDropzone height={60} width={100} iconSize='30px' control={control} name={name} />
-      <AppDropzone control={control} name={name} />
+      <AppDropzone height={200} width={150} control={control} name={name} />
       </Render>
       
       <DragDropContext onDragEnd={onDragEnd}>

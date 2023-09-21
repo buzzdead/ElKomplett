@@ -7,12 +7,16 @@ import 'draft-js/dist/Draft.css';
 import agent from 'app/api/agent';
 import { IProduct } from 'app/models/product';
 import draftToHtml from 'draftjs-to-html';
+import { Control, FieldValues, useController } from 'react-hook-form';
 
 interface ProductSpecificationsProps {
   selectedProduct: undefined | IProduct
+  control: Control<FieldValues, any>
 }
 
-const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({ selectedProduct }) => {
+const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({ selectedProduct, control }) => {
+
+  const {fieldState, field } = useController({control: control, name: 'productSpecification'})
 
   const contentBlocks = convertFromHTML(selectedProduct?.richDescription || '');
   const cs = ContentState.createFromBlockArray(
@@ -22,6 +26,11 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({ selectedP
   const es = EditorState.createWithContent(cs)
 
   const [editorState, setEditorState] = useState(selectedProduct?.richDescription ? es : EditorState.createEmpty());
+
+  const updateState = (editorState: EditorState) => {
+    field.onChange(editorState)
+    setEditorState(editorState)
+  }
 
   const handleSave = async () => {
     const contentState = editorState.getCurrentContent();
@@ -34,14 +43,12 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({ selectedP
   }
 
   return (
-    <div>
+    <div style={{border: '5px solid lightgrey', minHeight: 250}}>
       <Editor
         editorState={editorState}
-        onEditorStateChange={(newEditorState) => setEditorState(newEditorState)}
+        editorStyle={{marginLeft: 15}}
+        onEditorStateChange={(newEditorState) => updateState(newEditorState)}
       />
-      <Button onClick={handleSave}>
-        Save
-      </Button>
       </div>
   );
 };

@@ -23,5 +23,6 @@ namespace API.DTOs
         public int QuantityInStock { get; set; }
         public List<string> Order { get; set; } = new();
         public int categoryId {get; set;}
+        public string RichDescription { get; set; }
     }
 }

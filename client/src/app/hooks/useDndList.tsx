@@ -35,7 +35,7 @@ export function useDndList({images, watchFiles, control, name}: Props) {
     if(abc.length > 0) {
       abc = abc.filter((e: { path: string | undefined }) => !list.some(t => t.path === e.path))
     }
-    setList([...list, ...abc])
+    abc.length > 0 && setList([...list, ...abc])
   }, [watchFiles])
 
   return {

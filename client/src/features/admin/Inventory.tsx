@@ -58,18 +58,18 @@ export default function Inventory() {
 
   const renderHeader = () => {
     return (
-      <Box display='flex' justifyContent='space-between'>
+      <Box display='flex' justifyContent='space-between' flexDirection={view.mobile ? 'column' : 'row'}>
         <Typography sx={{ p: 2 }} variant='h4'>
           Inventory
         </Typography>
-        <Box>
+        <Box display='flex' flexDirection='row'>
           <Link to={'/inventory/advanced'}>
-          <Button sx={{ m: 2 }} size='large' variant='contained'>
-            Advanced
+          <Button sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
+            Advanced inventory
           </Button>
           </Link>
-        <Button onClick={() => setEditMode(true)} sx={{ m: 2 }} size='large' variant='contained'>
-          Create
+        <Button onClick={() => setEditMode(true)} sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
+          Create product
         </Button>
         </Box>
       </Box>

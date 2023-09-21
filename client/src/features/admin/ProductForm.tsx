@@ -18,7 +18,9 @@ import { useDndList } from '../../app/hooks/useDndList'
 import { DndList } from '../../app/components/DndList'
 import ProductSpecification from './AdvancedInventory/ProductSpecifications'
 import { indexOf } from 'lodash'
-
+import { convertToRaw } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
+import useView from 'app/hooks/useView'
 
 interface Props {
   product?: IProduct
@@ -33,7 +35,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     watch,
     formState: { isDirty, isSubmitting, isValid },
   } = useForm({
-    resolver: yupResolver(validationSchema(product === undefined || product === null)),
+    resolver: yupResolver(validationSchema()),
   })
   const { producers, productTypes } = useProducts()
   const watchFiles = watch('files', [])
@@ -41,18 +43,23 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   const [selectedTab, setSelectedTab] = useState(0)
   const { categories, categoriesLoading } = useCategories()
   const cats = categories.map((e) => e.title)
-
-  const {list, onDragEnd, reordered} = useDndList({images: product?.images, watchFiles: watchFiles, control: control, name: 'order'})
+  const view = useView()
+  const { list, onDragEnd, reordered } = useDndList({
+    images: product?.images,
+    watchFiles: watchFiles,
+    control: control,
+    name: 'order',
+  })
 
   const handleTabChange = (e: any, v: any) => {
     setSelectedTab(v)
   }
-  
+
   useEffect(() => {
-    if (product && watchFiles?.length === 0 && !isDirty) {
+    if (product !== undefined && watchFiles?.length === 0 && !isDirty) {
       reset({
         ...product,
-        files: [], // Reset the uploaded files when resetting the form
+        files: [], // Reset the uploaded files when resetting the fo
       })
     }
 
@@ -61,8 +68,19 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     }
   }, [product, reset, isDirty])
 
+  const convertProductSpecification = (data: FieldValues) => {
+    if(!data.productSpecification) return data;
+    const contentState = data.productSpecification.getCurrentContent()
+    const rawContentState = convertToRaw(contentState)
+    const stringifiedHtmlContentstate = JSON.stringify(draftToHtml(rawContentState))
+    const cleanedHtml = stringifiedHtmlContentstate.replace(/\\n/g, '').replace(/"/g, '')
+    data.richDescription = cleanedHtml
+    return data
+  }
+
   async function handleSubmitData(data: FieldValues) {
-    const cat =  categories.find((e) => e.title === data.categoryId)
+    data = convertProductSpecification(data)
+    const cat = categories.find((e) => e.title === data.categoryId)
     const newId = !cat ? product?.categoryId : cat?.id
     data.categoryId = newId
     try {
@@ -79,10 +97,14 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     }
   }
 
-  const catTitle = categories.find((c) => c.id === product?.categoryId)?.title || categories[0].title
-  var catIndex = indexOf(categories.map(e => e.title), catTitle)
+  const catTitle =
+    categories.find((c) => c.id === product?.categoryId)?.title || categories[0].title
+  var catIndex = indexOf(
+    categories.map((e) => e.title),
+    catTitle,
+  )
 
-  if(categoriesLoading) return null
+  if (categoriesLoading) return null
   return (
     <Box component={Paper} sx={{ p: 4 }}>
       <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
@@ -91,26 +113,45 @@ export default function ProductForm({ product, cancelEdit }: Props) {
       <Tabs sx={{ paddingBottom: 3 }} value={selectedTab} onChange={handleTabChange}>
         <Tab label='Product Details' />
         <Tab disabled={!product} label='Product Configurations' />
-        <Tab label='Produktdetaljer' />
       </Tabs>
       {
         //make into own component or use apptable
         selectedTab === 0 ? (
           <form onSubmit={handleSubmit(handleSubmitData)}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12} sm={4}>
                 <AppTextInput control={control} name='name' label='Product name' />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <AppSelectList control={control} items={producers} name='producerName' label='Producer Name' defaultValue={product?.producer?.name} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <AppSelectList control={control} items={productTypes} name='productTypeName' label='Product Type' defaultValue={product?.productType?.name} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} sm={4}>
                 <AppTextInput control={control} type='number' name='price' label='Price' />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} sm={4}>
+                <AppTextInput
+                  control={control}
+                  type='number'
+                  name='quantityInStock'
+                  label='Quantity in Stock'
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <AppSelectList
+                  control={control}
+                  items={producers}
+                  name='producerName'
+                  label='Producer Name'
+                  defaultValue={product?.producer?.name}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <AppSelectList
+                  control={control}
+                  items={productTypes}
+                  name='productTypeName'
+                  label='Product Type'
+                  defaultValue={product?.productType?.name}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <AppSelectList
                   control={control}
                   items={cats}
@@ -120,25 +161,23 @@ export default function ProductForm({ product, cancelEdit }: Props) {
                   defaultValue={catIndex}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <AppTextInput
-                  control={control}
-                  type='number'
-                  name='quantityInStock'
-                  label='Quantity in Stock'
-                />
-              </Grid>
+
               <Grid item xs={12}>
                 <AppTextInput
                   multiline
                   rows={2}
                   control={control}
                   name='description'
-                  label='Description'
+                  label='Short description'
                 />
               </Grid>
+              
               <Grid item xs={12}>
-               <DndList control={control} list={list} onDragEnd={onDragEnd}/>
+              <Typography variant='caption' fontSize={16}>Long description</Typography>
+                <ProductSpecification selectedProduct={product} control={control} />
+              </Grid>
+              <Grid item xs={12}>
+                <DndList small={view.view.ipad} control={control} list={list} onDragEnd={onDragEnd} />
               </Grid>
             </Grid>
             <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>
@@ -156,10 +195,9 @@ export default function ProductForm({ product, cancelEdit }: Props) {
               </LoadingButton>
             </Box>
           </form>
-        ) : selectedTab === 1 ? (
+        ) : (
           <Configurations configs={product?.configurables} productId={product?.id!} />
         )
-        : <ProductSpecification selectedProduct={product} />
       }
     </Box>
   )
