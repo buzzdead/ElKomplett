@@ -95,8 +95,8 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
       <Box sx={{display: 'flex', flexDirection: 'row'}}>
         {radioButtons.map((cfg, id) => {
           return (
-            <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 2, mb: modal ? 2 : 0}} key={cfg.key}>
-              {id === 0 && <Typography fontSize={20} variant='h4' sx={{display: 'flex', alignSelf: 'center', marginLeft: 1}}>Select: </Typography>}
+            <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 3, mb: modal ? 2 : 0}} key={cfg.key}>
+              {id === 0 && <Typography fontSize={20} variant='h4' sx={{display: 'flex', alignSelf: 'center', marginLeft: 1}}>Velg: </Typography>}
               <SelectButtonGroup
                 label={cfg.key}
                 flexDirection='row'

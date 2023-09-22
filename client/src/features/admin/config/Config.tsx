@@ -1,7 +1,9 @@
-import { Grid, Button, Radio } from '@mui/material'
+import { Grid, Button, Radio, Typography, Box } from '@mui/material'
 import AppTextInput from 'app/components/AppTextInput'
 import { DndList } from 'app/components/DndList'
 import { useDndList } from 'app/hooks/useDndList'
+import useView from 'app/hooks/useView'
+import Render from 'app/layout/Render'
 import { Configurable } from 'app/models/product'
 import { Control, FieldValues } from 'react-hook-form'
 
@@ -27,6 +29,7 @@ export default function Config({
 }: Props) {
   const watchFiles = watch(`${index}.files`, [])
   const {list, onDragEnd} = useDndList({images: config.images, watchFiles: watchFiles, control: control, name: `${index}.order`})
+  const view = useView()
 
   const getConfigValue = (value: keyof Configurable, defaultValue?: string): string => {
     return String(defaultValue ?? config?.[value] ?? '')
@@ -36,14 +39,22 @@ export default function Config({
     <Grid container spacing={2} sx={{ marginTop: 0.25 }}>
       <Grid
         item
-        xs={2}
+        xs={12}
         sm={1}
-        sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}
+        sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}
       >
-        <Button variant='text' onClick={() => removeConfig(config)}>
-          Del
+        <Button sx={{}} variant='text' onClick={() => removeConfig(config)}>
+          {view.view.mobile ? 'Delete config' : 'Del'}
         </Button>
+        <Render condition={view.view.mobile }>
+        <Box>
+          
+        <Typography variant='caption' sx={{alignSelf: 'center'}}>Set default</Typography>
+      
         <Radio onClick={() => setRadioNumber(index)} checked={radioNumber === index} />
+        </Box>
+        <Radio onClick={() => setRadioNumber(index)} checked={radioNumber === index} />
+        </Render>
       </Grid>
       {[
         { name: 'id', label: 'Id', type: 'string', disabled: true },
@@ -64,7 +75,7 @@ export default function Config({
           />
         </Grid>
       ))}
-      <Grid item xs={2} sm={3} sx={{display: 'flex', flexDirection: 'row'}}>
+      <Grid item xs={12} sm={3} sx={{display: 'flex', flexDirection: 'row'}}>
         <DndList name={`${index}.files`} small onDragEnd={onDragEnd} control={control} list={list} />
       </Grid>
     </Grid>

@@ -28,8 +28,8 @@ export const DndList = ({control, onDragEnd, list, small = false, name='files'}:
     <Box
       display='flex'
       alignItems='center'
-      gap={5}
-      flexDirection={small ? 'column' : 'row'}
+      gap={small && list.length > 5 ? 2.5 : 5}
+      flexDirection={small ? list.length > 5 ? 'column' : 'row' : 'row'}
     >
       <Render condition={small}>
       <AppDropzone height={60} width={100} iconSize='30px' control={control} name={name} />

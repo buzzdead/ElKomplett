@@ -24,7 +24,7 @@ export default function SelectButtonGroup({ options, onChange, selectedValue, fl
         onChange={onChange}
       sx={{
         width: 120,
-        height: 50
+        height: 45
       }}
     >
         

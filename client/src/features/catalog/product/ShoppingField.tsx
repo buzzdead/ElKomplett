@@ -4,7 +4,7 @@ import { BasketItem } from 'app/models/basket'
 import React from 'react'
 
 interface Props {
-  newQuantity: number
+  newQuantity: number | string
   handleUpdateCart: () => void
   updateState: (newQuantity: 'newQuantity', n: number | string) => void
   basketItem: BasketItem | undefined
@@ -41,7 +41,7 @@ export const ShoppingField = ({
       </Grid>
       <Grid item xs={6} md={6}>
         <LoadingButton
-          disabled={quantityChanged}
+          disabled={newQuantity === '' || quantityChanged}
           loading={status.includes('pending')}
           onClick={handleUpdateCart}
           sx={{ height: '55px' }}
