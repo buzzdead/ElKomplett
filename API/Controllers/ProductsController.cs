@@ -238,9 +238,9 @@ namespace API.Controllers
                 if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
                     await _imageService.DeleteImageAsync(image.PublicId);
             }
-            foreach(Config cfg in product.Configurables) 
+            foreach(Config cfg in product.Configurables.ToList()) 
             {
-                foreach(ImageDto image in cfg.Images)
+                foreach(ImageDto image in cfg.Images.ToList())
                 {
                       if (!string.IsNullOrEmpty(image.PublicId) && image.PublicId != "0")
                     await _imageService.DeleteImageAsync(image.PublicId);

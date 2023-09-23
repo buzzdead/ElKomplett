@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Button, Paper, Typography } from '@mui/material'
 import agent from '../../../app/api/agent'
-import { Configurable } from '../../../app/models/product'
+import { Configurable, IProduct } from '../../../app/models/product'
 import ConfigDialog, { IConfigPresetComposition } from './ConfigPreset/ConfigDialog'
 import { createNewConfig } from '../../../app/util/util'
 import Config from './Config'
@@ -9,18 +9,20 @@ import { LoadingButton } from '@mui/lab'
 import { FieldValues, useForm } from 'react-hook-form'
 import _ from 'lodash'
 import { toast } from 'react-toastify'
+import { useAppDispatch } from 'app/store/configureStore'
+import { fetchProductAsync, fetchProductsAsync, setProduct } from 'features/catalog/catalogSlice'
 
 interface Props {
-  productId: number
-  configs?: Configurable[]
+  product: IProduct | undefined
 }
 
-const Configurations = ({ productId, configs }: Props) => {
-  const [configurations, setConfigurations] = useState<Configurable[]>(configs?.map((cfg, id) => {return {...cfg, tempId: id}}) || [])
+const Configurations = ({ product }: Props) => {
+  const [configurations, setConfigurations] = useState<Configurable[]>(product?.configurables?.map((cfg, id) => {return {...cfg, tempId: id}}) || [])
   const [configAdded, setConfigAdded] = useState(false)
   const [configPresets, setConfigPresets] = useState<IConfigPresetComposition[]>([])
-  const [defaultKey, setDefaultKey] = useState((configs && configs[0]?.key) || '')
-  const [radioButton, setRadioButton] = useState((configs && configs[0]?.id) || 0)
+  const [defaultKey, setDefaultKey] = useState((product?.configurables && product?.configurables[0]?.key) || '')
+  const [radioButton, setRadioButton] = useState((product?.configurables && product?.configurables[0]?.id) || 0)
+  const dispatch = useAppDispatch()
 
   const {
     control,
@@ -58,6 +60,7 @@ const Configurations = ({ productId, configs }: Props) => {
                 setConfigurations(configurations.map((cfg) => (cfg.id === res.id ? res : cfg))),
               )
             : await agent.Admin.createConfig(config)
+          
           return res
         } else {
           return null
@@ -66,16 +69,17 @@ const Configurations = ({ productId, configs }: Props) => {
         console.log(error)
       }
     })
-
+    
     await Promise.all(promises)
+    await dispatch(fetchProductsAsync())
     addPresetsToProduct()
   }
 
   const addPresetsToProduct = () => {
-    if (configPresets) {
+    if (product && configPresets) {
       configPresets.forEach(({ configurations }) =>
         configurations.forEach(
-          async (configuration) => await agent.Admin.addConfigPreset(configuration, productId),
+          async (configuration) => await agent.Admin.addConfigPreset(configuration, product?.id),
         ),
       )
     }
@@ -86,10 +90,11 @@ const Configurations = ({ productId, configs }: Props) => {
     configPresets?: IConfigPresetComposition[],
     combinations?: string[],
   ) => {
+    if(!product) return
     setConfigAdded(true)
 
     const newConfigs = combinations?.map((combination, index) =>
-      createNewConfig(configKey, productId, combination, index),
+      createNewConfig(configKey, product?.id, combination, index),
     )
     setConfigurations(newConfigs || [])
     setDefaultKey(configKey)
@@ -97,12 +102,12 @@ const Configurations = ({ productId, configs }: Props) => {
   }
 
   useEffect(() => {
-    if (configs?.length! > 0) {
+    if (product?.configurables?.length! > 0) {
       setConfigAdded(true)
     }
-  }, [configs])
+  }, [product?.configurables])
 
-  if (!configAdded && (!configs || configs.length === 0)) {
+  if (!configAdded && (!product?.configurables || product?.configurables.length === 0)) {
     return (
       <ConfigDialog
         handleConfigSubmit={(configKey, configPresets, values) =>
@@ -117,8 +122,9 @@ const Configurations = ({ productId, configs }: Props) => {
       configurations[0].key.split(',').length > 1
         ? toast.error('Not yet possible')
         : await agent.Admin.removeConfig(config.id).then((res) =>
-            toast.warning('Config removed, update not yet implemented'),
+          setConfigurations(configurations.filter(e => e.id !== config.id)),
           )
+          await dispatch(fetchProductsAsync())
       return
     }
     const newConfigurations = configurations.filter((cfg) => cfg.tempId !== config.tempId)
@@ -148,7 +154,7 @@ const Configurations = ({ productId, configs }: Props) => {
       </Box>
       {configurations.map((config, index) => {
         return (
-          <Box key={config.tempId}>
+          <Box key={index || config.tempId}>
             <Config
               config={config}
               removeConfig={removeConfig}
@@ -165,14 +171,12 @@ const Configurations = ({ productId, configs }: Props) => {
       <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>
         <Button
           onClick={() =>
-            setConfigurations([...configurations, createNewConfig(defaultKey, productId, '', configurations.length)])
+            product && setConfigurations([...configurations, createNewConfig(defaultKey, product.id, '', configurations.length)])
           }
           variant='contained'
           color='inherit'
         >
-          {configurations[0].key.split(',').length > 1
-            ? 'Modify configurations'
-            : 'Add Configuration'}
+            Add Configuration
         </Button>
         <Button
           onClick={setDefaultConfig}

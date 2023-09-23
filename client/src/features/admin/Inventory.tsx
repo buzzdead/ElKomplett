@@ -4,7 +4,7 @@ import useProducts from '../../app/hooks/useProducts'
 import AppPagination from '../../app/components/AppPagination'
 import { useAppDispatch } from '../../app/store/configureStore'
 import { removeProduct, setPageNumber } from '../catalog/catalogSlice'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ProductForm from './ProductForm'
 import { IProduct } from '../../app/models/product'
 import agent from '../../app/api/agent'
@@ -41,6 +41,10 @@ export default function Inventory() {
     setSelectedProduct(product)
     setEditMode(true)
   }
+
+  useEffect(() => {
+    if(selectedProduct) setSelectedProduct(products.find(e => e.id === selectedProduct?.id))
+  }, [products])
 
   function handleDeleteProduct(id: number) {
     setLoading(true)

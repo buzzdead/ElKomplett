@@ -37,7 +37,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
   } = useForm({
     resolver: yupResolver(validationSchema()),
   })
-  const { producers, productTypes } = useProducts()
+  const { producers, productTypes, productsLoaded } = useProducts()
   const watchFiles = watch('files', [])
   const dispatch = useAppDispatch()
   const [selectedTab, setSelectedTab] = useState(0)
@@ -59,7 +59,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     if (product !== undefined && watchFiles?.length === 0 && !isDirty) {
       reset({
         ...product,
-        files: [], // Reset the uploaded files when resetting the fo
+        files: [],
       })
     }
 
@@ -103,8 +103,8 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     categories.map((e) => e.title),
     catTitle,
   )
-
-  if (categoriesLoading) return null
+  
+  if (categoriesLoading || !productsLoaded) return null
   return (
     <Box component={Paper} sx={{ p: 4 }}>
       <Typography variant='h4' gutterBottom sx={{ mb: 4 }}>
@@ -196,7 +196,7 @@ export default function ProductForm({ product, cancelEdit }: Props) {
             </Box>
           </form>
         ) : (
-          <Configurations configs={product?.configurables} productId={product?.id!} />
+          <Configurations product={product} />
         )
       }
     </Box>

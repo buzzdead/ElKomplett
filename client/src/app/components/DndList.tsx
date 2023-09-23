@@ -58,7 +58,7 @@ export const DndList = ({control, onDragEnd, list, small = false, name='files'}:
                           key={index}
                           src={f.pictureUrl || f.preview}
                           alt={`Image ${index}`}
-                          style={{ maxHeight: small ? 50 : 200 }}
+                          style={{ maxHeight: small ? 50 : 190 }}
                         />
                       </div>
                     )}

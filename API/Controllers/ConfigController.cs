@@ -137,12 +137,14 @@ namespace API.Controllers
         public async Task<ActionResult> RemoveConfig(int id)
         {
 
-            var cfg = await _context.Config.FindAsync(id);
+            var cfg = await _context.Config.Include(c => c.Images).FirstOrDefaultAsync(c => c.Id == id);
 
             var productId = cfg.ProductId;
 
             var product = await _context.Products.FindAsync(productId);
             product.RemoveConfig(cfg);
+
+            
 
             foreach (ImageDto image in cfg.Images)
             {

@@ -15,7 +15,8 @@ export const createNewConfig = (key: string, productId: number, value?: string, 
   value: value || '',
   quantityInStock: 1,
   productId,
-  tempId: tempId
+  tempId: tempId,
+  images: []
 });
 
 export  function getCombinations<T>(arrays: T[][]): T[] {
