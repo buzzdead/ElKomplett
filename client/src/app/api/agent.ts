@@ -173,6 +173,7 @@ const Orders = {
   list: () => requests.get('orders'),
   fetch: (id: number) => requests.get(`/orders/${id}`),
   create: (values: any) => requests.post('orders', values),
+  allOrders: () => requests.get('orders/GetAllOrders')
 }
 
 const Payments = {

@@ -72,6 +72,11 @@ export default function Inventory() {
             Advanced inventory
           </Button>
           </Link>
+          <Link to={'/inventory/orders'}>
+          <Button sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
+            Show orders
+          </Button>
+          </Link>
         <Button onClick={() => setEditMode(true)} sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
           Create product
         </Button>

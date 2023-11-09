@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { SxProps } from '@mui/system'
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 
 export type TableData = {
   key: string
@@ -25,9 +26,11 @@ interface Props {
   sx?: SxProps<Theme> | undefined
   sxRow?: SxProps<Theme> | undefined
   component?: any
+  url?: string
+  clickable?: boolean
 }
 
-export default function AppTable2D({ tableData, sx, component }: Props) {
+export default function AppTable2D({ tableData, sx, component, clickable = false, url}: Props) {
   const renderTableHeaders = (row: TableData) => {
     return !row.dontRender ? (
       <TableCell sx={row.sx} component={row.component} scope={row.scope} key={'header' + row.key}>
@@ -35,20 +38,47 @@ export default function AppTable2D({ tableData, sx, component }: Props) {
       </TableCell>
     ) : null
   }
-  const renderTableRow = (row: TableData) => {
+  const renderTableCell = (row: TableData) => {
     return (
-      <TableCell sx={row.sx} key={'row' + row.key} >
+      <TableCell
+        sx={{
+          ...row.sx,
+        }}
+        key={'row' + row.key}
+      >
         {row.value}
       </TableCell>
     )
   }
+  const CustomTableRow = ({ children, id }: { children: React.ReactNode; id: string }) => (
+    !clickable ? 
+    <TableRow>
+      {children}
+    </TableRow>
+    :
+    
+    <TableRow
+      component={Link}
+      to={`${url}/${id}`}
+      sx={{
+        cursor: 'pointer',
+        '&:hover': {
+          backgroundColor: 'darkgrey',
+        },
+      }}
+    >
+      {children}
+    </TableRow>
+  )
+  
+
   const renderTable = (data: TableData[], id: number) => {
     return (
-      <TableRow key={id}>
-        {data.map((row) => {
-          return !row.dontRender && renderTableRow(row)
+      <CustomTableRow id={id.toString()}>
+        {data.map((cell) => {
+          return !cell.dontRender && renderTableCell(cell)
         })}
-      </TableRow>
+      </CustomTableRow>
     )
   }
   return (
