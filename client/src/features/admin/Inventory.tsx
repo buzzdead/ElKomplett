@@ -17,10 +17,14 @@ import { currencyFormat } from '../../app/util/util'
 import useView from '../../app/hooks/useView'
 import Render from '../../app/layout/Render'
 import LoadingComponent from '../../app/layout/LoadingComponent'
-import { Link } from 'react-router-dom'
 import { useCategory } from 'app/hooks/useCategory'
 
-export default function Inventory() {
+
+interface Props {
+  adminMode?: boolean
+}
+
+export default function Inventory({adminMode = false}: Props) {
   const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } = useProducts(0)
   const {category, categoryLoading} = useCategory(0);
   const { view } = useView()
@@ -67,16 +71,6 @@ export default function Inventory() {
           Inventory
         </Typography>
         <Box display='flex' flexDirection='row'>
-          <Link to={'/inventory/advanced'}>
-          <Button sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
-            Advanced inventory
-          </Button>
-          </Link>
-          <Link to={'/inventory/orders'}>
-          <Button sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
-            Show orders
-          </Button>
-          </Link>
         <Button onClick={() => setEditMode(true)} sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
           Create product
         </Button>
@@ -150,7 +144,7 @@ export default function Inventory() {
     ]
   })
 
-  if(!filtersLoaded || !productsLoaded || categoryLoading) return <LoadingComponent message={'Loading products...'} />
+  if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading products...'} />
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
  
   return (

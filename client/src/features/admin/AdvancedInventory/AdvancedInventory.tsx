@@ -26,7 +26,6 @@ export const AdvancedInventory = () => {
         <Tab label='Producers' />
         <Tab label='Product Types' />
         <Tab label='Categories' />
-        <Tab label='Contact messages' />
       </Tabs>
       <Render condition={selectedTab === 0}>
         <Producers />
@@ -36,9 +35,6 @@ export const AdvancedInventory = () => {
       </Render>
       <Render condition={selectedTab === 2}>
         <EditCategory />
-      </Render>
-      <Render condition={selectedTab === 3}>
-        <ContactMessages />
       </Render>
     </Box>
   )

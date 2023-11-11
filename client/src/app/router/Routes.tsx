@@ -18,6 +18,7 @@ import Category from 'features/home/Category'
 import { AdvancedInventory } from 'features/admin/AdvancedInventory/AdvancedInventory'
 import { AllOrders } from 'features/admin/AllOrders'
 import { Order } from 'features/admin/Order'
+import Admin from 'features/admin/Admin'
 
 export const router = createBrowserRouter([
   {
@@ -34,10 +35,9 @@ export const router = createBrowserRouter([
       {
         element: <RequireAuth roles={['Admin', 'Test']} />,
         children: [
-          { path: 'inventory', element: <Inventory /> },
-          { path: 'inventory/advanced', element: <AdvancedInventory /> },
-          { path: 'inventory/orders', element: <AllOrders /> },
-          { path: 'inventory/orders/:id', element: <Order /> },
+          { path: 'admin', element: <Admin /> },
+          { path: 'admin/orders', element: <AllOrders /> },
+          { path: 'admin/orders/:id', element: <Order /> },
         ],
       },
       { path: 'catalog', element: <Catalog /> },

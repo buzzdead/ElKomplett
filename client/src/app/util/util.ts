@@ -6,7 +6,7 @@ export function getCookie(key: string) {
   }
 
 export function currencyFormat(amount: number) {
-    return '$' + (amount / 100).toFixed(2)
+    return (amount / 100).toFixed(2)
 }
 
 export const createNewConfig = (key: string, productId: number, value?: string, tempId?: number): Configurable => ({

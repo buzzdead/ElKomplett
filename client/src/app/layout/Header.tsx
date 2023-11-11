@@ -71,7 +71,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
   const { view } = useView()
   const itemCount = basket && basket.items.reduce((sum, item) => sum + item.quantity, 0)
   return (
-    <AppBar position='static'>
+    <AppBar position='sticky'>
       <Toolbar
         style={{ maxHeight: '10px' }}
         sx={{
@@ -110,16 +110,16 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               !view.ipad && user && AuthorisedRoles.some((role) => user.roles?.includes(role))
             }
           >
-            <ListItem component={NavLink} to={'/inventory'} sx={{...navStyles, width: ''}}>
-              INVENTAR
+            <ListItem component={NavLink} to={'/admin'} sx={{...navStyles, width: ''}}>
+              ADMIN
             </ListItem>
           </Render>
         </List>
         <Render condition={view.ipad}>
           <LowResMenu
             links={midLinks.concat({
-              path: './inventory',
-              title: 'Inventar',
+              path: './admin',
+              title: 'Admin',
               condition:
                 user !== null && AuthorisedRoles.some((role) => user.roles?.includes(role)),
             }).concat(rightLinks(user === null))}
