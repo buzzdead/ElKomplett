@@ -12,7 +12,7 @@ export const EmailForm = () => {
         console.log(form.current)
   
         emailjs
-          .sendForm('service_tmj7xj3', 'template_uzibm0n', form.current, 'ocXtKtxKC4tQL7d8J')
+          .sendForm('asdfasdfasdf', 'asdfasdfasdfsad', form.current, 'asdfasdfsadfasdfasdf')
           .then(
             (result) => {
               console.log(result.text);
