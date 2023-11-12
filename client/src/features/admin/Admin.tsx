@@ -67,7 +67,7 @@ export default function ResponsiveDrawer(props: Props) {
     <div>
         <Divider component={Paper} color='blue' />
       <List>
-        {['Dashboard', 'Orders', 'Inventory', 'Content',  'Feedback',].map((text, id) => (
+        {['Dashboard', 'Orders', 'Inventory', 'Content',  'Feedback'].map((text, id) => (
           <ListItem key={text} disablePadding>
             <ListItemButton style={{display: 'flex', width: '100%', alignContent: 'center', flexDirection: 'column', color: id === index ? 'blue' : 'GrayText'}} onClick={() => handleListItemClick(id)}>
               <ListItemIcon style={{display: 'flex', width: '100%', justifyContent: 'center', color: id === index ? 'blue' : 'GrayText'}}>

@@ -1,5 +1,6 @@
-import { ArrowDropUp } from '@mui/icons-material'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
+import Render from 'app/layout/Render'
 import { Order } from 'app/models/order'
 import { currencyFormat } from 'app/util/util'
 
@@ -17,24 +18,41 @@ interface Props {
   orders: Order[] | undefined
 }
 
-const getOrderSum = (orders: Order[] | undefined, type: IncomeTypes) => {
+const isSameDay = (date1: Date, date2: Date, previousDay?: boolean) => {
+  const minus = previousDay && date1.getDate() > 0 ? 1 : 0
+  return (
+    date1.getDate() - minus === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  )
+}
+const isSameMonth = (date1: Date, date2: Date, previousMonth?: boolean) => {
+  const minus = previousMonth && date1.getMonth() > 0 ? 1 : 0
+  return (
+    date1.getMonth() - minus === date2.getMonth() && date1.getFullYear() === date2.getFullYear()
+  )
+}
+
+const getOrderSum = (orders: Order[] | undefined, type: IncomeTypes, previous?: boolean) => {
   if (orders === undefined) return
   const toDaysDate = new Date()
+
   const ordersByType = orders.filter((e) => {
     const orderDate = new Date(e.orderDate)
     return type === 'Daily'
-      ? orderDate.getDay() === toDaysDate.getDay()
+      ? isSameDay(orderDate, toDaysDate, previous)
       : type === 'Monthly'
-      ? orderDate.getMonth() === toDaysDate.getMonth()
+      ? isSameMonth(toDaysDate, orderDate, previous)
       : orderDate.getFullYear() === toDaysDate.getFullYear()
   })
-  const sumTotal = ordersByType.reduce((total, order) => total + order.subtotal, 0);
+  const sumTotal = ordersByType.reduce((total, order) => total + order.subtotal, 0)
   return sumTotal
 }
 
 export const Income = ({ type, orders }: Props) => {
   const incomeType = incomeTypes.find((e) => e.variant === type)
   const total = currencyFormat(getOrderSum(orders, type) || 0)
+  const total2 = currencyFormat(getOrderSum(orders, type, true) || 0)
   return (
     <Box>
       <Box display='flex' flexDirection={'row'} gap={0.5}>
@@ -47,7 +65,10 @@ export const Income = ({ type, orders }: Props) => {
       </Box>
       <Typography style={{}}>{incomeType?.header}</Typography>
       <Box display='flex' flexDirection={'row'} alignItems={'center'}>
-        <ArrowDropUp color='success' style={{ marginLeft: -5, fontSize: 38 }} />
+        <Render condition={total2 > total}>
+          <ArrowDropDown color='warning' style={{ marginLeft: -5, fontSize: 38 }} />
+          <ArrowDropUp color='success' style={{ marginLeft: -5, fontSize: 38 }} />
+        </Render>
         <Box display='flex' flexDirection={'row'} alignItems={'flex-end'}>
           <Typography style={{ fontSize: 11, marginBottom: 1.5, marginRight: 1 }}>NOK</Typography>
           <Typography>{total}</Typography>

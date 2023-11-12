@@ -35,6 +35,26 @@ export const DashBoard = () => {
         }, 0) : 0, // Provide an initial value of 0 if orderItems is undefined
       };
     });
+const getNumberOfOrdersToday = () => {
+  const todaysDate = new Date()
+  const ordersToday = orders?.filter(e => {
+    const orderDate = new Date(e.orderDate)
+    return orderDate.getDate() === todaysDate.getDate() && orderDate.getFullYear() === todaysDate.getFullYear() && orderDate.getMonth() === todaysDate.getMonth()
+  })
+  return ordersToday?.length
+}
+
+const getAverageOrderValue = () => {
+  const todaysDate = new Date()
+  const ordersToday = orders?.filter(e => {
+    const orderDate = new Date(e.orderDate)
+    return orderDate.getDate() === todaysDate.getDate() && orderDate.getFullYear() === todaysDate.getFullYear() && orderDate.getMonth() === todaysDate.getMonth()
+  }) 
+  const averageTotal = ordersToday?.reduce((mergedValue, currentOrder) => {
+    return mergedValue += currentOrder.subtotal
+  }, 0)
+  return Math.round((averageTotal || 0) / (orders?.length || 1))
+}
 if(loading) return null
   return (
     <Box display='flex' flexDirection={'row'} gap={2.5}>
@@ -71,8 +91,23 @@ if(loading) return null
       </Box>
       <Card style={{ width: 300 }}>
         <CardHeader  title={<Typography variant='h6' style={{ fontSize: '18px' }}>Orders today</Typography>}  />
+        <Box display={'flex'} gap={4} flexDirection={'column'}>
         <Box marginLeft={2}>
-        {orders?.map(e => <Typography>{e.shippingAddress.fullName}</Typography>)}
+        <Typography style={{ fontWeight: 600, fontSize: 48 }}>{getNumberOfOrdersToday()}</Typography>
+        <Typography>Ubehandlede</Typography>
+        </Box>
+        <Box marginLeft={2}>
+        <Typography style={{ fontWeight: 600, fontSize: 48 }}>{getNumberOfOrdersToday()}</Typography>
+        <Typography>Ferdig behandlede</Typography>
+        </Box>
+        <Box marginLeft={2}>
+        <Typography style={{ fontWeight: 600, fontSize: 48 }}>{getNumberOfOrdersToday()}</Typography>
+        <Typography>Totalt</Typography>
+        </Box>
+        <Box marginLeft={2}>
+        <Typography style={{ fontWeight: 600, fontSize: 48 }}>{getAverageOrderValue()}</Typography>
+        <Typography>Sum gjennomsnittelig bestilling</Typography>
+        </Box>
         </Box>
       </Card>
     </Box>

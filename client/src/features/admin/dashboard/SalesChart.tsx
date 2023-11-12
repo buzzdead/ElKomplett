@@ -13,8 +13,29 @@ import { Line } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
+const todaysDate = new Date();
+const options2: Intl.DateTimeFormatOptions = { month: 'short' };
+const monthName = todaysDate.toLocaleString('en-US', options2);
+
 const options = {
   responsive: true,
+  scales: {
+    x: {
+      type: 'category',
+      labels: Array.from({ length: 30 }, (_, index) => `${index + 1} ${monthName}`),
+      title: {
+        display: true,
+        text: 'Days of the Month',
+      },
+    },
+    y: {
+      beginAtZero: true,
+        ticks: {
+            stepSize: 1,
+        },
+  
+    },
+  },
   plugins: {
     legend: {
       display: false,
@@ -25,19 +46,12 @@ const options = {
       text: 'Number of products sold',
     },
   },
-}
+} as const;
 const generateRandomData = () => {
-  return Array.from({ length: 7 }, () => Math.floor(Math.random() * 200) - 100)
+  return Array.from({ length: 30 }, () => Math.floor(Math.random() * 200) - 100)
 }
 
-const todaysDate = new Date();
-const options2: Intl.DateTimeFormatOptions = { month: 'short' };
-const monthName = todaysDate.toLocaleString('en-US', options2);
-
-console.log(monthName); // Outputs the 3-letter abbreviation of the current month
-
-
-const labels = Array.from({ length: 5 }, (_, index) => `${index * 7 + 1} ${monthName}`);
+const labels = Array.from({ length: 30 }, (_, index) => (index % 3 === 0 ? `${index + 1} ${monthName}` : ''));
 
 const data = {
   labels,
@@ -59,10 +73,13 @@ interface Props {
 
 export const SalesChart = ({myData}: Props) => {
   const theData = Array.from({ length: 30 }).fill(0) as number[]
-  myData?.forEach(d => {
-    const date = new Date(d.dateString)
-    theData[date.getDay()] += d.quantity
-  })
+  const currentDate = new Date()
+  myData?.forEach((d) => {
+    const date = new Date(d.dateString);
+    const dayOfMonth = date.getDate(); // Get the day of the month
+
+    date.getMonth() === currentDate.getMonth() ? theData[dayOfMonth - 1] += d.quantity : theData[dayOfMonth - 1] = theData[dayOfMonth - 1] // Adjust the index to start from 0
+  });
   data.datasets[0].data = theData as number[]
   return <Line style={{height: 300,  maxWidth: 600}} options={options} data={data} />
 }
