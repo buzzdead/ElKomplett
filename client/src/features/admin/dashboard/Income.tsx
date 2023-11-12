@@ -19,9 +19,9 @@ interface Props {
 }
 
 const isSameDay = (date1: Date, date2: Date, previousDay?: boolean) => {
-  const minus = previousDay && date1.getDate() > 0 ? 1 : 0
+  const minus = previousDay && date2.getDate() > 0 ? 1 : 0
   return (
-    date1.getDate() - minus === date2.getDate() &&
+    date1.getDate() === date2.getDate() - minus &&
     date1.getMonth() === date2.getMonth() &&
     date1.getFullYear() === date2.getFullYear()
   )

@@ -4,6 +4,7 @@ import { Income, IncomeTypes } from './Income'
 import { useOrder } from 'app/hooks/useOrders'
 import { SalesChart } from './SalesChart'
 import { OrderItem } from 'app/models/order'
+import { currencyFormat } from 'app/util/util'
 
 export const DashBoard = () => {
   const incomeTypes: IncomeTypes[] = ['Daily', 'Monthly', 'Yearly']
@@ -51,9 +52,9 @@ const getAverageOrderValue = () => {
     return orderDate.getDate() === todaysDate.getDate() && orderDate.getFullYear() === todaysDate.getFullYear() && orderDate.getMonth() === todaysDate.getMonth()
   }) 
   const averageTotal = ordersToday?.reduce((mergedValue, currentOrder) => {
-    return mergedValue += currentOrder.subtotal
+    return mergedValue + currentOrder.subtotal
   }, 0)
-  return Math.round((averageTotal || 0) / (orders?.length || 1))
+  return currencyFormat(Math.round((averageTotal || 0) / (orders?.length || 1)))
 }
 if(loading) return null
   return (
