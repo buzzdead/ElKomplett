@@ -54,7 +54,7 @@ const getAverageOrderValue = () => {
   const averageTotal = ordersToday?.reduce((mergedValue, currentOrder) => {
     return mergedValue + currentOrder.subtotal
   }, 0)
-  return currencyFormat(Math.round((averageTotal || 0) / (orders?.length || 1)))
+  return currencyFormat(Math.round((averageTotal || 0) / (ordersToday?.length || 1)))
 }
 if(loading) return null
   return (

@@ -53,6 +53,7 @@ export const Income = ({ type, orders }: Props) => {
   const incomeType = incomeTypes.find((e) => e.variant === type)
   const total = currencyFormat(getOrderSum(orders, type) || 0)
   const total2 = currencyFormat(getOrderSum(orders, type, true) || 0)
+  const deficit = parseInt(total2) > parseInt(total)
   return (
     <Box>
       <Box display='flex' flexDirection={'row'} gap={0.5}>
@@ -65,13 +66,16 @@ export const Income = ({ type, orders }: Props) => {
       </Box>
       <Typography style={{}}>{incomeType?.header}</Typography>
       <Box display='flex' flexDirection={'row'} alignItems={'center'}>
-        <Render condition={total2 > total}>
+        <Render condition={deficit}>
           <ArrowDropDown color='warning' style={{ marginLeft: -5, fontSize: 38 }} />
           <ArrowDropUp color='success' style={{ marginLeft: -5, fontSize: 38 }} />
         </Render>
         <Box display='flex' flexDirection={'row'} alignItems={'flex-end'}>
           <Typography style={{ fontSize: 11, marginBottom: 1.5, marginRight: 1 }}>NOK</Typography>
+          <Render condition={deficit}>
+          <Typography>{currencyFormat((parseInt(total2) - parseInt(total)) * 100)}</Typography>
           <Typography>{total}</Typography>
+          </Render>
           <Typography style={{ marginLeft: 5 }}>fra {incomeType?.from}</Typography>
         </Box>
       </Box>
