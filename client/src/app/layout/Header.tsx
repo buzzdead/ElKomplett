@@ -71,7 +71,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
   const { view } = useView()
   const itemCount = basket && basket.items.reduce((sum, item) => sum + item.quantity, 0)
   return (
-    <AppBar position='sticky'>
+    <AppBar position='sticky' style={{backgroundColor: darkMode ? 'black' : ''}}>
       <Toolbar
         style={{ maxHeight: '10px' }}
         sx={{
@@ -80,7 +80,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
         }}
       >
         <Box display='flex' alignItems='center' justifyContent='flex-start'>
-          <Typography variant='h6' component={NavLink} to='/' sx={navStyles}>
+          <Typography variant='h6' component={NavLink} to='/' sx={navStyles} style={{color: 'white'}}>
             ElKomplett
           </Typography>
           <Switch

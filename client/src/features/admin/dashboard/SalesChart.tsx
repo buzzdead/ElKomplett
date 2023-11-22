@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { Theme, useTheme } from '@mui/material/styles';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -17,7 +18,8 @@ const todaysDate = new Date();
 const options2: Intl.DateTimeFormatOptions = { month: 'short' };
 const monthName = todaysDate.toLocaleString('en-US', options2);
 
-const options = {
+const options = (theme: Theme) => {
+  return {
   responsive: true,
   scales: {
     x: {
@@ -27,13 +29,16 @@ const options = {
         display: true,
         text: 'Days of the Month',
       },
+      ticks: {
+        color: theme.palette.neutral.main
+      }
     },
     y: {
       beginAtZero: true,
         ticks: {
             stepSize: 1,
+            color: theme.palette.neutral.main
         },
-  
     },
   },
   plugins: {
@@ -46,24 +51,26 @@ const options = {
       text: 'Number of products sold',
     },
   },
-} as const;
+} as const; }
 const generateRandomData = () => {
   return Array.from({ length: 30 }, () => Math.floor(Math.random() * 200) - 100)
 }
 
 const labels = Array.from({ length: 30 }, (_, index) => (index % 3 === 0 ? `${index + 1} ${monthName}` : ''));
 
-const data = {
+const data = (theme: Theme) => {
+  return{
   labels,
   datasets: [
     {
       label: 'Dataset 1',
       data: generateRandomData(),
-      borderColor: 'rgb(255, 99, 132)',
+      borderColor: theme.palette.secondary.darker,
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      color: 'green'
     },
   ],
-}
+}}
 
 type DataPoints = {dateString: string, quantity: number}
 
@@ -72,14 +79,16 @@ interface Props {
 }
 
 export const SalesChart = ({myData}: Props) => {
+  const theme = useTheme()
   const theData = Array.from({ length: 30 }).fill(0) as number[]
   const currentDate = new Date()
   myData?.forEach((d) => {
     const date = new Date(d.dateString);
-    const dayOfMonth = date.getDate(); // Get the day of the month
+    const dayOfMonth = date.getDate();
 
-    date.getMonth() === currentDate.getMonth() ? theData[dayOfMonth - 1] += d.quantity : theData[dayOfMonth - 1] = theData[dayOfMonth - 1] // Adjust the index to start from 0
+    date.getMonth() === currentDate.getMonth() ? theData[dayOfMonth - 1] += d.quantity : theData[dayOfMonth - 1] = theData[dayOfMonth - 1]
   });
-  data.datasets[0].data = theData as number[]
-  return <Line style={{height: 300,  maxWidth: 600}} options={options} data={data} />
+  const themedData = data(theme)
+  themedData.datasets[0].data = theData as number[]
+  return <Line style={{height: 300}} options={options(theme)} data={themedData} />
 }

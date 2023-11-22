@@ -1,32 +1,34 @@
 import { Typography, Button, Paper, Box, Grid } from '@mui/material'
 import { Edit, Delete } from '@mui/icons-material'
-import useProducts from '../../app/hooks/useProducts'
-import AppPagination from '../../app/components/AppPagination'
-import { useAppDispatch } from '../../app/store/configureStore'
-import { removeProduct, setPageNumber } from '../catalog/catalogSlice'
+import useProducts from '../../../app/hooks/useProducts'
+import AppPagination from '../../../app/components/AppPagination'
+import { useAppDispatch } from '../../../app/store/configureStore'
+import { removeProduct, setPageNumber } from '../../catalog/catalogSlice'
 import { useEffect, useState } from 'react'
 import ProductForm from './ProductForm'
-import { IProduct } from '../../app/models/product'
-import agent from '../../app/api/agent'
+import { IProduct } from '../../../app/models/product'
+import agent from '../../../app/api/agent'
 import { LoadingButton } from '@mui/lab'
-import SideBar from '../SideBar'
-import ProductSearch from '../catalog/product/productSearch'
-import { TableData } from '../../app/components/AppTable/AppTable'
-import AppTable2D from '../../app/components/AppTable/AppTable2D'
-import { currencyFormat } from '../../app/util/util'
-import useView from '../../app/hooks/useView'
-import Render from '../../app/layout/Render'
-import LoadingComponent from '../../app/layout/LoadingComponent'
+import SideBar from '../../SideBar'
+import ProductSearch from '../../catalog/product/productSearch'
+import { TableData } from '../../../app/components/AppTable/AppTable'
+import AppTable2D from '../../../app/components/AppTable/AppTable2D'
+import { currencyFormat } from '../../../app/util/util'
+import useView from '../../../app/hooks/useView'
+import Render from '../../../app/layout/Render'
+import FilterListIcon from '@mui/icons-material/FilterList'
+import LoadingComponent from '../../../app/layout/LoadingComponent'
 import { useCategory } from 'app/hooks/useCategory'
-
+import { SidebarModal } from 'features/catalog/SidebarModal'
 
 interface Props {
   adminMode?: boolean
 }
 
-export default function Inventory({adminMode = false}: Props) {
-  const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } = useProducts(0)
-  const {category, categoryLoading} = useCategory(0);
+export default function Inventory({ adminMode = false }: Props) {
+  const { products, metaData, producers, productTypes, filtersLoaded, productsLoaded } =
+    useProducts(0)
+  const { category, categoryLoading } = useCategory(0)
   const { view } = useView()
   const dispatch = useAppDispatch()
   //State
@@ -34,6 +36,7 @@ export default function Inventory({adminMode = false}: Props) {
   const [selectedProduct, setSelectedProduct] = useState<IProduct | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [target, setTarget] = useState(0)
+  const [showFilterModal, setShowFilterModal] = useState(false)
 
   const tableProps = {
     p: view.mobile ? '0 8px' : '16px',
@@ -47,7 +50,7 @@ export default function Inventory({adminMode = false}: Props) {
   }
 
   useEffect(() => {
-    if(selectedProduct) setSelectedProduct(products.find(e => e.id === selectedProduct?.id))
+    if (selectedProduct) setSelectedProduct(products.find((e) => e.id === selectedProduct?.id))
   }, [products])
 
   function handleDeleteProduct(id: number) {
@@ -66,14 +69,23 @@ export default function Inventory({adminMode = false}: Props) {
 
   const renderHeader = () => {
     return (
-      <Box display='flex' justifyContent='space-between' flexDirection={view.mobile ? 'column' : 'row'}>
+      <Box
+        display='flex'
+        justifyContent='space-between'
+        flexDirection={view.mobile ? 'column' : 'row'}
+      >
         <Typography sx={{ p: 2 }} variant='h4'>
           Inventory
         </Typography>
         <Box display='flex' flexDirection='row'>
-        <Button onClick={() => setEditMode(true)} sx={{ m: 2, minWidth: 170 }} size='large' variant='contained'>
-          Create product
-        </Button>
+          <Button
+            onClick={() => setEditMode(true)}
+            sx={{ m: 2, minWidth: 170 }}
+            size='large'
+            variant='contained'
+          >
+            Create product
+          </Button>
         </Box>
       </Box>
     )
@@ -144,20 +156,46 @@ export default function Inventory({adminMode = false}: Props) {
     ]
   })
 
-  if(!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading products...'} />
+  if (!filtersLoaded || categoryLoading) return <LoadingComponent message={'Loading products...'} />
   if (editMode) return <ProductForm product={selectedProduct} cancelEdit={cancelEdit} />
- 
+  const toggleFilterModal = () => {
+    setShowFilterModal(!showFilterModal)
+  }
   return (
     <>
       <Grid container columnSpacing={4} width='100%'>
-        <Render condition={!view.mobile}>
+        <Render condition={view.ipad}>
+          <SidebarModal
+            onClose={toggleFilterModal}
+            producers={producers}
+            productTypes={productTypes}
+            showModal={showFilterModal}
+          />
+        </Render>
+        <Render condition={!view.ipad}>
           <Grid item xs={3} minWidth='175px'>
             <ProductSearch />
-            <SideBar producers={producers} productTypes={productTypes} />
+              <SideBar producers={producers} productTypes={productTypes} />
+              
           </Grid>
+          <Button onClick={toggleFilterModal}>
+                <FilterListIcon
+                  sx={{
+                    height: 40,
+                    width: 40,
+                    color: 'green',
+                    display: 'flex',
+                    alignSelf: 'center',
+                    position: 'absolute',
+                    marginBottom: 2,
+                    right: 15,
+                  }}
+                  fontSize='large'
+                />
+              </Button>
         </Render>
 
-        <Grid item xs={view.mobile ? 14 : 9}>
+        <Grid item xs={12} lg={9} md={9}>
           {renderHeader()}
           <AppTable2D
             sxRow={{ '&:last-child td, &:last-child th': { border: 0 } }}

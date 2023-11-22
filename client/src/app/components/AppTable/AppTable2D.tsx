@@ -52,13 +52,14 @@ export default function AppTable2D({ tableData, sx, component, clickable = false
   }
   const CustomTableRow = ({ children, id }: { children: React.ReactNode; id: string }) => (
     !clickable ? 
-    <TableRow>
+    <TableRow key={id + 'custom1'}>
       {children}
     </TableRow>
     :
     
     <TableRow
       component={Link}
+      key={id + 'custom2'}
       to={`${url}/${id}`}
       sx={{
         cursor: 'pointer',
@@ -74,7 +75,7 @@ export default function AppTable2D({ tableData, sx, component, clickable = false
 
   const renderTable = (data: TableData[], id: number) => {
     return (
-      <CustomTableRow id={id.toString()}>
+      <CustomTableRow key={id} id={id.toString()}>
         {data.map((cell) => {
           return !cell.dontRender && renderTableCell(cell)
         })}

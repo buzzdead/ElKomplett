@@ -11,15 +11,20 @@ import { useAppDispatch } from '../store/configureStore'
 import { fetchBasketAsync } from '../../features/basket/basketSlice'
 import { fetchCurrentUser } from '../../features/account/accountSlice'
 import HomePage from '../../features/home/HomePage'
-import { blue, blueGrey, common, green, grey, lightGreen, lime, red, yellow } from '@mui/material/colors'
+import { blue, blueGrey, common, green, grey, lightGreen, lime, purple, red, teal, yellow, amber, brown, deepOrange, deepPurple,cyan } from '@mui/material/colors'
+import { dark } from '@mui/material/styles/createPalette'
 
 declare module '@mui/material/styles' {
   interface Palette {
     special: PaletteColor;
+    special2: PaletteColor;
+    special3: PaletteColor;
   }
 
   interface PaletteOptions {
     special: string;
+    special2: string;
+    special3: {main: string};
   }
 }
 
@@ -75,9 +80,14 @@ function App() {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       special: darkMode ? grey[700] : 'white',
+      special2: darkMode ? grey[900] : 'white',
+      special3:  {
+        main: darkMode ? cyan[100] : cyan[900]
+      },
       background: {
+        main: darkMode ?  grey[700] : grey[200],
         default: darkMode ? grey[800] : grey[200],
-        paper: darkMode ? grey[700] : grey[300],
+        paper: darkMode ? grey[900] : grey[300],
       },
       secondary: {
         main: darkMode ? blue[400] : red[400],

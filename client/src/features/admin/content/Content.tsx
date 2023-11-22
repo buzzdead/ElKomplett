@@ -6,12 +6,11 @@ import {
 } from '@mui/material'
 import Render from 'app/layout/Render'
 import { useState } from 'react'
-import { Producers } from './SidebarItems/Producers'
-import { ProductTypes } from './SidebarItems/ProductTypes'
-import { EditCategory } from './EditCategory'
-import { ContactMessages } from './ContactMessages'
+import { Producers } from './Producers'
+import { ProductTypes } from './ProductTypes'
+import { EditCategory } from './Category'
 
-export const AdvancedInventory = () => {
+export const Content = () => {
   const [selectedTab, setSelectedTab] = useState(0)
   const handleTabChange = (e: any, v: any) => {
     setSelectedTab(v)

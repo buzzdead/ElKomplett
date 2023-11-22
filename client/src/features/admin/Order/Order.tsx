@@ -16,7 +16,6 @@ export const Order = () => {
       await agent.Orders.fetch(theId).then((res) => {
         setOrder(res)
         setTable(res)
-        console.log(res)
       })
     } catch (error) {
       console.log(error)

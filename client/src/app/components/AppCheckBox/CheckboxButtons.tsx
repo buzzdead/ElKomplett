@@ -7,12 +7,13 @@ interface Props {
     items: string[]
     checked?: string[]
     flexRow?: boolean
+    color?: string
     onChange: (items: string[]) => void
     onStateUpdate?: (loading: boolean) => void
     resetFunction?: () => void
 }
 
-export default function CheckboxButtons({items, checked, onChange, flexRow = false, onStateUpdate, resetFunction}: Props) {
+export default function CheckboxButtons({items, checked, onChange, flexRow = false, onStateUpdate, resetFunction, color = 'mode'}: Props) {
     const [checkedItems, setCheckedItems] = useState(checked || [])
     const [loading, setLoading] = useState(false)
     const timer = useRef<NodeJS.Timeout>()
@@ -70,7 +71,7 @@ export default function CheckboxButtons({items, checked, onChange, flexRow = fal
             </div>
         <FormGroup sx={{display: 'flex', flexDirection: flexRow ? 'row' : 'column' }}>
             {items.map(item => (
-              <FormControlLabel control={<Checkbox checked={checkedItems.indexOf(item) !== -1} onClick={() => handleChecked(item)} />} label={item} key={item} />
+              <FormControlLabel sx={{color: color}} control={<Checkbox checked={checkedItems.indexOf(item) !== -1} onClick={() => handleChecked(item)} />} label={item} key={item} />
             ))}
           </FormGroup>
           </div>

@@ -21,11 +21,18 @@ export default function ProductSearch() {
   };
 
   return (
-    <Paper sx={{ mb: 2, bgcolor: 'special', width: '100%' }}>
+    <Paper sx={{ mb: 2, bgcolor: 'special2', width: '100%' }}>
       <TextField
         label='Søk blant produkter'
         variant='outlined'
+        color='primary'
         type='search'
+        InputLabelProps={{
+          sx: {  color: (theme) => theme.palette.special3.main  }, // Change 'desiredLabelColor' to your preferred color
+        }}
+        InputProps={{
+          sx: {  color: (theme) => theme.palette.special3.main  }
+        }}
         fullWidth
         value={searchTerm || ''}
         onChange={handleInputChange}

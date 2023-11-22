@@ -1,5 +1,5 @@
 import SideBar from "features/SideBar"
-import { ProductTypes } from "features/admin/AdvancedInventory/SidebarItems/ProductTypes"
+import { ProductTypes } from "features/admin/AdvancedInventory/Sidebars/ProductTypes"
 import './catalog.css'
 
 interface Props {

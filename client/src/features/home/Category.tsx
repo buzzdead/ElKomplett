@@ -78,7 +78,7 @@ export default function Category() {
       </Render>
       <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: 5}}>
       <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={10} className='center-on-small2'>
-        <Card sx={{ width: '100%', marginBottom: 2, bgcolor: 'special' }}>
+        <Card sx={{ width: '100%', marginBottom: 2, bgcolor: 'special2' }}>
           <Render condition={!categoryLoading}>
             <CardMedia
               sx={{ height: 200, backgroundSize: 'cover' }}
@@ -89,14 +89,14 @@ export default function Category() {
           </Render>
           <Render condition={!view.view.mobile}>
           <CardContent>
-            <Typography gutterBottom variant='h5' component='div'>
+            <Typography gutterBottom variant='h5' component='div' sx={{color: (theme) => theme.palette.info.light}}>
               {!categoryLoading ? (
                 category.title
               ) : (
                 <Skeleton animation='wave' height={60} width='80%' style={{}} />
               )}
             </Typography>
-            <Typography variant='h6' fontSize={14}>
+            <Typography variant='h6' fontSize={14} sx={{color: (theme) => theme.palette.neutral.main}}>
               {!categoryLoading ? (
                 category.description
               ) : (

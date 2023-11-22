@@ -19,21 +19,21 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAppDispatch } from 'app/store/configureStore';
 import { fetchFilters } from 'features/catalog/catalogSlice';
 
-export const Producers = () => {
+export const ProductTypes = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editedName, setEditedName] = useState('')
-  const { producers } = useProducts(0)
+  const { productTypes } = useProducts()
   const dispatch = useAppDispatch()
 
   const handleSave = async () => {
     const data = { name: editedName }
     if (editedName === '') return
-    await agent.Admin.createProducer(data)
+    await agent.Admin.createProductType(data)
     dispatch(fetchFilters(0))
     setModalOpen(false)
   }
   const handleDelete = async (producer: string) => {
-    await agent.Admin.deleteProducer(producer)
+    await agent.Admin.deleteProductType(producer)
     dispatch(fetchFilters(0))
   }
   return (
@@ -56,11 +56,10 @@ export const Producers = () => {
           title={''}
         />
       </Card>
-      {producers?.map((e) => (
-        <Box sx={{ display: 'flex', flexDirection: 'row'}}>
+      {productTypes?.map((e) => (
+             <Box key={e} sx={{ display: 'flex', flexDirection: 'row'}}>
         <Box sx={{ border: '1px solid black', width: 100 }}>
           <Typography style={{ textAlign: 'center' }}>{e}</Typography>
-          
         </Box>
         <Button sx={{padding: 0, minWidth: 0}} onClick={() => handleDelete(e)}>
           <DeleteForeverIcon color='error' />
@@ -68,7 +67,7 @@ export const Producers = () => {
         </Box>
       ))}
       <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-        <DialogTitle>Edit Producer</DialogTitle>
+        <DialogTitle>Edit Product Type</DialogTitle>
         <DialogContent>
           <TextField
             label='Title'

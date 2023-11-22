@@ -2,25 +2,22 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import { Paper } from '@mui/material';
-import Inventory from './Inventory';
-import Orders from 'features/orders/Orders';
-import { ContactMessages } from './AdvancedInventory/ContactMessages';
-import { AdvancedInventory } from './AdvancedInventory/AdvancedInventory';
+import Inventory from './inventory/Inventory';
+import { ContactMessages } from './ContactMessages';
+import { Content } from './content/Content';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import SourceIcon from '@mui/icons-material/Source';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { DashBoard } from './dashboard/DashBoard';
-import { AllOrders } from './AllOrders';
+import { AllOrders } from './Order/AllOrders';
 
 const drawerWidth = 140;
 
@@ -45,7 +42,7 @@ export default function ResponsiveDrawer(props: Props) {
     {id: 0, element: <DashBoard />, icon: <DashboardIcon />},
     {id: 1, element: <AllOrders />, icon: <PointOfSaleIcon /> },
     {id: 2, element: <Inventory />, icon: <InventoryIcon />},
-    {id: 3, element: <AdvancedInventory />, icon: <SourceIcon />},
+    {id: 3, element: <Content />, icon: <SourceIcon />},
     {id: 4, element: <ContactMessages />, icon: <ContactMailIcon />},
   ]
 
@@ -63,23 +60,24 @@ export default function ResponsiveDrawer(props: Props) {
     sessionStorage.setItem('selectedTabIndex', clickedIndex.toString());
   };
 
-  const drawer = (
+  const renderDrawer = () => { 
+    return (
     <div>
         <Divider component={Paper} color='blue' />
       <List>
         {['Dashboard', 'Orders', 'Inventory', 'Content',  'Feedback'].map((text, id) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton style={{display: 'flex', width: '100%', alignContent: 'center', flexDirection: 'column', color: id === index ? 'blue' : 'GrayText'}} onClick={() => handleListItemClick(id)}>
-              <ListItemIcon style={{display: 'flex', width: '100%', justifyContent: 'center', color: id === index ? 'blue' : 'GrayText'}}>
+            <ListItemButton sx={{color: (theme) => id === index ? theme.palette.primary.main : 'GrayText' }} style={{display: 'flex', width: '100%', alignContent: 'center', flexDirection: 'column', }} onClick={() => handleListItemClick(id)}>
+              <ListItemIcon sx={{color: (theme) => id === index ? theme.palette.primary.main : 'GrayText' }} style={{display: 'flex', width: '100%', justifyContent: 'center'}}>
                 {components.find(e => e.id === id)?.icon}
               </ListItemIcon>
-              <ListItemText style={{display: 'flex', width: '100%', justifyContent: 'center' }} primary={text} />
+              <ListItemText style={{display: 'flex', width: '100%', justifyContent: 'center', }} primary={text} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
     </div>
-  );
+  )}
 
   // Remove this const when copying and pasting into your project.
   const container = window !== undefined ? () => window().document.body : undefined;
@@ -105,7 +103,7 @@ export default function ResponsiveDrawer(props: Props) {
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, marginTop: '64px' },
           }}
         >
-          {drawer}
+          {renderDrawer()}
         </Drawer>
         <Drawer
           variant="permanent"
@@ -116,7 +114,7 @@ export default function ResponsiveDrawer(props: Props) {
           }}
           open
         >
-          {drawer}
+          {renderDrawer()}
         </Drawer>
       </Box>
         {renderComponent()}

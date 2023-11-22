@@ -13,9 +13,9 @@ export default function CategoryCard({ title, pictureUrl, id }: Props) {
     <Card>
       <CardHeader
         title={title}
-        sx={{maxHeight: 20, bgcolor: ''}}
+        sx={{maxHeight: 20, bgcolor: 'secondary.dark'}}
         titleTypographyProps={{
-          sx: {textAlign: 'center', color: 'neutral.darker'},
+          sx: {textAlign: 'center', color: 'neutral.main'},
           
         }}
       />
