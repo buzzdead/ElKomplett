@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 ENV PATH $PATH:/root/.dotnet/tools
-RUN dotnet tool install -g dotnet-ef
+RUN dotnet tool install -g dotnet-ef --version 7.0.0   
 EXPOSE 8080
 
 # copy csproj and restore as distinct layers
