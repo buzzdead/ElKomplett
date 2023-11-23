@@ -9,7 +9,6 @@ export const EmailForm = () => {
   
       if (form.current) {
         const formData = new FormData(form.current);
-        console.log(form.current)
   
         emailjs
           .sendForm('asdfasdfasdf', 'asdfasdfasdfsad', form.current, 'asdfasdfsadfasdfasdf')

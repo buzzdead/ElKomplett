@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Grid, Typography } from '@mui/material'
-import { Income, IncomeTypes } from './Income'
+import { Income, IncomeTypes, isSameDay } from './Income'
 import { useOrder } from 'app/hooks/useOrders'
 import { SalesChart } from './SalesChart'
 import { OrderItem } from 'app/models/order'
@@ -32,7 +32,7 @@ export const DashBoard = () => {
         ? e.orderItems.reduce((mergedQuantity, currentItem) => {
             return mergedQuantity + currentItem.quantity
           }, 0)
-        : 0
+        : 0,
     }
   })
   /* const getNumberOfOrdersToday = () => {
@@ -64,6 +64,12 @@ export const DashBoard = () => {
     return currencyFormat(Math.round((averageTotal || 0) / (ordersToday?.length || 1)))
   } */
   if (loading) return null
+  const todaysDate = new Date()
+  const todaysOrders = orders?.filter(o => {
+    const orderDate = new Date(o.orderDate)
+    return isSameDay(orderDate, todaysDate)
+  })
+  
   return (
     <Grid
       container
@@ -110,9 +116,9 @@ export const DashBoard = () => {
                 </Typography>
               }
             />
-            <CardContent>
-              {orderItems.map((e, id) => (
-                <Box key={id} display='flex' flexDirection={'row'} justifyContent={'space-between'}>
+            <CardContent style={{ paddingTop: 0 }}>
+              {orderItems.slice(0, 5).map(e => (
+                <Box key={e.name} display='flex' flexDirection={'row'} justifyContent={'space-between'}>
                   <Typography>{e.name}</Typography>
                   <Typography>{e.quantity}</Typography>
                 </Box>
@@ -131,7 +137,9 @@ export const DashBoard = () => {
               </Typography>
             }
           />
-          <Box display={'flex'} flexDirection={'column'} gap={4} p={2}></Box>
+          <Box display={'flex'} flexDirection={'column'} gap={4} p={2}>
+            {todaysOrders?.map(o => <Typography>{o.buyerId}</Typography>)}
+          </Box>
         </Card>
       </Grid>
     </Grid>

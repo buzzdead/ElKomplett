@@ -18,7 +18,7 @@ interface Props {
   orders: Order[] | undefined
 }
 
-const isSameDay = (date1: Date, date2: Date, previousDay?: boolean) => {
+export const isSameDay = (date1: Date, date2: Date, previousDay?: boolean) => {
   const minus = previousDay && date2.getDate() > 0 ? 1 : 0
   return (
     date1.getDate() === date2.getDate() - minus &&
