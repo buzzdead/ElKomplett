@@ -19,12 +19,14 @@ declare module '@mui/material/styles' {
     special: PaletteColor;
     special2: PaletteColor;
     special3: PaletteColor;
+    special4: PaletteColor;
   }
 
   interface PaletteOptions {
     special: string;
     special2: string;
     special3: {main: string};
+    special4: {main: string};
   }
 }
 
@@ -80,9 +82,12 @@ function App() {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       special: darkMode ? grey[700] : 'white',
-      special2: darkMode ? grey[900] : 'white',
+      special2: darkMode ? grey[900] : grey[100],
       special3:  {
-        main: darkMode ? cyan[100] : cyan[900]
+        main: darkMode ? cyan[100] : 'black'
+      },
+      special4: {
+        main: darkMode ? grey[700] : 'white'
       },
       background: {
         main: darkMode ?  grey[700] : grey[200],

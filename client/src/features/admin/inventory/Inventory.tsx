@@ -71,22 +71,19 @@ export default function Inventory({ adminMode = false }: Props) {
     return (
       <Box
         display='flex'
-        justifyContent='space-between'
-        flexDirection={view.mobile ? 'column' : 'row'}
+        width='100%'
+        justifyContent='flex-end'
       >
-        <Typography sx={{ p: 2 }} variant='h4'>
-          Inventory
-        </Typography>
-        <Box display='flex' flexDirection='row'>
+        <Render condition={view.custom}>
+        </Render>
           <Button
             onClick={() => setEditMode(true)}
-            sx={{ m: 2, minWidth: 170 }}
+            sx={{ my: 2, minWidth: 170 }}
             size='large'
             variant='contained'
           >
             Create product
           </Button>
-        </Box>
       </Box>
     )
   }
@@ -162,9 +159,10 @@ export default function Inventory({ adminMode = false }: Props) {
     setShowFilterModal(!showFilterModal)
   }
   return (
-    <>
-      <Grid container columnSpacing={4} width='100%'>
-        <Render condition={view.ipad}>
+      <Grid display='flex' flexDirection={'row'} container columnSpacing={4} >
+      {renderHeader()}
+      <Grid item xs={12} lg={12} display='flex' gap={5} flexDirection={'row'}>
+        <Render condition={view.custom}>
           <SidebarModal
             onClose={toggleFilterModal}
             producers={producers}
@@ -172,31 +170,33 @@ export default function Inventory({ adminMode = false }: Props) {
             showModal={showFilterModal}
           />
         </Render>
-        <Render condition={!view.ipad}>
+        <Render condition={!view.custom}>
+          
           <Grid item xs={3} minWidth='175px'>
             <ProductSearch />
               <SideBar producers={producers} productTypes={productTypes} />
               
           </Grid>
-          <Button onClick={toggleFilterModal}>
+          <Button onClick={toggleFilterModal}
+          sx={{
+            height: 40,
+            width: 40,
+            color: 'green',
+            display: 'flex',
+            alignSelf: 'center',
+            position: 'absolute',
+            marginBottom: 2,
+            top: 105 
+          }}>
                 <FilterListIcon
-                  sx={{
-                    height: 40,
-                    width: 40,
-                    color: 'green',
-                    display: 'flex',
-                    alignSelf: 'center',
-                    position: 'absolute',
-                    marginBottom: 2,
-                    right: 15,
-                  }}
+                  
                   fontSize='large'
                 />
               </Button>
         </Render>
 
-        <Grid item xs={12} lg={9} md={9}>
-          {renderHeader()}
+        <Grid item xs={12} lg={view.custom ? 12 : 9} md={12}>
+         
           <AppTable2D
             sxRow={{ '&:last-child td, &:last-child th': { border: 0 } }}
             tableData={tableData}
@@ -213,7 +213,7 @@ export default function Inventory({ adminMode = false }: Props) {
             </Box>
           </Render>
         </Grid>
+        </Grid>
       </Grid>
-    </>
   )
 }

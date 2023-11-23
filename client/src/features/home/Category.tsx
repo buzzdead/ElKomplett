@@ -76,7 +76,7 @@ export default function Category() {
           <Skeleton animation='wave' variant='rectangular' height={35} width={'60%'} />
         </Grid>
       </Render>
-      <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: 5}}>
+      <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: {sm: 0, md: 5}}}>
       <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={10} className='center-on-small2'>
         <Card sx={{ width: '100%', marginBottom: 2, bgcolor: 'special2' }}>
           <Render condition={!categoryLoading}>

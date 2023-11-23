@@ -49,7 +49,7 @@ export default function ProductCard({ product }: Props) {
     maxHeight: '60px',
   }
   return (
-    <Card sx={{ bgcolor: 'special' }}>
+    <Card sx={{ bgcolor: 'special4.main' }}>
       <Modal
         open={configure}
         onClose={setConfigureMode}

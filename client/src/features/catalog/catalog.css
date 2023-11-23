@@ -13,7 +13,6 @@
     right: -100%; /* Off-screen initially */
     height: 100%;
     width: 200px; /* Adjust width as needed */
-    background-color: white;
     transition: right 0.5s ease; /* Add a transition effect */
     z-index: 9238293829;
   }

@@ -1,6 +1,6 @@
 import SideBar from "features/SideBar"
-import { ProductTypes } from "features/admin/AdvancedInventory/Sidebars/ProductTypes"
 import './catalog.css'
+import { Box } from "@mui/material"
 
 interface Props {
     producers: string[]
@@ -14,9 +14,9 @@ export const SidebarModal = (props: Props) => {
     <>
     <div className={`overlay ${props.showModal ? 'show' : ''}`} onClick={props.onClose}></div>
     
-    <div className={`filter-modal ${props.showModal ? 'show' : ''}`}>
+    <Box sx={{backgroundColor: 'special2'}} className={`filter-modal ${props.showModal ? 'show' : ''}`}>
         <SideBar producers={props.producers} productTypes={props.productTypes} />
 
-    </div>
+    </Box>
     </>)
 }
