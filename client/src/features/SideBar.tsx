@@ -24,12 +24,11 @@ export default function SideBar(props: Props) {
   if(!filtersLoaded) return null;
   return (
     <div>
-      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special2' , minWidth: 225}}>
+      <Paper sx={{ mb: 2, p: 2, bgcolor: 'special2' , minWidth: 225, }}>
         <RadioButtonGroup
           selectedValue={productParams.orderBy}
           flexDirection='column'
           options={sortOptions}
-          color='special3.main'
           onChange={(e) => dispatch(setProductParams({ orderBy: e.target.value }))}
         />
       </Paper>
@@ -37,7 +36,6 @@ export default function SideBar(props: Props) {
       <Paper sx={{ mb: 2, p: 2, bgcolor: 'special2', minWidth: 225  }}>
         <CheckboxButtons
           items={props.producers}
-          color='special3.main'
           checked={productParams.producers}
           onChange={(items: string[]) => dispatch(setProductParams({ producers: items }))}
           resetFunction={() => dispatch(setProductParams({producers: []}))}
@@ -48,7 +46,6 @@ export default function SideBar(props: Props) {
       <Paper sx={{ mb: 2, p: 2, bgcolor: 'special2', minWidth: 225  }}>
         <CheckboxButtons
           items={props.productTypes}
-          color='special3.main'
           checked={productParams.productTypes}
           onChange={(items: string[]) => dispatch(setProductParams({ productTypes: items }))}
           resetFunction={() => dispatch(setProductParams({productTypes: []}))}

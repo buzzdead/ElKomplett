@@ -35,33 +35,37 @@ export default function Catalog() {
     <Grid container columnSpacing={4} className='center-on-small'>
       <Render condition={!categoriesLoading}>
       <Grid
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 2.5,
-          justifyContent: 'center',
-          marginBottom: 2.5,
-          flexWrap: 'wrap'
-        }}
-        item
-        xs={12}
-      >
-        {categories.map((c) => {
-          return (
-            <Link style={{ textDecoration: 'none' }} key={c.id} to={`/catalog/categories/${c.id}`}>
-              <Typography
-                variant='overline'
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            overflow: {xs: 'scroll', md: 'hidden'},
+            marginBottom: 2.5,
+            justifyContent: {xs: 'flex-start', md: 'center'}
+          }}
+          item
+          xs={12}
+        >
+           {categories.map((c) => (
+              <Button
+                component={Link}
+                to={`/catalog/categories/${c.id}`}
+                key={c.id}
                 sx={{
-                  fontSize: 14,
-                  color: c.id === category.id ? 'blue' : 'neutral.main',
-                  fontWeight: 500,
+                  my: 1,
+                  minWidth: 150,
+                  color: c.id === category.id ? 'primary.main' : 'text.secondary',
+                  fontWeight: c.id === category.id ? 600 : 400,
+                  fontSize: c.id === category.id ? '1rem' : '0.875rem',
+                  height: 30,
+                  backgroundColor: (theme) => c.id === category.id ? theme.palette.warning.contrastText : 'transparent',
+                  '&:hover': {
+                    backgroundColor: c.id === category.id ? 'primary' : 'grey.500',
+                  },
                 }}
               >
                 {c.title}
-              </Typography>
-            </Link>
-          )
-        })}
+              </Button>
+            ))}
         </Grid>
         <Grid
         sx={{

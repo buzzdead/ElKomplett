@@ -1,4 +1,4 @@
-import { Box, Card, CardMedia, Grid, Paper, Typography } from '@mui/material'
+import { Box, Card, CardMedia, Grid, Paper, Typography, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
@@ -30,6 +30,7 @@ const gridStyle = {
   width: '100%',
   mt: 5,
   mb: 5,
+  position: 'sticky', top: 0, zIndex: 10
 }
 
 export default function ProductDetails() {
@@ -41,6 +42,7 @@ export default function ProductDetails() {
   const { state, setState, updateState } = useConfigs({ basket: basket, product: product, id: id })
   const [bottomValue, setBottomValue] = useState(0)
   const view = useView()
+  const theme = useTheme()
 
   function handleUpdateCart() {
     const quantity = state.newQuantity as number
@@ -165,33 +167,48 @@ export default function ProductDetails() {
           newQuantity={state.newQuantity as number}
           status={status}
           handleUpdateCart={handleUpdateCart}
-          updateState={(newQuantity: 'newQuantity', n: number | string) => updateState(newQuantity, n)}
+          updateState={(newQuantity: 'newQuantity', n: number | string) =>
+            updateState(newQuantity, n)
+          }
           basketItem={state.basketItem}
         />
       </Grid>
 
       <Grid
-        component={Paper}
-        elevation={1}
-        item
-        xs={10}
-        sx={{ ...gridStyle, ml: view.view.ipad ? 2 : 20, mr: view.view.ipad ? 2 : 20 }}
-      >
-        <ProductBottom onChangeValue={setBottomValue} />
-        <Typography variant='subtitle1' sx={{ marginBottom: 5, marginTop: 2, marginRight: 5 }}>
-          {bottomValue === 0 ? (
-            product.richDescription !== null ? (
-              <RichTextDisplay richText={product.richDescription} />
-            ) : (
-              product.description
-            )
-          ) : bottomValue === 1 ? (
-            'Spesifikasjoner kommer'
-          ) : (
-            'Dokumentasjon kommer'
-          )}
-        </Typography>
-      </Grid>
+    component={Paper}
+    item
+    xs={10}
+    pb={5}
+    sx={{
+      ...gridStyle,
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.text.primary,
+      ml: view.view.ipad ? 2 : 20,
+      mr: view.view.ipad ? 2 : 20,
+    }}
+  >
+    <ProductBottom onChangeValue={setBottomValue} />
+    <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
+    <div className={`tab-content ${bottomValue === 0 ? 'active' : ''}`}>
+      {/* Content for the first tab */}
+      {bottomValue === 0 ? (
+        product.richDescription !== null ? (
+          <RichTextDisplay richText={product.richDescription} />
+        ) : (
+          product.description
+        )
+      ) : null}
+    </div>
+    <div className={`tab-content ${bottomValue === 1 ? 'active' : ''}`}>
+      {/* Content for the second tab */}
+      {bottomValue === 1 ? 'Spesifikasjoner kommer' : null}
+    </div>
+    <div className={`tab-content ${bottomValue === 2 ? 'active' : ''}`}>
+      {/* Content for the third tab */}
+      {bottomValue === 2 ? 'Dokumentasjon kommer' : null}
+    </div>
+    </Grid>
+  </Grid>
     </Grid>
   )
 }

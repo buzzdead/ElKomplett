@@ -28,10 +28,10 @@ export default function ProductSearch() {
         color='primary'
         type='search'
         InputLabelProps={{
-          sx: {  color: (theme) => theme.palette.special3.main  }, // Change 'desiredLabelColor' to your preferred color
+          sx: {  color: (theme) => theme.palette.neutral.main  }, // Change 'desiredLabelColor' to your preferred color
         }}
         InputProps={{
-          sx: {  color: (theme) => theme.palette.special3.main  }
+          sx: {  color: (theme) => theme.palette.neutral.main  }
         }}
         fullWidth
         value={searchTerm || ''}

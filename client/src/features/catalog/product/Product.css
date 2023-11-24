@@ -26,3 +26,19 @@
       align-self: center;
     }
   }
+
+  .tab-content {
+    transform-origin: top;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    opacity: 0; /* Start with content fully transparent */
+    transform: scaleY(0); /* Start with content scaled down to nothing */
+    height: 0; /* Initially, the height is 0 to avoid taking space */
+    overflow: hidden; /* Prevents content from spilling out during the transition */
+  }
+  
+  .tab-content.active {
+    opacity: 1; /* Fade in to full opacity */
+    transform: scaleY(1); /* Scale up to full size */
+    height: auto; /* Allow the height to grow as needed */
+  }
+  

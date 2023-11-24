@@ -29,38 +29,38 @@ export default function Category() {
   return (
     <Grid container columnSpacing={4}>
       <Render condition={!categoriesLoading}>
-        <Grid
+      <Grid
           sx={{
             display: 'flex',
             flexDirection: 'row',
-            gap: 2.5,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
+            overflow: {xs: 'scroll', md: 'hidden'},
             marginBottom: 2.5,
+            justifyContent: {xs: 'flex-start', md: 'center'}
           }}
           item
           xs={12}
         >
-          {categories.map((c) => {
-            return (
-              <Link
-                style={{ textDecoration: 'none' }}
-                key={c.id}
+           {categories.map((c) => (
+              <Button
+                component={Link}
                 to={`/catalog/categories/${c.id}`}
+                key={c.id}
+                sx={{
+                  my: 1,
+                  minWidth: 150,
+                  color: c.id === category.id ? 'primary.main' : 'text.secondary',
+                  fontWeight: c.id === category.id ? 600 : 400,
+                  fontSize: c.id === category.id ? '1rem' : '0.875rem',
+                  height: 30,
+                  backgroundColor: (theme) => c.id === category.id ? theme.palette.neutral.darker : 'transparent',
+                  '&:hover': {
+                    backgroundColor: c.id === category.id ? 'primary' : 'grey.500',
+                  },
+                }}
               >
-                <Typography
-                  variant='overline'
-                  sx={{
-                    fontSize: c.id === category.id ? 15 : 14,
-                    color: c.id === category.id ? 'primary.main' : 'neutral.main',
-                    fontWeight: 500,
-                  }}
-                >
-                  {c.title}
-                </Typography>
-              </Link>
-            )
-          })}
+                {c.title}
+              </Button>
+            ))}
         </Grid>
         <Grid
           sx={{
@@ -76,55 +76,32 @@ export default function Category() {
           <Skeleton animation='wave' variant='rectangular' height={35} width={'60%'} />
         </Grid>
       </Render>
-      <Grid item xs={12} className='center-on-small2' sx={{display: 'flex', flexDirection: 'row', gap: {sm: 0, md: 5}}}>
-      <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={10} className='center-on-small2'>
-        <Card sx={{ width: '100%', marginBottom: 2, bgcolor: 'special2' }}>
-          <Render condition={!categoryLoading}>
-            <CardMedia
-              sx={{ height: 200, backgroundSize: 'cover' }}
-              image={category.pictureUrl || ''}
-              title={category.title}
-            />
-            <Skeleton animation='wave' variant='rectangular' height={225} />
-          </Render>
-          <Render condition={!view.view.mobile}>
-          <CardContent>
-            <Typography gutterBottom variant='h5' component='div' sx={{color: (theme) => theme.palette.info.light}}>
-              {!categoryLoading ? (
-                category.title
-              ) : (
-                <Skeleton animation='wave' height={60} width='80%' style={{}} />
-              )}
-            </Typography>
-            <Typography variant='h6' fontSize={14} sx={{color: (theme) => theme.palette.neutral.main}}>
-              {!categoryLoading ? (
-                category.description
-              ) : (
-                <Skeleton animation='wave' height={60} width='80%' style={{}} />
-              )}
-            </Typography>
-          </CardContent>
-          </Render>
-        </Card>
-        <Box display='flex' flexDirection={view.view.ipad ? 'row' : 'column'}>
-
-        
-        <ProductSearch />
-        <Render condition={!view.view.mobile}>
-        <SideBar producers={producers} productTypes={productTypes} />
-        <Button onClick={toggleFilterModal}>
-        <FilterListIcon sx={{ height: 40, width: 40, display: 'flex', alignSelf: 'center', marginBottom: 2, position: 'absolute', right: 15}} fontSize='large' />
-        </Button>
-        </Render>
-        <Render condition={view.view.ipad}>
-          <SidebarModal onClose={toggleFilterModal} producers={producers} productTypes={productTypes} showModal={showFilterModal}/>
-        </Render>
-        </Box>
-      </Grid>
-      <Grid item xs={11} >
-        <ProductList loadingCondition={categoryLoading} products={products} />
-      </Grid>
+  
+      <Grid item xs={12} className='center-on-small2' sx={{ display: 'flex', flexDirection: 'row', gap: { sm: 0, md: 5 } }}>
+        <Grid item lg={2.65} xl={2.65} md={3} sm={6} xs={10} className='center-on-small2'>
+         
+  
+          <Box display='flex' flexDirection={view.view.ipad ? 'row' : 'column'}>
+            <ProductSearch />
+  
+            <Render condition={!view.view.mobile}>
+              <SideBar producers={producers} productTypes={productTypes} />
+              <Button onClick={toggleFilterModal} sx={{ height: 40, width: 40, display: 'flex', alignSelf: 'center', marginBottom: 2, position: 'absolute', right: 15 }}>
+                <FilterListIcon fontSize='large' />
+              </Button>
+            </Render>
+  
+            <Render condition={view.view.ipad}>
+              <SidebarModal onClose={toggleFilterModal} producers={producers} productTypes={productTypes} showModal={showFilterModal} />
+            </Render>
+          </Box>
+        </Grid>
+  
+        <Grid item xs={11}>
+          <ProductList loadingCondition={categoryLoading} products={products} />
+        </Grid>
       </Grid>
     </Grid>
-  )
+  );
+  
 }

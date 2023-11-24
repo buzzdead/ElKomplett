@@ -65,9 +65,8 @@ const data = (theme: Theme) => {
     {
       label: 'Dataset 1',
       data: generateRandomData(),
-      borderColor: theme.palette.secondary.darker,
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      color: 'green'
+      borderColor: theme.palette.primary.main, // Use the primary color for the line
+      backgroundColor: theme.palette.secondary.main,
     },
   ],
 }}

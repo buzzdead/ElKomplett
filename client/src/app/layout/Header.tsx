@@ -7,8 +7,10 @@ import {
   List,
   ListItem,
   Switch,
+  Theme,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material'
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -53,34 +55,41 @@ const rightLinks = (condition: any) => [
   },
 ]
 
-const navStyles = {
+const navStyles = (theme: Theme) => ({
   color: 'inherit',
   textDecoration: 'none',
   typography: 'h6',
   '&:hover': {
     color: 'grey.500',
+    textDecoration: 'underline',
   },
   '&.active': {
-    color: 'text.secondary',
+    color: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.warning.light, // A warm color in light mode
+    textDecoration: 'underline',
   },
-}
+});
+
+
 
 export default function Header({ darkMode, handleThemeChange }: Props) {
   const { basket } = useAppSelector((state) => state.basket)
   const { user } = useAppSelector((state) => state.account)
   const { view } = useView()
+  const theme = useTheme();
+const styles = navStyles(theme);
   const itemCount = basket && basket.items.reduce((sum, item) => sum + item.quantity, 0)
   return (
-    <AppBar position='sticky' style={{backgroundColor: darkMode ? 'black' : ''}}>
+    <AppBar position='sticky' sx={{ backgroundColor: darkMode ? 'grey.900' : 'primary.main' }}>
+
       <Toolbar
-        style={{ maxHeight: '10px' }}
+        style={{ maxHeight: '40px' }}
         sx={{
           display: 'flex',
           width: '100%',
         }}
       >
         <Box display='flex' alignItems='center' justifyContent='flex-start'>
-          <Typography variant='h6' component={NavLink} to='/' sx={navStyles} style={{color: 'white'}}>
+          <Typography variant='h6' component={NavLink} to='/' sx={styles} style={{color: 'white'}}>
             ElKomplett
           </Typography>
           <Switch
@@ -100,7 +109,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
         <List sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 5 }}>
           <Render condition={!view.ipad} ignoreTernary>
             {midLinks.map(({ title, path }) => (
-              <ListItem component={NavLink} to={path} key={path} sx={{...navStyles, width: '125px'}}>
+              <ListItem component={NavLink} to={path} key={path} sx={{...styles, width: '125px'}}>
                 {title.toUpperCase()}
               </ListItem>
             ))}
@@ -110,7 +119,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
               !view.ipad && user && AuthorisedRoles.some((role) => user.roles?.includes(role))
             }
           >
-            <ListItem component={NavLink} to={'/admin'} sx={{...navStyles, width: ''}}>
+            <ListItem component={NavLink} to={'/admin'} sx={{...styles, width: ''}}>
               ADMIN
             </ListItem>
           </Render>
@@ -135,7 +144,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
             <SignedInMenu />
             <List sx={{ display: 'flex'}}>
               {rightLinks(!view.ipad).map(({title, condition, path }) => (
-                <ListItem component={NavLink} to={path} key={path} sx={{...navStyles, width: !view.ipad ? '125px' : ''}}>
+                <ListItem component={NavLink} to={path} key={path} sx={{...styles, width: !view.ipad ? '125px' : ''}}>
                   {condition && title.toUpperCase()}
                 </ListItem>
               ))}

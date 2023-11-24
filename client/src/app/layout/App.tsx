@@ -20,6 +20,7 @@ declare module '@mui/material/styles' {
     special2: PaletteColor;
     special3: PaletteColor;
     special4: PaletteColor;
+    brandSecondary: PaletteColor;
   }
 
   interface PaletteOptions {
@@ -27,6 +28,7 @@ declare module '@mui/material/styles' {
     special2: string;
     special3: {main: string};
     special4: {main: string};
+    brandSecondary: {main: string; light: string; dark: string; contrastText: string;}
   }
 }
 
@@ -81,34 +83,45 @@ function App() {
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
-      special: darkMode ? grey[700] : 'white',
-      special2: darkMode ? grey[900] : grey[100],
-      special3:  {
-        main: darkMode ? cyan[100] : 'black'
+      error: {
+        main: '#d32f2f', // or any color that fits your design
       },
-      special4: {
-        main: darkMode ? grey[700] : 'white'
+      primary: {
+        main: '#2979ff',
       },
+      secondary: {
+        main: darkMode ? red[400] : blue[500], // Adjust secondary color
+        contrastText: darkMode ? grey[100] : grey[900], // Ensure text on secondary color is visible
+      },
+      brandSecondary: {
+        light: teal[400],
+        main: teal[500],
+        dark: teal[600],
+        contrastText: common.white,
+      },
+      // Adjust other colors as needed
       background: {
-        main: darkMode ?  grey[700] : grey[200],
+        main: darkMode ? grey[700] : grey[200],
         default: darkMode ? grey[800] : grey[200],
         paper: darkMode ? grey[900] : grey[300],
       },
-      secondary: {
-        main: darkMode ? blue[400] : red[400],
-        dark: darkMode ? blueGrey[800] : blueGrey[100],
-        darker: darkMode ? green[400] : green[400]
+      special: darkMode ? grey[700] : 'white',
+      special2: darkMode ? grey[900] : grey[100],
+      special3: {
+        main: darkMode ? cyan[100] : 'black',
+      },
+      special4: {
+        main: darkMode ? grey[700] : 'white',
       },
       neutral: {
         main: darkMode ? 'white' : 'black',
         dark: darkMode ? blue[400] : blue[300],
-        darker: blue[900]
+        darker: darkMode ? green[200] : green[100],
       },
-      common: {
-        
-      }
+      common: {},
     },
-  })
+  });
+  
 
   function handleThemeChange() {
     setDarkMode(!darkMode)
