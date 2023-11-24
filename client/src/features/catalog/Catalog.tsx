@@ -44,6 +44,7 @@ export default function Catalog() {
           }}
           item
           xs={12}
+          gap={2.5}
         >
            {categories.map((c) => (
               <Button

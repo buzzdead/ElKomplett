@@ -102,7 +102,7 @@ export default function ProductCard({ product }: Props) {
             {currencyFormat(product.price)}
           </Typography>
           <Typography fontSize={16}
-          fontWeight={600} variant='button' color='neutral.darker'>
+          fontWeight={600} variant='button' color='primary.darker'>
             {currencyFormat(product.price * 0.9)}
           </Typography>
         </Box>

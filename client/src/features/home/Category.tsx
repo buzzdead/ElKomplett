@@ -38,6 +38,7 @@ export default function Category() {
             justifyContent: {xs: 'flex-start', md: 'center'}
           }}
           item
+          gap={2.5}
           xs={12}
         >
            {categories.map((c) => (
