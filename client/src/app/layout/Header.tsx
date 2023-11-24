@@ -136,8 +136,8 @@ const styles = navStyles(theme);
         </Render>
         <Box display='flex' alignItems='center' justifyContent='flex-end' sx={{}}>
           <IconButton component={Link} to='/basket' size='large' sx={{ color: 'inherit' }}>
-            <Badge badgeContent={itemCount} color='secondary'>
-              <ShoppingCart fontSize='large' />
+            <Badge badgeContent={itemCount} color='error'>
+              <ShoppingCart fontSize='large'  />
             </Badge>
           </IconButton>
           <Render condition={user !== null}>

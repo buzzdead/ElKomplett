@@ -21,11 +21,13 @@ declare module '@mui/material/styles' {
     special3: PaletteColor;
     special4: PaletteColor;
     brandSecondary: PaletteColor;
+    mode2: PaletteColor
   }
 
   interface PaletteOptions {
     special: string;
     special2: string;
+    mode2: {main: string};
     special3: {main: string};
     special4: {main: string};
     brandSecondary: {main: string; light: string; dark: string; contrastText: string;}
@@ -83,6 +85,7 @@ function App() {
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
+      mode2: {main: darkMode ? 'black' : 'white'},
       error: {
         main: '#d32f2f', // or any color that fits your design
       },
@@ -116,7 +119,7 @@ function App() {
       neutral: {
         main: darkMode ? 'white' : 'black',
         dark: darkMode ? blue[400] : blue[300],
-        darker: darkMode ? green[200] : green[100],
+        darker: darkMode ? cyan[300] : cyan[200],
       },
       common: {},
     },

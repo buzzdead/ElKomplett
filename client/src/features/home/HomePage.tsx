@@ -61,7 +61,7 @@ export default function HomePage() {
           />
         </div>
       </Slider>
-      <Box sx={{ padding: isMobile ? 1 : 5, paddingX: 20 }}>
+      <Box sx={{ padding: isMobile ? 1 : 5, paddingX: {sx: 0, md: 20} }}>
         <Categories />
       </Box>
     </div>

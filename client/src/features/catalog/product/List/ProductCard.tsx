@@ -8,6 +8,7 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
+  CircularProgress,
   Modal,
   Typography,
 } from '@mui/material'
@@ -25,6 +26,8 @@ import BuildIcon from '@mui/icons-material/Build'
 import useView from 'app/hooks/useView'
 import { Configuring } from './Configuring'
 import '../Product.css'
+import { green } from '@mui/material/colors'
+import LoadingComponent from 'app/layout/LoadingComponent'
 
 interface Props {
   product: IProduct
@@ -39,6 +42,10 @@ export default function ProductCard({ product }: Props) {
 
   const setConfigureMode = () => {
     setConfigure(!configure)
+  }
+
+  const currencyFormatWithNok = (price: number) => {
+    return <Box display='flex' flexDirection={'row'} gap={0.5}><Typography display='flex' mb={0.4} alignSelf={'flex-end'} fontSize={10}>NOK </Typography><Typography>{currencyFormat(price)}</Typography></Box>
   }
 
   const cellStyle = {
@@ -70,7 +77,7 @@ export default function ProductCard({ product }: Props) {
         <Configuring product={product} basket={basket} status={status} modal/>
       </Modal>
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: 'neutral.light', width: '50px', height: '50px', color: 'neutral.darker', fontWeight: 600, fontSize: 15 }}>-10%</Avatar>}
+        avatar={<Avatar sx={{ bgcolor: 'warning.main', width: '50px', height: '50px', color: 'primary.dark', fontWeight: 600, fontSize: 15 }}>-10%</Avatar>}
         title={<div className='cellStyle'>{product.name}</div> as any}
         titleTypographyProps={{
           sx: { fontWeight: 'bold', color: 'text.primary', fontSize: '1rem' },
@@ -79,7 +86,7 @@ export default function ProductCard({ product }: Props) {
       <CardMedia
         component="img"
         sx={{
-          height: 140,
+          height: 180,
           objectFit: 'contain',
           p: 2,
         }}
@@ -99,15 +106,17 @@ export default function ProductCard({ product }: Props) {
              fontSize={16}
              fontWeight={600}
           >
-            {currencyFormat(product.price)}
+            {currencyFormatWithNok(product.price)}
           </Typography>
           <Typography fontSize={16}
-          fontWeight={600} variant='button' color='primary.darker'>
-            {currencyFormat(product.price * 0.9)}
+          fontWeight={600} variant='button' color='warning.main'>
+            {currencyFormatWithNok(product.price * 0.9)}
           </Typography>
         </Box>
       </CardContent>
       <CardActions sx={{ display: 'flex', justifyContent: 'space-between', p: 0, pb : 2, px: 2 }}>
+        <Render condition={status === 'pendingAddItem' + product.id}>
+          <CircularProgress variant='indeterminate' />
         <LoadingButton
         sx={{ minWidth: '48px'}}
           loading={status === 'pendingAddItem' + product.id}
@@ -121,6 +130,7 @@ export default function ProductCard({ product }: Props) {
           ><AddShoppingCartIcon sx={{color: (theme) => product.configurables && product.configurables.length > 0 ? 'dark' : theme.palette.warning.main}} fontSize='medium' /></Badge>}
           size='medium'
         />
+        </Render>
         {product.configurables && product.configurables.length > 0 && (
           <LoadingButton
             loading={status === 'pendingAddItem' + product.id}

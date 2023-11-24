@@ -53,7 +53,6 @@ export default function Category() {
                   fontWeight: c.id === category.id ? 600 : 400,
                   fontSize: c.id === category.id ? '1rem' : '0.875rem',
                   height: 30,
-                  backgroundColor: (theme) => c.id === category.id ? theme.palette.neutral.darker : 'transparent',
                   '&:hover': {
                     backgroundColor: c.id === category.id ? 'primary' : 'grey.500',
                   },

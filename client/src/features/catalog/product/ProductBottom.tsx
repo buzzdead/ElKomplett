@@ -25,7 +25,7 @@ export default function ProductBottom({ onChangeValue }: Props) {
     },
     fontWeight: 600,
     backgroundColor: isActive ? theme.palette.brandSecondary.main : theme.palette.action.disabledBackground,
-    borderRadius: 1,
+    borderRadius: 5,
     minWidth: 150,
     minHeight: 60,
     '& .MuiSvgIcon-root': {
