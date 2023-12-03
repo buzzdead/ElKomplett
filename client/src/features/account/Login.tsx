@@ -12,7 +12,8 @@ import { useForm } from 'react-hook-form';
 import { FieldValues } from 'react-hook-form/dist/types';
 import { LoadingButton } from '@mui/lab';
 import { useAppDispatch } from '../../app/store/configureStore';
-import { signInUser } from './accountSlice';
+import { signInUser, signInUserWithGoogle } from './accountSlice';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const navigate = useNavigate()
@@ -33,6 +34,19 @@ export default function Login() {
     
   }
 
+  const responseMessage = async (response: any) => {
+    try {
+      await dispatch(signInUserWithGoogle(response.credential))
+      navigate(location.state?.from?.pathname || '/catalog')
+    }
+    catch (error) {
+      console.log(error)
+    }
+};
+const errorMessage = () => {
+    console.log("error");
+};
+
   return (
       <Container component={Paper} maxWidth="sm" sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4}}>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -41,6 +55,7 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+          <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
           <Box component="form" onSubmit={handleSubmit(submitForm)} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"

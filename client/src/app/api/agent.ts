@@ -167,6 +167,7 @@ const Account = {
   register: (values: any) => requests.post('account/register', values),
   currentUser: () => requests.get('account/currentUser'),
   fetchAddress: () => requests.get('account/savedAddress'),
+  google: (token: any) => requests.post('account/google', token)
 }
 
 const Orders = {

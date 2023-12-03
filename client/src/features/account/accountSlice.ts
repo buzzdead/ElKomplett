@@ -30,6 +30,23 @@ export const signInUser = createAsyncThunk<User, FieldValues>(
     }
 )
 
+
+export const signInUserWithGoogle = createAsyncThunk<User, FieldValues>(
+    'account/signInUser',
+    async (token, thunkAPI) => {
+        const userDto = await agent.Account.google({token: token})
+        try {
+            const { basket, ...user } = userDto
+            if (basket) thunkAPI.dispatch(setBasket(basket))
+            localStorage.setItem('user', JSON.stringify(user))
+            return user
+        }
+        catch(error: any) {
+            return thunkAPI.rejectWithValue({error: error.data})
+        }
+    }
+)
+
 export const fetchCurrentUser = createAsyncThunk<User>(
     'account/fetchCurrentUser',
     async (_, thunkAPI) => {
@@ -74,12 +91,12 @@ export const accountSlice = createSlice({
             toast.error('Session expired - please login again')
             router.navigate('/')
         })
-        builder.addMatcher(isAnyOf(signInUser.fulfilled, fetchCurrentUser.fulfilled), (state, action) => {
+        builder.addMatcher(isAnyOf(signInUser.fulfilled, fetchCurrentUser.fulfilled, signInUserWithGoogle.fulfilled), (state, action) => {
             let claims = JSON.parse(atob(action.payload.token.split('.')[1]))
             let roles = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
             state.user = {...action.payload, roles: typeof(roles) === 'string' ? [roles] : roles}
         })
-        builder.addMatcher(isAnyOf(signInUser.rejected), (state, action) => {
+        builder.addMatcher(isAnyOf(signInUser.rejected, signInUserWithGoogle.rejected), (state, action) => {
             throw action.payload
         })
     })

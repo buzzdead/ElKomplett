@@ -72,9 +72,13 @@ builder.Services.AddDbContext<StoreContext>(opt =>
     opt.UseNpgsql(connStr);
 });
 builder.Services.AddCors();
-builder.Services.AddIdentityCore<User>()
-    .AddRoles<Role>()
-    .AddEntityFrameworkStores<StoreContext>();
+builder.Services.AddIdentityCore<User>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
+})
+.AddRoles<Role>()
+.AddEntityFrameworkStores<StoreContext>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {

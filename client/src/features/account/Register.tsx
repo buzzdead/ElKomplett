@@ -7,7 +7,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { Paper, Switch } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
 import agent from '../../app/api/agent'
@@ -15,9 +15,14 @@ import { toast } from 'react-toastify'
 import { useState } from 'react'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import Render from '../../app/layout/Render'
+import { GoogleLogin } from '@react-oauth/google';
+import { signInUserWithGoogle } from './accountSlice'
+import { useAppDispatch } from 'app/store/configureStore'
 
 export default function Register() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const location = useLocation()
   const [testAdmin, setTestAdmin] = useState(false)
   const {
     register,
@@ -43,6 +48,19 @@ export default function Register() {
     }
   }
 
+  const responseMessage = async (response: any) => {
+    try {
+      await dispatch(signInUserWithGoogle(response.credential))
+      navigate(location.state?.from?.pathname || '/catalog')
+    }
+    catch (error) {
+      console.log(error)
+    }
+};
+const errorMessage = () => {
+    console.log("error");
+};
+
   return (
     <Container
       component={Paper}
@@ -58,6 +76,7 @@ export default function Register() {
       <Typography component='h1' variant='h5'>
         Register
       </Typography>
+      <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
       <Box
         component='form'
         onSubmit={handleSubmit((data) =>
