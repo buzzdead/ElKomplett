@@ -76,7 +76,7 @@ const errorMessage = () => {
       <Typography component='h1' variant='h5'>
         Register
       </Typography>
-      <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+      <GoogleLogin theme='filled_blue' onSuccess={responseMessage} onError={errorMessage} />
       <Box
         component='form'
         onSubmit={handleSubmit((data) =>
