@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj": {}
+    "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj": {
+    "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj",
+        "projectPath": "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\API.csproj",
         "packagesPath": "C:\\Users\\BigBu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\BigBu\\Projects\\Restore\\API\\obj\\",
+        "outputPath": "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\BigBu\\AppData\\Roaming\\NuGet\\NuGet.Config"
