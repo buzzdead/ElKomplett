@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5Ix2mAqr37UIaiwbMhaAlRvMAToLUW9xRempEZByuMdKfB43J0zlGgAOU0ZdXAsRqBgoBrPV2xhYG6/M2D7HKA==",
+  "dgSpecHash": "T7I2//Dh2YNkBzS9TAiHj78UYebzSDvOhkGcVWcVRdZPRJXTPwr4/g3dmvlDGHtQXsPaCNYAZcM0+pKc6dTFeg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\BigBu\\Projects\\Restore\\API\\API.csproj",
+  "projectFilePath": "C:\\Users\\BigBu\\Projects\\ElKomplett\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\BigBu\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\BigBu\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",
