@@ -21,10 +21,10 @@ namespace API.Controllers
         }
 
         [HttpDelete("deleteUser")]
-        public async Task<ActionResult> DeleteUser(string userName) 
+        public async Task<ActionResult> DeleteUser(string userName)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName);
-            if(user == null) return BadRequest();
+            if (user == null) return BadRequest();
             _context.Users.Remove(user);
             var result = await _context.SaveChangesAsync() > 0;
             if (result) return Ok();
@@ -122,7 +122,54 @@ namespace API.Controllers
             return userDto;
         }
 
+        [HttpGet("createTestAdmin")]
+        public async Task<ActionResult<UserDto>> CreateTestAdmin()
+        {
+            var name = "TestAdmin";
+            var email = "Test@Admin";
+            var isUnique = false;
+            var baseName = name;
+            var suffix = 1;
+            while (!isUnique)
+            {
+                var duplicateUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == name);
+                if (duplicateUserName != null)
+                {
+                    name = $"{baseName}{suffix}";
+                    email = $"{email}{suffix}";
+                    suffix++;
+                }
+                else
+                {
+                    isUnique = true;
+                    email += ".com";
+                }
+            }
 
+            var user = new User { UserName = name, Email = email };
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+                return ValidationProblem();
+            }
+
+            await _userManager.AddToRoleAsync(user, "Test");
+
+            var userBasket = await RetrieveBasket(user.UserName);
+            var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
+            var userDto = new UserDto
+            {
+                Email = user.Email,
+                Token = await _tokenService.GenerateToken(user),
+                Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
+            };
+
+            return userDto;
+        }
 
         [HttpPost("login")]
 

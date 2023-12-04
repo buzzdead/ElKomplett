@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { Paper, Switch } from '@mui/material'
+import { Button, Paper, Switch } from '@mui/material'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
@@ -16,13 +16,16 @@ import { useState } from 'react'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import Render from '../../app/layout/Render'
 import { GoogleLogin } from '@react-oauth/google';
-import { signInUserWithGoogle } from './accountSlice'
+import { createTestAdmin, signInUserWithGoogle } from './accountSlice'
 import { useAppDispatch } from 'app/store/configureStore'
+import './google.css'
+import useView from 'app/hooks/useView'
 
 export default function Register() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const location = useLocation()
+  const view = useView()
   const [testAdmin, setTestAdmin] = useState(false)
   const {
     register,
@@ -61,6 +64,15 @@ const errorMessage = () => {
     console.log("error");
 };
 
+const newAdmin = async () => {
+  try {
+    await dispatch(createTestAdmin({arguments: undefined}))
+    navigate(location.state?.from?.pathname || '/catalog')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
   return (
     <Container
       component={Paper}
@@ -73,10 +85,13 @@ const errorMessage = () => {
         <LockOutlinedIcon />
         </Render>
       </Avatar>
-      <Typography component='h1' variant='h5'>
+      <Typography component='h1' variant='h5' marginBottom={2}>
         Register
       </Typography>
-      <GoogleLogin theme='filled_blue' onSuccess={responseMessage} onError={errorMessage} />
+      <Box gap={2} maxHeight={{xs: 30, sm: 39}} minHeight={{xs: 30, sm: 39}} display='flex' flexDirection={'row'}>
+      <GoogleLogin size={view.view.mobile ? 'medium' : 'large'} onSuccess={responseMessage} onError={errorMessage} />
+      <Button onClick={newAdmin} sx={{":hover": {opacity: 0.8}}} style={{backgroundColor: 'white', textTransform: 'none', color: 'black' }} title="asdijf">Test Admin <SupervisorAccountIcon style={{marginLeft: 5, marginBottom: 5}} /></Button>
+      </Box>
       <Box
         component='form'
         onSubmit={handleSubmit((data) =>
