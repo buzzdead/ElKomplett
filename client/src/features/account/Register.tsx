@@ -18,7 +18,6 @@ import Render from '../../app/layout/Render'
 import { GoogleLogin } from '@react-oauth/google';
 import { createTestAdmin, signInUserWithGoogle } from './accountSlice'
 import { useAppDispatch } from 'app/store/configureStore'
-import './google.css'
 import useView from 'app/hooks/useView'
 
 export default function Register() {
