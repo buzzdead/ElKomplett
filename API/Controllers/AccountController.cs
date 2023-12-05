@@ -42,13 +42,11 @@ namespace API.Controllers
 
             try
             {
-
                 var httpClient = new HttpClient();
                 var json = await httpClient.GetStringAsync("https://www.googleapis.com/oauth2/v3/certs");
                 var jsonObject = JObject.Parse(json);
                 var keysArray = jsonObject["keys"].ToString();
 
-                // Deserialize the keys into a collection of JWK objects
                 var signingKeys = Newtonsoft.Json.JsonConvert.DeserializeObject<List<JsonWebKey>>(keysArray);
 
 
@@ -76,7 +74,6 @@ namespace API.Controllers
             var email = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "email")?.Value;
             var name = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
 
-            // 3. Check if the user exists or needs to be created
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -101,17 +98,12 @@ namespace API.Controllers
 
                 if (!result.Succeeded)
                 {
-                    // Provide more detailed error information
-                    return BadRequest("User creation failed due to [specific reason]");
+                    return BadRequest("User creation failed");
                 }
-
-                // Optionally assign roles or do other setup
             }
 
             var userBasket = await RetrieveBasket(user.UserName);
             var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
-
-            // 4. Log in the user (create and return a token as in your existing methods)
             var userDto = new UserDto
             {
                 Email = user.Email,
@@ -157,7 +149,9 @@ namespace API.Controllers
                 return ValidationProblem();
             }
 
+            user.AdminTokens = 0;
             await _userManager.AddToRoleAsync(user, "Test");
+            
 
             var userBasket = await RetrieveBasket(user.UserName);
             var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
