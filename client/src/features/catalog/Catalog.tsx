@@ -16,6 +16,7 @@ import './catalog.css'
 import useView from 'app/hooks/useView'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { SidebarModal } from './SidebarModal'
+import { CategoryList } from 'app/components/CategoryList'
 
 export default function Catalog() {
   const { products, producers, productTypes, filtersLoaded, metaData, productsLoaded } = useProducts()
@@ -46,26 +47,7 @@ export default function Catalog() {
           xs={12}
           gap={2.5}
         >
-           {categories.map((c) => (
-              <Button
-                component={Link}
-                to={`/catalog/categories/${c.id}`}
-                key={c.id}
-                sx={{
-                  my: 1,
-                  minWidth: 150,
-                  color: c.id === category.id ? 'primary.main' : 'text.secondary',
-                  fontWeight: c.id === category.id ? 600 : 400,
-                  fontSize: c.id === category.id ? '1rem' : '0.875rem',
-                  height: 30,
-                  '&:hover': {
-                    backgroundColor: c.id === category.id ? 'primary' : 'grey.500',
-                  },
-                }}
-              >
-                {c.title}
-              </Button>
-            ))}
+          <CategoryList categories={categories} category={category} />
         </Grid>
         <Grid
         sx={{

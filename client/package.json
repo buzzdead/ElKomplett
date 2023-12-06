@@ -28,6 +28,7 @@
     "chart.js": "^4.4.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
+    "framer-motion": "^10.16.12",
     "google": "^2.1.0",
     "history": "^4.10.1",
     "react": "^18.2.0",

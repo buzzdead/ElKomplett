@@ -59,7 +59,7 @@ export const AllOrders = () => {
       tableData={tableData}
       component={Paper}
       url={'/admin/orders'}
-      sx={{ minWidth: 350 }}
+      sx={{ minWidth: 350, marginTop: {xs: 10, sm: 0} }}
     />
   ) : null
 }

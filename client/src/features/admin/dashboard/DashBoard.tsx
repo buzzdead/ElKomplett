@@ -74,7 +74,7 @@ export const DashBoard = () => {
     <Grid
       container
       spacing={2}
-      paddingLeft={{ md: 5, lg: 0, xs: 0, sm: 5 }}
+      paddingLeft={{ md: 5, lg: 5, xl: 0, xs: 0, sm: 5 }}
       paddingRight={{ md: 5, lg: 0, xs: 0, sm: 5 }}
     >
       <Grid item lg={4} sm={12} xs={12}>

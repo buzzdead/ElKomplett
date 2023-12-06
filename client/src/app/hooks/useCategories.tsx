@@ -1,8 +1,10 @@
 import agent from "app/api/agent"
 import { useEffect, useState } from "react"
 
+export type Category = { title: string, pictureUrl: string, id: number, description: string }
+
 export const useCategories = () => {
-    const [categories, setCategories] = useState<{title: string, pictureUrl: string, id: number, description: string}[]>([{title: '', pictureUrl: '', id: 1, description: ''}])
+    const [categories, setCategories] = useState<Category[]>([{title: '', pictureUrl: '', id: 1, description: ''}])
     const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const fetchCategories = async () => {

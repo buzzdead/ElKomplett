@@ -38,12 +38,13 @@ const getOrderSum = (orders: Order[] | undefined, type: IncomeTypes, previous?: 
   const toDaysDate = new Date()
 
   const ordersByType = orders.filter((e) => {
+    const p = previous ? 1 : 0
     const orderDate = new Date(e.orderDate)
     return type === 'Daily'
       ? isSameDay(orderDate, toDaysDate, previous)
       : type === 'Monthly'
       ? isSameMonth(toDaysDate, orderDate, previous)
-      : orderDate.getFullYear() === toDaysDate.getFullYear()
+      : orderDate.getFullYear() === (toDaysDate.getFullYear() - p)
   })
   const sumTotal = ordersByType.reduce((total, order) => total + order.subtotal, 0)
   return sumTotal
@@ -74,7 +75,7 @@ export const Income = ({ type, orders }: Props) => {
           <Typography style={{ fontSize: 11, marginBottom: 1.5, marginRight: 1 }}>NOK</Typography>
           <Render condition={deficit}>
           <Typography>{currencyFormat((parseInt(total2) - parseInt(total)) * 100)}</Typography>
-          <Typography>{total}</Typography>
+          <Typography>{currencyFormat((parseInt(total) - parseInt(total2)) * 100)} </Typography>
           </Render>
           <Typography style={{ marginLeft: 5 }}>fra {incomeType?.from}</Typography>
         </Box>

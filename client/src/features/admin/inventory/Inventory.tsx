@@ -159,7 +159,7 @@ export default function Inventory({ adminMode = false }: Props) {
     setShowFilterModal(!showFilterModal)
   }
   return (
-      <Grid display='flex' flexDirection={'row'} container columnSpacing={4} >
+      <Grid display='flex' flexDirection={'row'} container columnSpacing={4} sx={{ marginTop: {xs: 5, sm: 0}}} >
       {renderHeader()}
       <Grid item xs={12} lg={12} display='flex' gap={5} flexDirection={'row'}>
         <Render condition={view.custom}>
@@ -186,7 +186,7 @@ export default function Inventory({ adminMode = false }: Props) {
             alignSelf: 'center',
             position: 'absolute',
             marginBottom: 2,
-            top: 105 
+            top: {xs: 145, sm: 105} 
           }}>
                 <FilterListIcon
                   

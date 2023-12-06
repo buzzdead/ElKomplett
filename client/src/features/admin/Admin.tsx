@@ -18,6 +18,7 @@ import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { DashBoard } from './dashboard/DashBoard';
 import { AllOrders } from './Order/AllOrders';
+import Render from 'app/layout/Render';
 
 const drawerWidth = 140;
 
@@ -60,18 +61,21 @@ export default function ResponsiveDrawer(props: Props) {
     sessionStorage.setItem('selectedTabIndex', clickedIndex.toString());
   };
 
-  const renderDrawer = () => { 
+  const renderDrawer = (xs?: boolean) => { 
     return (
     <div>
         <Divider component={Paper} color='blue' />
-      <List>
+      <List sx={{display: 'flex', flexDirection: {sm: 'column', xs: 'row'}}}>
         {['Dashboard', 'Orders', 'Inventory', 'Content',  'Feedback'].map((text, id) => (
-          <ListItem key={text} disablePadding>
+          <ListItem sx={{width: {xs: 75, sm: 'inherit'}}} key={text} disablePadding>
             <ListItemButton sx={{color: (theme) => id === index ? theme.palette.primary.main : 'GrayText' }} style={{display: 'flex', width: '100%', alignContent: 'center', flexDirection: 'column', }} onClick={() => handleListItemClick(id)}>
               <ListItemIcon sx={{color: (theme) => id === index ? theme.palette.primary.main : 'GrayText' }} style={{display: 'flex', width: '100%', justifyContent: 'center'}}>
                 {components.find(e => e.id === id)?.icon}
               </ListItemIcon>
+              <Render condition={xs}>
+                <ListItemText></ListItemText>
               <ListItemText style={{display: 'flex', width: '100%', justifyContent: 'center', }} primary={text} />
+              </Render>
             </ListItemButton>
           </ListItem>
         ))}
@@ -86,13 +90,14 @@ export default function ResponsiveDrawer(props: Props) {
     <Box sx={{ display: 'flex' }}>
       <Box
         component="nav"
-        sx={{ flexShrink: { sm: 0 }, width: drawerWidth}}
+        sx={{ flexShrink: { sm: 0 }, width: {xs: 0, sm: drawerWidth}}}
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
-          variant="temporary"
+          variant="permanent"
+          anchor='top'
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
@@ -100,17 +105,17 @@ export default function ResponsiveDrawer(props: Props) {
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, marginTop: '64px' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: '100%', marginTop: '64px' },
           }}
         >
-          {renderDrawer()}
+          {renderDrawer(true)}
         </Drawer>
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
             backgroundColor: 'white',
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, marginTop: '64px' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: {xs: 0, sm: drawerWidth}, marginTop: '64px' },
           }}
           open
         >

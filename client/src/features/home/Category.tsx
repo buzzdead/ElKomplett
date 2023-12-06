@@ -13,6 +13,8 @@ import useView from 'app/hooks/useView'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { SidebarModal } from 'features/catalog/SidebarModal'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { CategoryList } from 'app/components/CategoryList'
 
 export default function Category() {
  
@@ -20,10 +22,11 @@ export default function Category() {
   const { products, productsLoaded, producers, productTypes } = useProducts(category.id, categoryLoading)
   const { categories, categoriesLoading } = useCategories()
   const [showFilterModal, setShowFilterModal] = useState(false);
-
+  
   const toggleFilterModal = () => {
     setShowFilterModal(!showFilterModal);
   };
+
   const view = useView()
   if(categoryLoading) return null;
   return (
@@ -41,26 +44,7 @@ export default function Category() {
           gap={2.5}
           xs={12}
         >
-           {categories.map((c) => (
-              <Button
-                component={Link}
-                to={`/catalog/categories/${c.id}`}
-                key={c.id}
-                sx={{
-                  my: 1,
-                  minWidth: 150,
-                  color: c.id === category.id ? 'primary.main' : 'text.secondary',
-                  fontWeight: c.id === category.id ? 600 : 400,
-                  fontSize: c.id === category.id ? '1rem' : '0.875rem',
-                  height: 30,
-                  '&:hover': {
-                    backgroundColor: c.id === category.id ? 'primary' : 'grey.500',
-                  },
-                }}
-              >
-                {c.title}
-              </Button>
-            ))}
+             <CategoryList categories={categories} category={category} />
         </Grid>
         <Grid
           sx={{

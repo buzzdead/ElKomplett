@@ -49,8 +49,6 @@ namespace API.Controllers
 
                 var signingKeys = Newtonsoft.Json.JsonConvert.DeserializeObject<List<JsonWebKey>>(keysArray);
 
-
-
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,

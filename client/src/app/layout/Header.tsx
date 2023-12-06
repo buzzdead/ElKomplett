@@ -61,11 +61,9 @@ const navStyles = (theme: Theme) => ({
   typography: 'h6',
   '&:hover': {
     color: 'grey.500',
-    textDecoration: 'underline',
   },
   '&.active': {
     color: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.warning.light, // A warm color in light mode
-    textDecoration: 'underline',
   },
 });
 
