@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { useConfig } from 'app/hooks/useConfig'
 import { getCombinations } from 'app/util/util'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import AppTextInput from '../../../../app/components/AppTextInput'
 import Render from '../../../../app/layout/Render'
@@ -46,8 +46,9 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
   const [configDialogOpen, setConfigDialogOpen] = useState(false)
   const [configPresetDialogOpen, setConfigPresetDialogOpen] = useState(false)
   const [multipleKeys, setMultipleKeys] = useState(false)
-  const [checkedConfigPreset, setCheckedConfigPreset] = useState<IConfigPresetComposition[]>([])
-  const [loadingPresets, setLoadingPresets] = useState(false)
+  const [empty, setIsEmpty] = useState(true)
+  const preset1 = useRef<IConfigPresetComposition>()
+  const preset2 = useRef<IConfigPresetComposition>()
 
   const { control, getValues, watch } = useForm({})
   const { configPresets, configsLoaded } = useConfig(multipleKeys)
@@ -66,13 +67,15 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
   }
 
   const handleMultipleKeysSubmit = () => {
-    const keys = checkedConfigPreset.map((preset) => preset.key).join(', ')
-    const values = checkedConfigPreset.map((preset) =>
+    if(!preset1.current || !preset2.current) return
+    const newCheckedConfigPresets = [preset1.current, preset2.current]
+    const keys = newCheckedConfigPresets.map((preset) => preset.key).join(', ')
+    const values = newCheckedConfigPresets.map((preset) =>
       preset.configurations.map((configuration) => configuration.value),
     )
     setConfigDialogOpen(false)
     const combinations = getCombinations(values)
-    handleConfigSubmit(keys, checkedConfigPreset, combinations)
+    handleConfigSubmit(keys, newCheckedConfigPresets, combinations)
   }
 
   const handleCloseModal = () => {
@@ -86,18 +89,13 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
   const getFieldValue = (fieldValue: any) => {
     return getValues(fieldValue)
   }
-  const handleOnChange = (configPreset: IConfigPresetComposition) => {
-    const newCheckedConfigPreset = checkedConfigPreset.filter((e) => e.key !== configPreset.key)
-    newCheckedConfigPreset.push(configPreset)
-    setCheckedConfigPreset(newCheckedConfigPreset)
+
+  const handleOnChange2 = (type: "1" | "2", preset: IConfigPresetComposition) => {
+    type === "1" ? preset1.current = preset : preset2.current = preset
+    if(!preset1 || !preset2 || (preset1?.current?.configurations.length === 0 && preset2?.current?.configurations.length === 0)) setIsEmpty(true)
+    else setIsEmpty(false)
   }
 
-  const onStateUpdate = (b: boolean) => {
-    if (b && loadingPresets) return
-    if (!b && !loadingPresets) return
-    if (b && !loadingPresets) setLoadingPresets(true)
-    if (!b && loadingPresets) setLoadingPresets(false)
-  }
 
   if (configDialogOpen) {
     return (
@@ -131,20 +129,18 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <ConfigPreset
-                        onChange={handleOnChange}
+                        onChange={(configPreset) => handleOnChange2("1", configPreset)}
                         label='Preset 1'
                         items={configPresets!}
                         loading={!configsLoaded}
-                        onStateUpdate={(b) => onStateUpdate(b)}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <ConfigPreset
-                        onChange={handleOnChange}
+                        onChange={(configPreset) => handleOnChange2("2", configPreset)}
                         label='Preset 2'
                         items={configPresets!}
                         loading={!configsLoaded}
-                        onStateUpdate={(b) => onStateUpdate(b)}
                       />
                     </Grid>
                   </Grid>
@@ -181,10 +177,10 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                 {multipleKeys ? 'Remove Key' : 'Add key'}
               </Button>
               <LoadingButton
-              loading={loadingPresets}
+              loading={false}
                 disabled={
                   multipleKeys
-                    ? !checkedConfigPreset.some((preset) => preset.configurations.length > 0)
+                    ? empty
                     : !(watchConfigKey && watchNumberOfValues)
                 }
                 sx={{ display: 'flex', marginLeft: 'auto', marginRight: 5 }}

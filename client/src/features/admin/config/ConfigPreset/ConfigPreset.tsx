@@ -18,7 +18,6 @@ interface Props {
   label: string
   loading?: boolean
   onChange: (configPresets: IConfigPresetComposition) => void
-  onStateUpdate: (b: boolean) => void
 }
 
 export default function ConfigPreset(props: Props) {
@@ -31,6 +30,7 @@ export default function ConfigPreset(props: Props) {
     setCurrentKey(e.target.value)
   }
   const handleCheckBoxOnChange = (items: string[]) => {
+    console.log(items)
     const checkedItems = items.filter((e) => e !== '')
     const configPreset: IConfigPresetComposition = {
       id: props.items.find((e) => e.key === currentKey)?.id || 0,
@@ -67,7 +67,6 @@ export default function ConfigPreset(props: Props) {
           <Paper variant='elevation' sx={{ padding: 2, borderColor: 'darkgreen', border: 1.5 }}>
             <CheckboxButtons
               flexRow
-              onStateUpdate={props.onStateUpdate}
               checked={currentValue.map((e) => e.value)}
               onChange={(items) => handleCheckBoxOnChange(items)}
               items={
