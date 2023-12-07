@@ -38,7 +38,7 @@ export default function ProductDetails() {
   const dispatch = useAppDispatch()
   const { status: productStatus } = useAppSelector((state) => state.catalog)
   const { id } = useParams<{ id: string }>()
-  const product = useAppSelector((state) => productSelectors.selectById(state, id!))
+  const product = useAppSelector((state) => productSelectors.selectById(state, parseInt(id!)))
   const { state, setState, updateState } = useConfigs({ basket: basket, product: product, id: id })
   const [bottomValue, setBottomValue] = useState(0)
   const view = useView()
@@ -95,10 +95,11 @@ export default function ProductDetails() {
     updateState('currentPicture', img)
   }
   return (
-    <Grid container spacing={6} sx={{ marginTop: 0, marginLeft: 0 }}>
+    <Grid width='inherit' container spacing={6} sx={{ marginTop: 0, marginLeft: 0 }}>
       <Grid
         item
         xs={12}
+        style={{paddingLeft: 0}}
         md={6}
         sx={{
           display: 'flex',
@@ -106,6 +107,7 @@ export default function ProductDetails() {
           justifyContent: 'center',
           width: '100%',
           height: '100%',
+          alignItems: 'center'
         }}
       >
         <Render condition={product.images.length > 1}>
@@ -177,7 +179,11 @@ export default function ProductDetails() {
       <Grid
     component={Paper}
     item
-    xs={10}
+    sm={10}
+    xs={12}
+    style={{paddingLeft: view.view.mobile ? 2.5 : 48, alignItems: view.view.mobile ? 'center' : 'flex-start'}}
+    pl={{xs: 2.5}}
+    pr={{xs: 2.5}}
     pb={5}
     sx={{
       ...gridStyle,
@@ -188,8 +194,8 @@ export default function ProductDetails() {
     }}
   >
     <ProductBottom onChangeValue={setBottomValue} />
-    <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-    <div className={`tab-content ${bottomValue === 0 ? 'active' : ''}`}>
+    <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+    <div style={{paddingLeft: 15}} className={`tab-content ${bottomValue === 0 ? 'active' : ''}`}>
       {/* Content for the first tab */}
       {bottomValue === 0 ? (
         product.richDescription !== null ? (

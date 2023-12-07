@@ -90,11 +90,11 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
               src={image.pictureUrl}
               alt={`Image ${index}`}
               style={{
-                maxHeight: 110,
-                minHeight: 110,
+                maxHeight: horizontal ? 75 : 110,
+                minHeight: horizontal ? 75 : 110,
                 opacity: selectedImageUrl === image.pictureUrl ? 1 : 0.5,
                 cursor: 'pointer',
-                maxWidth: horizontal ? 62.5 : 150
+                maxWidth: horizontal ? 50 : 150
               }}
             />
           </ListItem>

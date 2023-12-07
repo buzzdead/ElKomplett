@@ -1,5 +1,5 @@
 import { useTheme } from '@emotion/react'
-import { Box, Theme } from '@mui/material'
+import { Box, Theme, Typography } from '@mui/material'
 import { Category } from 'app/hooks/useCategories'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -56,7 +56,6 @@ export const CategoryList = ({ categories, category }: Props) => {
         <motion.div
           variants={categoryVariants(theme)}
           initial='initial'
-         
           whileHover='hover'
           animate={isSelected ? 'selected' : 'initial'}
           style={{
@@ -70,8 +69,14 @@ export const CategoryList = ({ categories, category }: Props) => {
             
           }}
         >
-            
+            <Typography   sx={{
+    maxHeight: 20,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }}>
           {children}
+          </Typography>
         </motion.div>
         </Box>
       </Link>
