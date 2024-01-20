@@ -7,7 +7,7 @@ import LoadingComponent from '../../../app/layout/LoadingComponent'
 import { useAppDispatch, useAppSelector } from '../../../app/store/configureStore'
 import { addBasketItemAsync, removeBasketItemAsync } from '../../basket/basketSlice'
 import { productSelectors } from '.././catalogSlice'
-import { currencyFormat } from '../../../app/util/util'
+import { createTableCell, currencyFormat } from '../../../app/util/util'
 import AppTable, { TableData } from '../../../app/components/AppTable/AppTable'
 import './Product.css'
 import { ProductConfigs } from './ProductConfigs'
@@ -30,13 +30,15 @@ const gridStyle = {
   width: '100%',
   mt: 5,
   mb: 5,
-  position: 'sticky', top: 0, zIndex: 10
+  position: 'sticky',
+  top: 0,
+  zIndex: 10,
 }
 
 export default function ProductDetails() {
   const { basket, status } = useAppSelector((state) => state.basket)
-  const dispatch = useAppDispatch()
   const { status: productStatus } = useAppSelector((state) => state.catalog)
+  const dispatch = useAppDispatch()
   const { id } = useParams<{ id: string }>()
   const product = useAppSelector((state) => productSelectors.selectById(state, parseInt(id!)))
   const { state, setState, updateState } = useConfigs({ basket: basket, product: product, id: id })
@@ -44,23 +46,27 @@ export default function ProductDetails() {
   const view = useView()
   const theme = useTheme()
 
-  function handleUpdateCart() {
-    const quantity = state.newQuantity as number
-    if (typeof quantity !== 'number' || quantity < 0) {
-      updateState('newQuantity', state.basketItem?.quantity || 0)
-      return
-    }
-    const newQuantity = Math.abs(quantity - (state.basketItem?.quantity || 0))
+  const isInvalidQuantity = (quantity: number) => {
+    return typeof quantity !== 'number' || quantity < 0
+  }
+
+  const updateCart = (quantity: number, basketItemQuantity: number) => {
+    const newQuantity = Math.abs(quantity - basketItemQuantity)
     const productId: number = product?.id as number
     const addToCart = !state.basketItem || quantity > state.basketItem.quantity
+    const dispatchableItem = { productId, quantity: newQuantity, configId: state.config?.id }
 
     addToCart
-      ? dispatch(
-          addBasketItemAsync({ productId, quantity: newQuantity, configId: state.config?.id }),
-        )
-      : dispatch(
-          removeBasketItemAsync({ productId, quantity: newQuantity, configId: state.config?.id }),
-        )
+      ? dispatch(addBasketItemAsync(dispatchableItem))
+      : dispatch(removeBasketItemAsync(dispatchableItem))
+  }
+
+  function handleUpdateCart() {
+    const quantity = state.newQuantity as number
+    const basketItemQuantity = state.basketItem?.quantity || 0
+    isInvalidQuantity(quantity)
+      ? updateState('newQuantity', basketItemQuantity)
+      : updateCart(quantity, basketItemQuantity)
   }
 
   if (productStatus.includes('pendingFetchProduct'))
@@ -68,27 +74,19 @@ export default function ProductDetails() {
 
   if (!product) return <NotFound />
 
+  const isConfigWithQuantity = state.config && state.config.config && state.config.config.quantityInStock
+
   const tableData: TableData[] = [
-    {
-      key: 'Navn',
-      value: product.name,
-    },
-    {
-      key: 'Beskrivelse',
-      value: product.description,
-    },
-    {
-      key: 'Produsent',
-      value: product.producer?.name || 'produktnavn',
-    },
-    { key: 'Produkttype', value: product.productType?.name },
-    {
-      key: 'Lagerstatus',
-      value:
-        state.config && state.config.config && state.config.config.quantityInStock
-          ? state.config?.config.quantityInStock
-          : product.quantityInStock,
-    },
+    createTableCell('Navn', product.name),
+    createTableCell('Beskrivelse', product.description),
+    createTableCell('Produsent', product.producer?.name || 'produktnavn'),
+    createTableCell('Produkttype', product.productType?.name),
+    createTableCell(
+      'Lagerstatus',
+      isConfigWithQuantity
+        ? state.config?.config.quantityInStock
+        : product.quantityInStock,
+    ),
   ]
 
   const handleOnPress = (img: { pictureUrl: string }) => {
@@ -99,7 +97,7 @@ export default function ProductDetails() {
       <Grid
         item
         xs={12}
-        style={{paddingLeft: 0}}
+        style={{ paddingLeft: 0 }}
         md={6}
         sx={{
           display: 'flex',
@@ -107,7 +105,7 @@ export default function ProductDetails() {
           justifyContent: 'center',
           width: '100%',
           height: '100%',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <Render condition={product.images.length > 1}>
@@ -177,44 +175,47 @@ export default function ProductDetails() {
       </Grid>
 
       <Grid
-    component={Paper}
-    item
-    sm={10}
-    xs={12}
-    style={{paddingLeft: view.view.mobile ? 2.5 : 48, alignItems: view.view.mobile ? 'center' : 'flex-start'}}
-    pl={{xs: 2.5}}
-    pr={{xs: 2.5}}
-    pb={5}
-    sx={{
-      ...gridStyle,
-      backgroundColor: theme.palette.background.paper,
-      color: theme.palette.text.primary,
-      ml: view.view.ipad ? 2 : 20,
-      mr: view.view.ipad ? 2 : 20,
-    }}
-  >
-    <ProductBottom onChangeValue={setBottomValue} />
-    <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-    <div style={{paddingLeft: 15}} className={`tab-content ${bottomValue === 0 ? 'active' : ''}`}>
-      {/* Content for the first tab */}
-      {bottomValue === 0 ? (
-        product.richDescription !== null ? (
-          <RichTextDisplay richText={product.richDescription} />
-        ) : (
-          product.description
-        )
-      ) : null}
-    </div>
-    <div className={`tab-content ${bottomValue === 1 ? 'active' : ''}`}>
-      {/* Content for the second tab */}
-      {bottomValue === 1 ? 'Spesifikasjoner kommer' : null}
-    </div>
-    <div className={`tab-content ${bottomValue === 2 ? 'active' : ''}`}>
-      {/* Content for the third tab */}
-      {bottomValue === 2 ? 'Dokumentasjon kommer' : null}
-    </div>
-    </Grid>
-  </Grid>
+        component={Paper}
+        item
+        sm={10}
+        xs={12}
+        style={{
+          paddingLeft: view.view.mobile ? 2.5 : 48,
+          alignItems: view.view.mobile ? 'center' : 'flex-start',
+        }}
+        pl={{ xs: 2.5 }}
+        pr={{ xs: 2.5 }}
+        pb={5}
+        sx={{
+          ...gridStyle,
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          ml: view.view.ipad ? 2 : 20,
+          mr: view.view.ipad ? 2 : 20,
+        }}
+      >
+        <ProductBottom onChangeValue={setBottomValue} />
+        <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{ paddingLeft: 15 }}
+            className={`tab-content ${bottomValue === 0 ? 'active' : ''}`}
+          >
+            {bottomValue === 0 ? (
+              product.richDescription !== null ? (
+                <RichTextDisplay richText={product.richDescription} />
+              ) : (
+                product.description
+              )
+            ) : null}
+          </div>
+          <div className={`tab-content ${bottomValue === 1 ? 'active' : ''}`}>
+            {bottomValue === 1 ? 'Spesifikasjoner kommer' : null}
+          </div>
+          <div className={`tab-content ${bottomValue === 2 ? 'active' : ''}`}>
+            {bottomValue === 2 ? 'Dokumentasjon kommer' : null}
+          </div>
+        </Grid>
+      </Grid>
     </Grid>
   )
 }

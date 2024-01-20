@@ -28,14 +28,23 @@ export const Configuring = React.forwardRef(
       boxShadow: 24,
       p: 4,
     }
+    const { state, setState, updateState } = useConfigs({
+      basket: basket,
+      product: product,
+      id: undefined,
+    })
     const dispatch = useAppDispatch()
+    const isInvalidQuantity = (quantity: number) => {
+      return typeof quantity !== 'number' || quantity < 0
+    }
     function handleUpdateCart() {
-      const abc = state.newQuantity as number
-      if (typeof abc !== 'number' || abc < 0) {
+      const newQuantity = state.newQuantity as number
+      if (isInvalidQuantity(newQuantity)) {
         updateState('newQuantity', state.basketItem?.quantity || 0)
         return
       }
-      const quantity = Math.abs((state.newQuantity as number) - (state.basketItem?.quantity || 0))
+      
+      const quantity = Math.abs(newQuantity - (state.basketItem?.quantity || 0))
       const productId: number = product?.id as number
       const addToCart =
         !state.basketItem || (state.newQuantity as number) > state.basketItem.quantity
@@ -44,11 +53,7 @@ export const Configuring = React.forwardRef(
         ? dispatch(addBasketItemAsync({ productId, quantity, configId: state.config?.id }))
         : dispatch(removeBasketItemAsync({ productId, quantity, configId: state.config?.id }))
     }
-    const { state, setState, updateState } = useConfigs({
-      basket: basket,
-      product: product,
-      id: undefined,
-    })
+   
 
     return (
       <Box sx={style}>

@@ -14,17 +14,33 @@ interface CatalogState {
     metaData: MetaData | null
 }
 
+const PARAMS = {
+    PAGE_NUMBER: 'pageNumber',
+    PAGE_SIZE: 'pageSize',
+    ORDER_BY: 'orderBy',
+    SEARCH_TERM: 'searchTerm',
+    CATEGORY_ID: 'categoryId',
+    PRODUCERS: 'producers',
+    PRODUCT_TYPES: 'productTypes',
+  };
+
 const productsAdapter = createEntityAdapter<IProduct>()
 
 function getAxiosParams(productParams: ProductParams) {
     const params = new URLSearchParams()
-    params.append('pageNumber', productParams.pageNumber.toString())
-    params.append('pageSize', productParams.pageSize.toString())
-    params.append('orderBy', productParams.orderBy)
-    if(productParams.searchTerm) params.append('searchTerm', productParams.searchTerm)
-    if(productParams.categoryId) params.append('categoryId', productParams.categoryId.toString())
-    if(productParams.producers.length > 0) params.append('producers', productParams.producers.toString())
-    if(productParams.productTypes.length > 0) params.append('productTypes', productParams.productTypes.toString())
+    const appendParam = (key: string, value: any) => {
+        if (value) {
+          params.append(key, value.toString());
+        }
+      };
+    
+      appendParam(PARAMS.PAGE_NUMBER, productParams.pageNumber);
+      appendParam(PARAMS.PAGE_SIZE, productParams.pageSize);
+      appendParam(PARAMS.ORDER_BY, productParams.orderBy);
+      appendParam(PARAMS.SEARCH_TERM, productParams.searchTerm);
+      appendParam(PARAMS.CATEGORY_ID, productParams.categoryId);
+      appendParam(PARAMS.PRODUCERS, productParams.producers);
+      appendParam(PARAMS.PRODUCT_TYPES, productParams.productTypes);
     return params
     
 }

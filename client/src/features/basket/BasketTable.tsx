@@ -28,13 +28,15 @@ export default function BasketTable({ items, isBasket = true }: Props) {
   const [config, setConfig] = React.useState<Configurable[]>()
   const view = useView();
 
+  const renderConfiguration = (key: string, value: string) => (
+    <Typography variant='caption' fontWeight={500}>{key}: {value}</Typography>
+  );
+
   const renderConfigs = (cfg: Configurable | undefined) => {
     if(cfg === undefined) return null;
     const cfgKeys = cfg.key?.replace(',', '').split(' ')
     const cfgValues = cfg.value.split(' ')
-    return cfgKeys.map((e, id) => {
-      return <Typography variant='caption' fontWeight={500}>{e}: {cfgValues[id]}</Typography>
-    })
+    return cfgKeys.map((key, id) => renderConfiguration(key, cfgValues[id]));
   }
 
   const product = (item: BasketItem, cfg?: Configurable) => {

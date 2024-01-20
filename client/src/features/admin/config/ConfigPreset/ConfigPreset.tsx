@@ -29,15 +29,22 @@ export default function ConfigPreset(props: Props) {
   const handleOnChange = (e: SelectChangeEvent<string>, key: boolean) => {
     setCurrentKey(e.target.value)
   }
+  const findKey = (items: IConfigPresetComposition[], currentKey: string) => {
+    return items.find((item) => item.key === currentKey)?.key || '';
+  };
+  
+  const mapConfigurations = (checkedItems: string[]) => {
+    return checkedItems.map((item) => {
+      return { key: findKey(props.items, currentKey), value: item };
+    });
+  };
+  
   const handleCheckBoxOnChange = (items: string[]) => {
-    console.log(items)
     const checkedItems = items.filter((e) => e !== '')
     const configPreset: IConfigPresetComposition = {
       id: props.items.find((e) => e.key === currentKey)?.id || 0,
       key: currentKey,
-      configurations: checkedItems.map((e) => {
-        return { key: props.items.find((e) => e.key === currentKey)?.key || '', value: e }
-      }),
+      configurations: mapConfigurations(checkedItems),
     }
     props.onChange(configPreset)
     setCurrentValue(configPreset.configurations)

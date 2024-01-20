@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DropResult } from 'react-beautiful-dnd';
 import { UseControllerProps, useController } from 'react-hook-form';
 
 export type Image = {publicId?: string, path?: string, pictureUrl?: string, preview?: string}
@@ -16,27 +16,32 @@ export function useDndList({images, watchFiles, control, name}: Props) {
 
   const [reordered, setReordered] = useState(false)
 
-  const {fieldState, field } = useController({control: control, name: name})
+  const {field } = useController({control: control, name: name})
+
+  const reorderList = (list: Image[], startIndex: number, endIndex: number) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    field.onChange(result.map(e => e.publicId || e.path))
+    !reordered && setReordered(true)
+    setList(result);
+  }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination) return;
-
-    const reorderedList = Array.from(list);
-    const [reorderedItem] = reorderedList.splice(source.index, 1);
-    reorderedList.splice(destination.index, 0, reorderedItem);
-    source.index !== destination.index && field.onChange(reorderedList.map(e => e.publicId || e.path))
-    !reordered && source.index !== destination.index && setReordered(true)
-    source.index !== destination.index && setList(reorderedList);
+    if (!destination || source.index === destination.index) return;
+    reorderList(list, source.index, destination.index);
   };
 
+  const mapFiles = (files: Image[]) => files?.map(({ path, preview }) => ({ path, preview })) || [];
+  const filterFiles = (files: Image[], list: Image[]) => files.filter(({ path }) => !list.some(item => item.path === path));
+
   useEffect(() => {
-    let abc = watchFiles?.map((wf: { path: any, preview: any }) => {return {path: wf.path, preview: wf.preview}}) || []
-    if(abc.length > 0) {
-      abc = abc.filter((e: { path: string | undefined }) => !list.some(t => t.path === e.path))
+    const updatedFiles = filterFiles(mapFiles(watchFiles), list);
+    if (updatedFiles.length > 0) {
+      setList(prevList => [...prevList, ...updatedFiles]);
     }
-    abc.length > 0 && setList([...list, ...abc])
-  }, [watchFiles])
+  }, [watchFiles, list]);
 
   return {
     list,

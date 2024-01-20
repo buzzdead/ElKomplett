@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { List, ListItem, Button, Box } from '@mui/material'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { List, ListItem, Button } from '@mui/material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowLeft from '@mui/icons-material/ArrowLeft';
 import ArrowRight from '@mui/icons-material/ArrowRight';
@@ -31,33 +31,32 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
 
   const handleMouseScroll = (event: React.WheelEvent<HTMLDivElement>) => {
     if (event.deltaY > 0 && scrollIndex < images.length - 3) {
-      // Scrolling down
       setScrollIndex(scrollIndex + 1)
     } else if (event.deltaY < 0 && scrollIndex > 0) {
-      // Scrolling up
       setScrollIndex(scrollIndex - 1)
     }
   }
+  
+  const preventDefault = (event: WheelEvent) => {
+    event.preventDefault();
+  };
+  
+  const handleMouseEnter = useCallback(() => {
+    document.addEventListener('wheel', preventDefault, { passive: false });
+  }, []);
+  
+  const handleMouseLeave = useCallback(() => {
+    document.removeEventListener('wheel', preventDefault);
+  }, [])
+  
   useEffect(() => {
-    const preventDefault = (event: WheelEvent) => {
-      event.preventDefault();
-    };
-
     const divElement = divRef.current;
-
-    const handleMouseEnter = () => {
-      document.addEventListener('wheel', preventDefault, { passive: false });
-    };
-
-    const handleMouseLeave = () => {
-      document.removeEventListener('wheel', preventDefault);
-    };
-
+  
     if (divElement) {
       divElement.addEventListener('mouseenter', handleMouseEnter);
       divElement.addEventListener('mouseleave', handleMouseLeave);
     }
-
+  
     return () => {
       if (divElement) {
         divElement.removeEventListener('mouseenter', handleMouseEnter);
@@ -65,7 +64,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
       }
       document.removeEventListener('wheel', preventDefault);
     };
-  }, []);
+  }, [handleMouseEnter, handleMouseLeave]);
 
   return (
     <div ref={divRef} onWheel={handleMouseScroll} style={{display: 'flex', flexDirection: horizontal ? 'row' : 'column', justifyContent: 'center', width: '85%'}}>
@@ -88,7 +87,7 @@ const ImageScroller: React.FC<ImageScrollerProps> = ({ images, onPress, selected
             <img
               onClick={() => onPress(image)}
               src={image.pictureUrl}
-              alt={`Image ${index}`}
+              alt={`scrollable ${index}`}
               style={{
                 maxHeight: horizontal ? 75 : 110,
                 minHeight: horizontal ? 75 : 110,

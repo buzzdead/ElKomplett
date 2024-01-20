@@ -66,13 +66,18 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
     }
   }
 
+  const getKeysAndValuesFromPresets = (configPresetCompositions: IConfigPresetComposition[]) => {
+    const keys = configPresetCompositions.map((preset) => preset.key).join(', ')
+    const values = configPresetCompositions.map((preset) =>
+      preset.configurations.map((configuration) => configuration.value),
+    )
+    return { keys, values }
+  }
+
   const handleMultipleKeysSubmit = () => {
     if(!preset1.current || !preset2.current) return
     const newCheckedConfigPresets = [preset1.current, preset2.current]
-    const keys = newCheckedConfigPresets.map((preset) => preset.key).join(', ')
-    const values = newCheckedConfigPresets.map((preset) =>
-      preset.configurations.map((configuration) => configuration.value),
-    )
+    const { keys, values } = getKeysAndValuesFromPresets(newCheckedConfigPresets)
     setConfigDialogOpen(false)
     const combinations = getCombinations(values)
     handleConfigSubmit(keys, newCheckedConfigPresets, combinations)
@@ -90,8 +95,8 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
     return getValues(fieldValue)
   }
 
-  const handleOnChange2 = (type: "1" | "2", preset: IConfigPresetComposition) => {
-    type === "1" ? preset1.current = preset : preset2.current = preset
+  const handleOnChange = (type: "Preset1" | "Preset2", preset: IConfigPresetComposition) => {
+    type === "Preset1" ? preset1.current = preset : preset2.current = preset
     if(!preset1 || !preset2 || (preset1?.current?.configurations.length === 0 && preset2?.current?.configurations.length === 0)) setIsEmpty(true)
     else setIsEmpty(false)
   }
@@ -129,7 +134,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <ConfigPreset
-                        onChange={(configPreset) => handleOnChange2("1", configPreset)}
+                        onChange={(configPreset) => handleOnChange("Preset1", configPreset)}
                         label='Preset 1'
                         items={configPresets!}
                         loading={!configsLoaded}
@@ -137,7 +142,7 @@ export default function ConfigDialog({ handleConfigSubmit }: Props) {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <ConfigPreset
-                        onChange={(configPreset) => handleOnChange2("2", configPreset)}
+                        onChange={(configPreset) => handleOnChange("Preset2", configPreset)}
                         label='Preset 2'
                         items={configPresets!}
                         loading={!configsLoaded}

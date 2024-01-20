@@ -39,5 +39,12 @@ export  function getCombinations<T>(arrays: T[][]): T[] {
   }
 }
 
+export const createTableCell = (key: string, value: string | number | undefined) => {
+  return {
+    key: key,
+    value: value,
+  }
+}
+
 
 export const AuthorisedRoles = ['Admin', 'Test']

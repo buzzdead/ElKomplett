@@ -28,11 +28,11 @@ export interface IRadioButton {
   checkedValue: string
 }
 
-export function ProductConfigs({  product, config, basket, updateState, modal=false }: Props) {
+export function ProductConfigs({ product, config, basket, updateState, modal = false }: Props) {
   const [checkedRadioButton, setCheckedRadioButton] = useState<IRadioButton[]>([
     config && config.config
-                  ? { key: config.config.key, checkedValue: config?.value }
-                  : { key: '', checkedValue: '' },
+      ? { key: config.config.key, checkedValue: config?.value }
+      : { key: '', checkedValue: '' },
   ])
   const view = useView()
   function onRadioButtonChange(value: string, key: string = '') {
@@ -62,10 +62,8 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
   )
 
   const isTheRightOne = (a: string, b: string) => {
-    
     const arrayA = a.split(' ')
     const arrayB = b.split(' ')
-
 
     if (arrayA.length !== arrayB.length) {
       return false
@@ -77,8 +75,16 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
     return sortedArrayA.every((value, index) => value === sortedArrayB[index])
   }
 
+  const isNewConfig = (configValue: IRadioButton[]) => {
+    return configValue.filter((e, id) =>
+      product.configPresets && product.configPresets.length > 0
+        ? id > 0 && e.checkedValue !== ''
+        : e.checkedValue !== '',
+    )
+  }
+
   function onConfigChange(updatedWithNewValue: IRadioButton[]) {
-    const newConfig = updatedWithNewValue.filter((e, id) => product.configPresets && product.configPresets.length > 0 ? id > 0 && e.checkedValue !== '' : e.checkedValue !== '')
+    const newConfig = isNewConfig(updatedWithNewValue)
     const newConfigValue = newConfig.map((e) => e.checkedValue).join(' ')
     const currentConfig = product?.configurables?.find((e) =>
       isTheRightOne(e.value, newConfigValue),
@@ -87,16 +93,39 @@ export function ProductConfigs({  product, config, basket, updateState, modal=fa
       (i: { productId: number | undefined }) => i.productId === product?.id,
     )
     const bItem = basketItems?.find((e) => e.configId === currentConfig?.id)
-    currentConfig && updateState({basketItem: bItem, newQuantity: bItem?.quantity || 0, currentPicture: currentConfig?.images[0], config:  { config: currentConfig, value: currentConfig.value, id: currentConfig.id }})
-
+    currentConfig &&
+      updateState({
+        basketItem: bItem,
+        newQuantity: bItem?.quantity || 0,
+        currentPicture: currentConfig?.images[0],
+        config: { config: currentConfig, value: currentConfig.value, id: currentConfig.id },
+      })
   }
   return (
     <Render condition={radioButtons.length > 0}>
-      <Box sx={{display: 'flex', flexDirection: 'row'}}>
+      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         {radioButtons.map((cfg, id) => {
           return (
-            <Box sx={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 2, mt: modal ? 0 : 3, mb: modal ? 2 : 0}} key={cfg.key}>
-              {id === 0 && <Typography fontSize={20} variant='h4' sx={{display: 'flex', alignSelf: 'center', marginLeft: 1}}>Velg: </Typography>}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 2,
+                mt: modal ? 0 : 3,
+                mb: modal ? 2 : 0,
+              }}
+              key={cfg.key}
+            >
+              {id === 0 && (
+                <Typography
+                  fontSize={20}
+                  variant='h4'
+                  sx={{ display: 'flex', alignSelf: 'center', marginLeft: 1 }}
+                >
+                  Velg:{' '}
+                </Typography>
+              )}
               <SelectButtonGroup
                 label={cfg.key}
                 flexDirection='row'

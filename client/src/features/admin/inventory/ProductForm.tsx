@@ -13,7 +13,7 @@ import { useAppDispatch } from '../../../app/store/configureStore'
 import { setProduct } from '../../catalog/catalogSlice'
 import { LoadingButton } from '@mui/lab'
 import Configurations from '../config/Configurations'
-import { useCategories } from 'app/hooks/useCategories'
+import { Category, useCategories } from 'app/hooks/useCategories'
 import { useDndList } from '../../../app/hooks/useDndList'
 import { DndList } from '../../../app/components/DndList'
 import ProductSpecification from './ProductSpecifications'
@@ -55,21 +55,25 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     setSelectedTab(v)
   }
 
-  useEffect(() => {
-    if (product !== undefined && watchFiles?.length === 0 && !isDirty) {
+  const cleanupFiles = (files: { preview: string }[] | undefined) => {
+    files?.forEach((file) => URL.revokeObjectURL(file.preview))
+  }
+
+  const resetIfNew = () => {
+    if (product && watchFiles?.length === 0 && !isDirty)
       reset({
         ...product,
         files: [],
       })
-    }
+  }
 
-    return () => {
-      watchFiles?.forEach((file: { preview: string }) => URL.revokeObjectURL(file.preview))
-    }
+  useEffect(() => {
+    resetIfNew()
+    return () => cleanupFiles(watchFiles)
   }, [product, reset, isDirty])
 
   const convertProductSpecification = (data: FieldValues) => {
-    if(!data.productSpecification) return data;
+    if (!data.productSpecification) return data
     const contentState = data.productSpecification.getCurrentContent()
     const rawContentState = convertToRaw(contentState)
     const stringifiedHtmlContentstate = JSON.stringify(draftToHtml(rawContentState))
@@ -78,32 +82,47 @@ export default function ProductForm({ product, cancelEdit }: Props) {
     return data
   }
 
-  async function handleSubmitData(data: FieldValues) {
-    data = convertProductSpecification(data)
-    const cat = categories.find((e) => e.title === data.categoryId)
-    const newId = !cat ? product?.categoryId : cat?.id
-    data.categoryId = newId
+  const getCategoryId = (
+    convertedData: FieldValues,
+    product: IProduct | undefined,
+    categories: Category[],
+  ): number | undefined => {
+    const selectedCategory = categories.find(
+      (category) => category.title === convertedData.categoryId,
+    )
+    return selectedCategory?.id || product?.categoryId
+  }
+
+  // Extracted function to handle product creation or update
+  const handleProductUpdateOrCreate = async (
+    data: FieldValues,
+    product: IProduct | undefined,
+  ): Promise<IProduct> => {
+    return product ? await agent.Admin.updateProduct(data) : await agent.Admin.createProduct(data)
+  }
+
+  async function handleSubmitData(originalData: FieldValues) {
+    const convertedData = convertProductSpecification(originalData)
+    const categoryId = getCategoryId(convertedData, product, categories)
+
+    const data = { ...convertedData, categoryId }
+
     try {
-      let response: IProduct
-      if (product) {
-        response = await agent.Admin.updateProduct(data)
-      } else {
-        response = await agent.Admin.createProduct(data)
-      }
+      const response: IProduct = await handleProductUpdateOrCreate(data, product)
+
       dispatch(setProduct(response))
       cancelEdit()
     } catch (error) {
       console.log(error)
     }
   }
-
   const catTitle =
     categories.find((c) => c.id === product?.categoryId)?.title || categories[0].title
   var catIndex = indexOf(
     categories.map((e) => e.title),
     catTitle,
   )
-  
+
   if (categoriesLoading || !productsLoaded) return null
   return (
     <Box component={Paper} sx={{ p: 4 }}>
@@ -171,13 +190,20 @@ export default function ProductForm({ product, cancelEdit }: Props) {
                   label='Short description'
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
-              <Typography variant='caption' fontSize={16}>Long description</Typography>
+                <Typography variant='caption' fontSize={16}>
+                  Long description
+                </Typography>
                 <ProductSpecification selectedProduct={product} control={control} />
               </Grid>
               <Grid item xs={12}>
-                <DndList small={view.view.ipad} control={control} list={list} onDragEnd={onDragEnd} />
+                <DndList
+                  small={view.view.ipad}
+                  control={control}
+                  list={list}
+                  onDragEnd={onDragEnd}
+                />
               </Grid>
             </Grid>
             <Box display='flex' justifyContent='space-between' sx={{ mt: 3 }}>

@@ -25,7 +25,6 @@ export default function CategoryCard({ title, pictureUrl, id }: Props) {
     sx: {textAlign: 'center', color: (theme) => theme.palette.neutral.main}
   }}
 />
-
       <CardMedia
       component={Paper}
         sx={{

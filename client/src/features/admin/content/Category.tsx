@@ -29,7 +29,7 @@ export const EditCategory = () => {
   useEffect(() => {
     const abc = Math.max(...categories.map(c => c.id))
     setMaxId(abc)
-  }, [categoriesLoading])
+  }, [categoriesLoading, categories])
   
   const {
     control,
@@ -54,21 +54,22 @@ export const EditCategory = () => {
   };
 
   const handleSaveChanges = async (data: any) => {
-    // Implement logic to save editedTitle and editedDescription to the selectedCategory
-    // You can use an API call or a state management library like Redux
-    if(!selectedCategory?.id) return
-    if(!selectedCategory) return
-    data.title = editedTitle
-    data.id = selectedCategory.id
-    data.description = editedDescription
-
-    selectedCategory.id === maxId + 1  && setMaxId(maxId + 1)
+    if (!selectedCategory?.id) return;
+    data = {
+      ...data,
+      title: editedTitle,
+      id: selectedCategory.id,
+      description: editedDescription,
+    };
+  
+    if (selectedCategory.id === maxId + 1) {
+      setMaxId(maxId + 1);
+    }
+  
     setModalOpen(false);
   };
 
   const handleDeleteClick = async () => {
-    // Implement logic to delete the selectedCategory
-    // You can use an API call or a state management library like Redux
     if(!selectedCategory?.id) return
     await agent.Catalog.deleteCategory(selectedCategory.id)
     setModalOpen(false);
@@ -146,7 +147,7 @@ export const EditCategory = () => {
           />
           <img
             src={watchFile ? watchFile.preview : selectedCategory?.pictureUrl}
-            alt={'Image'}
+            alt={'currentFile'}
             style={{ maxHeight: 150 }}
         />
         </Box>

@@ -1,18 +1,17 @@
 import { Box, Button, Paper, Step, StepLabel, Stepper, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import AddressForm from './AddressForm'
 import PaymentForm from './PaymentForm'
 import Review from './Review'
 import React from 'react'
 import { FieldValues, FormProvider, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { validationSchema } from './checkoutValidation'
 import agent from '../../app/api/agent'
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore'
 import { clearBasket } from '../basket/basketSlice'
 import { LoadingButton } from '@mui/lab'
-import { StripeElementType } from '@stripe/stripe-js'
+import { StripeCardNumberElement } from '@stripe/stripe-js'
 import { CardNumberElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { useCheckoutForm } from './useCheckoutForm'
 
 const steps = ['Shipping address', 'Review your order', 'Payment details']
 
@@ -21,30 +20,25 @@ export default function CheckoutPage() {
   const [orderNumber, setOrderNumber] = useState(0)
   const [loading, setLoading] = useState(false)
   const dispatch = useAppDispatch()
-  const [cardState, setCardState] = useState<{
-    elementError: { [key in StripeElementType]?: string }
-  }>({ elementError: {} })
-  const [cardComplete, setCardComplete] = useState({
-    cardNumber: false,
-    cardExpiry: false,
-    cardCvc: false,
-  })
+ 
   const [paymentMessage, setPaymentMessage] = useState('')
   const [paymentSucceeded, setPaymentSucceeded] = useState(false)
   const { basket } = useAppSelector((state) => state.basket)
   const stripe = useStripe()
   const elements = useElements()
+  const { methods, cardState, onCardInputChange, submitDisabled } = useCheckoutForm(activeStep);
 
-  function onCardInputchange(event: any) {
-    setCardState({
-      ...cardState,
-      elementError: {
-        ...cardState.elementError,
-        [event.elementType]: event.error?.message,
-      },
-    })
-
-    setCardComplete({ ...cardComplete, [event.elementType]: event.complete })
+ 
+  function CheckoutStepper({ activeStep }: { activeStep: number }) {
+    return (
+      <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    );
   }
 
   function getStepContent(step: number) {
@@ -54,26 +48,22 @@ export default function CheckoutPage() {
       case 1:
         return <Review />
       case 2:
-        return <PaymentForm cardState={cardState} onCardInputChange={onCardInputchange} />
+        return <PaymentForm cardState={cardState} onCardInputChange={onCardInputChange} />
       default:
         throw new Error('Unknown step')
     }
   }
 
-  const currentValidationSchema = validationSchema[activeStep]
-
-  const methods = useForm({
-    mode: 'all',
-    resolver: yupResolver(currentValidationSchema),
-  })
-
-  useEffect(() => {
-    agent.Account.fetchAddress().then((response) => {
-      if (response) {
-        methods.reset({ ...methods.getValues(), ...response, saveAddress: false })
-      }
-    })
-  }, [methods])
+  const getPaymentResult = async (cardElement: StripeCardNumberElement | null, nameOnCard: string) => {
+    return await stripe?.confirmCardPayment(basket?.clientSecret!, {
+      payment_method: {
+        card: cardElement!,
+        billing_details: {
+          name: nameOnCard,
+        },
+      },
+    });
+  };
 
   async function submitOrder(data: FieldValues) {
     setLoading(true)
@@ -82,14 +72,7 @@ export default function CheckoutPage() {
       //stripe is not ready
       try {
         const cardElement = elements?.getElement(CardNumberElement)
-        const paymentResult = await stripe?.confirmCardPayment(basket?.clientSecret!, {
-          payment_method: {
-            card: cardElement!,
-            billing_details: {
-              name: nameOnCard,
-            },
-          },
-        })
+        const paymentResult = await getPaymentResult(cardElement, nameOnCard);
         
         if (paymentResult?.paymentIntent?.status === 'succeeded') {
           const orderNumber = await agent.Orders.create({ saveAddress, shippingAddress })
@@ -123,32 +106,13 @@ export default function CheckoutPage() {
     setActiveStep(activeStep - 1)
   }
 
-  function submitDisabled(): boolean {
-    if (activeStep === steps.length - 1) {
-      return (
-        !cardComplete.cardCvc ||
-        !cardComplete.cardExpiry ||
-        !cardComplete.cardNumber ||
-        !methods.formState.isValid
-      )
-    } else {
-      return !methods.formState.isValid
-    }
-  }
-
   return (
     <FormProvider {...methods}>
       <Paper variant='outlined' sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
         <Typography component='h1' variant='h4' align='center'>
           Checkout
         </Typography>
-        <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+       <CheckoutStepper activeStep={activeStep}/>
         <form onSubmit={methods.handleSubmit(handleNext)}>
           {activeStep === steps.length ? (
             <>

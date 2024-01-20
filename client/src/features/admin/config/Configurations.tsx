@@ -10,7 +10,7 @@ import { FieldValues, useForm } from 'react-hook-form'
 import _ from 'lodash'
 import { toast } from 'react-toastify'
 import { useAppDispatch } from 'app/store/configureStore'
-import { fetchProductAsync, fetchProductsAsync, setProduct } from 'features/catalog/catalogSlice'
+import { fetchProductsAsync } from 'features/catalog/catalogSlice'
 
 interface Props {
   product: IProduct | undefined
@@ -46,25 +46,30 @@ const Configurations = ({ product }: Props) => {
     return b['file'] === null && _.isEqual(aCopy, bCopy)
   }
 
+  const updateConfigurations = (res: Configurable) => {
+    setConfigurations(configurations.map((cfg) => (cfg.id === res.id ? res : cfg)));
+  };
+  
+  const createOrUpdateConfig = async (oldConfig: Configurable | undefined, config: Configurable) => {
+    if (!oldConfig || !isUnChanged(oldConfig, config)) {
+      const res = config.id
+        ? await agent.Admin.updateConfig(config).then(updateConfigurations)
+        : await agent.Admin.createConfig(config);
+      
+      return res;
+    } else {
+      return null;
+    }
+  };
+
   async function handleSubmitData(data: FieldValues) {
     const dataArray: Configurable[] = Object.values(data)
 
     const promises = dataArray.map(async (config) => {
       try {
-        // Check if the config has changed before updating it
         const oldConfig = configurations.find((c) => c.id?.toString() === config.id?.toString())
-
-        if (!oldConfig || !isUnChanged(oldConfig, config)) {
-          const res = config.id
-            ? await agent.Admin.updateConfig(config).then((res) =>
-                setConfigurations(configurations.map((cfg) => (cfg.id === res.id ? res : cfg))),
-              )
-            : await agent.Admin.createConfig(config)
-          
-          return res
-        } else {
-          return null
-        }
+        createOrUpdateConfig(oldConfig, config)
+       
       } catch (error) {
         console.log(error)
       }

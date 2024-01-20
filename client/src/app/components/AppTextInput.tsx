@@ -1,25 +1,25 @@
-import { TextField } from '@mui/material';
-import * as React from 'react';
-import { useController, UseControllerProps } from 'react-hook-form';
+import { TextField } from '@mui/material'
+import * as React from 'react'
+import { useController, UseControllerProps } from 'react-hook-form'
 
 interface Props extends UseControllerProps {
-    label: string
-    multiline?: boolean
-    disabled?: boolean
-    rows?: number
-    type?: string
-    defaultValue?: string | number
-    addError?: boolean
+  label: string
+  multiline?: boolean
+  disabled?: boolean
+  rows?: number
+  type?: string
+  defaultValue?: string | number
+  addError?: boolean
 }
 
 export default function AppTextInput(props: Props) {
-    const {fieldState, field} = useController({
-        ...props, 
-        defaultValue: props.defaultValue || ''
-    })
+  const { fieldState, field } = useController({
+    ...props,
+    defaultValue: props.defaultValue || '',
+  })
 
-    return (
-        <TextField
+  return (
+    <TextField
       label={props.label}
       disabled={props.disabled}
       {...field}
@@ -27,14 +27,14 @@ export default function AppTextInput(props: Props) {
       rows={props.rows}
       type={props.type}
       fullWidth
-      variant="outlined"
+      variant='outlined'
       error={!!fieldState.error || props.addError}
       helperText={fieldState.error?.message}
       sx={{
-        "& .MuiOutlinedInput-notchedOutline": {
-          borderColor: props.disabled ? "green !important" : '',
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: props.disabled ? 'green !important' : '',
         },
       }}
     />
-    )
+  )
 }

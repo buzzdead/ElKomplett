@@ -30,6 +30,17 @@ export default function ConfigPresetDialog(props: Props) {
     reset()
     fields.forEach((field, id) => remove(id))}
  }, [loading, remove, reset])
+
+ const renderField = (field: any, index: number) => (
+  <Box key={field.id} display='flex' alignItems='center' mt={2}>
+    <Box flex={1}>
+      <AppTextInput control={control} label={`Value ${index + 1}`} name={`configurations[${index}].value`} />
+    </Box>
+    <Box ml={2}>
+      <Button variant='outlined' color='secondary' onClick={() => remove(index)}>Remove</Button>
+    </Box>
+  </Box>
+);
  
   return (
     <Dialog fullWidth maxWidth='sm' open={props.open}>
@@ -40,16 +51,7 @@ export default function ConfigPresetDialog(props: Props) {
         <Box py={2}>
           <AppTextInput control={control} label='Key' name='key' />
         </Box>
-        {fields.map((field, index) => (
-          <Box key={field.id} display='flex' alignItems='center' mt={2}>
-            <Box flex={1}>
-              <AppTextInput control={control} label={`Value ${index + 1}`} name={`configurations[${index}].value`} />
-            </Box>
-            <Box ml={2}>
-              <Button variant='outlined' color='secondary' onClick={() => remove(index)}>Remove</Button>
-            </Box>
-          </Box>
-        ))}
+        {fields.map(renderField)}
         <Box mt={2}>
           <Button variant='outlined' color='success' onClick={() => append({ value: '' })}>Add Value</Button>
         </Box>
