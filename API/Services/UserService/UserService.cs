@@ -121,7 +121,7 @@ public class UserService : IUserService
     private async Task<(string username, string email)> GenerateUniqueUserDetailsAsync(string baseName, string baseEmail)
     {
         var isUnique = false;
-        var suffix = 1;
+        var suffix = 111;
         while (!isUnique)
         {
             var duplicateUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == baseName);
@@ -139,9 +139,9 @@ public class UserService : IUserService
         }
         return (baseName, baseEmail);
     }
-    private async Task<UserResult> CreateUser(User user)
+    private async Task<UserResult> CreateUser(User user, string password = "Pa$$w0rd")
     {
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
             return new UserResult { Succeeded = false, Errors = result.Errors };
