@@ -11,12 +11,14 @@ namespace API.Controllers
         private TokenService _tokenService;
         private readonly StoreContext _context;
         private readonly IConfiguration _config;
-        public AccountController(UserManager<User> userManager, TokenService tokenService, StoreContext context, IConfiguration config)
+        private readonly UserService _userService;
+        public AccountController(UserManager<User> userManager, TokenService tokenService, StoreContext context, IConfiguration config, UserService userService)
         {
             _context = context;
             _config = config;
             _tokenService = tokenService;
             _userManager = userManager;
+            _userService = userService;
 
         }
 
@@ -100,8 +102,8 @@ namespace API.Controllers
                 }
             }
 
-            var userBasket = await RetrieveBasket(user.UserName);
-            var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
+            var userBasket = await _userService.RetrieveBasket(user.UserName);
+            var anonBasket = await _userService.RetrieveBasket(Request.Cookies["buyerId"]);
             var userDto = new UserDto
             {
                 Email = user.Email,
@@ -115,29 +117,8 @@ namespace API.Controllers
         [HttpGet("createTestAdmin")]
         public async Task<ActionResult<UserDto>> CreateTestAdmin()
         {
-            var name = "TestAdmin";
-            var email = "Test@Admin";
-            var isUnique = false;
-            var baseName = name;
-            var suffix = 1;
-            while (!isUnique)
-            {
-                var duplicateUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == name);
-                if (duplicateUserName != null)
-                {
-                    name = $"{baseName}{suffix}";
-                    email = $"{email}{suffix}";
-                    suffix++;
-                }
-                else
-                {
-                    isUnique = true;
-                    email += ".com";
-                }
-            }
+            var result = await _userService.CreateTestAdminAsync();
 
-            var user = new User { UserName = name, Email = email };
-            var result = await _userManager.CreateAsync(user);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -147,74 +128,34 @@ namespace API.Controllers
                 return ValidationProblem();
             }
 
-            user.AdminTokens = 0;
-            await _userManager.AddToRoleAsync(user, "Test");
-            
-
-            var userBasket = await RetrieveBasket(user.UserName);
-            var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
-            var userDto = new UserDto
-            {
-                Email = user.Email,
-                Token = await _tokenService.GenerateToken(user),
-                Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
-            };
-
-            return userDto;
+            return result.UserResultDto;
         }
 
         [HttpPost("login")]
 
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.Username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
-                return Unauthorized();
+             var result = await _userService.LoginUserAsync(loginDto);
 
-            var userBasket = await RetrieveBasket(loginDto.Username);
-            var anonBasket = await RetrieveBasket(Request.Cookies["buyerId"]);
+        if (!result.Succeeded)
+        {
+            return Unauthorized(result.ErrorMessage);
+        }
 
-            if (anonBasket != null)
-            {
-                if (userBasket != null) _context.Baskets.Remove(userBasket);
-                anonBasket.BuyerId = user.UserName;
-                Response.Cookies.Delete("buyerId");
-                await _context.SaveChangesAsync();
-
-            }
-
-            return new UserDto
-            {
-                Email = user.Email,
-                Token = await _tokenService.GenerateToken(user),
-                Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
-            };
+        return result.UserResultDto;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
-            var user = new User { UserName = registerDto.Username, Email = registerDto.Email };
+            var result = await _userService.CreateUserAsync(registerDto);
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+        if (!result.Succeeded)
+        {
+            return HandleError(result.Errors);
+        }
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(error.Code, error.Description);
-                }
-                return ValidationProblem();
-            }
-            if (registerDto.TestAdmin == true)
-            {
-                user.AdminTokens = 0;
-                await _userManager.AddToRoleAsync(user, "Test");
-            }
-            else
-                await _userManager.AddToRoleAsync(user, "Member");
-
-            return StatusCode(201);
+        return StatusCode(201);
         }
         [Authorize]
         [HttpGet("currentUser")]
@@ -224,7 +165,7 @@ namespace API.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var userBasket = await RetrieveBasket(User.Identity.Name);
+            var userBasket = await _userService.RetrieveBasket(User.Identity.Name);
 
 
             return new UserDto
@@ -244,19 +185,14 @@ namespace API.Controllers
                 .FirstOrDefaultAsync();
         }
 
-        private async Task<Basket> RetrieveBasket(string buyerId)
+        
+        private ActionResult HandleError(IEnumerable<IdentityError> errors)
+    {
+        foreach (var error in errors)
         {
-
-            if (string.IsNullOrEmpty(buyerId))
-            {
-                Response.Cookies.Delete("buyerId");
-                return null;
-            }
-            return await _context.Baskets
-                        .Include(i => i.Items)
-                        .ThenInclude(p => p.Product)
-                        .ThenInclude(p => p.Images)
-                        .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
+            ModelState.AddModelError(error.Code, error.Description);
         }
+        return ValidationProblem();
+    }
     }
 }

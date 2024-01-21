@@ -51,6 +51,31 @@ public class EntityMappingCache
 
         return id;
     }
+    public Task<Producer> GetProducerFromName(string name)
+    {
+        var id = GetProducerIdFromName(name);
+
+        if (!id.HasValue)
+        {
+            return null;
+        }
+        
+        return _context.Producers.FirstOrDefaultAsync(p => p.Id == id);
+        
+    }
+
+    public Task<ProductType> GetProductTypeFromName(string name)
+    {
+        var id = GetProductTypeIdFromName(name);
+
+        if (!id.HasValue)
+        {
+            return null;
+        }
+        
+        return _context.ProductTypes.FirstOrDefaultAsync(p => p.Id == id);
+        
+    }
 
   public bool CategoriesIsEmpty()
 {

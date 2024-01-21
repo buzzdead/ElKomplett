@@ -95,9 +95,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<EntityMappingCache>();
 
