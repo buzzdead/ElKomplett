@@ -17,6 +17,7 @@ import Category from 'features/home/Category'
 import { AllOrders } from 'features/admin/Order/AllOrders'
 import { Order } from 'features/admin/Order/Order'
 import Admin from 'features/admin/Admin'
+import Profile from 'features/account/Profile/Profile'
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
       { path: 'not-found', element: <NotFound /> },
       { path: 'basket', element: <BasketPage /> },
       { path: 'login', element: <Login /> },
+      { path: 'profile', element: <Profile />},
       { path: 'register', element: <Register /> },
       { path: '*', element: <Navigate replace to='/not-found' /> },
     ],

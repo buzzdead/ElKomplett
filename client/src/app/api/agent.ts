@@ -167,8 +167,11 @@ const Account = {
   register: (values: any) => requests.post('account/register', values),
   currentUser: () => requests.get('account/currentUser'),
   fetchAddress: () => requests.get('account/savedAddress'),
+  updateAddress: (data: any) => requests.post('account/updateAddress', data),
   google: (token: any) => requests.post('account/google', token),
-  createTestAdmin: () => requests.get('account/CreateTestAdmin')
+  createTestAdmin: () => requests.get('account/CreateTestAdmin'),
+  changeUserDetails: (data: any) => requests.post('account/changeUserDetails', data),
+  changePassword: (data: any) => requests.post('account/changePassword', data),
 }
 
 const Orders = {
