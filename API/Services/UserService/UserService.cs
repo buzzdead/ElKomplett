@@ -1,3 +1,4 @@
+using API.Entities.OrderAggregate;
 using API.Services;
 
 public class UserService : IUserService
@@ -38,8 +39,8 @@ public class UserService : IUserService
 
         var userResultDto = new UserResultDto
         {
-            Username = user.UserName,
             Email = user.Email,
+            UserName = user.UserName,
             Token = await _tokenService.GenerateToken(user)
         };
 
@@ -48,7 +49,7 @@ public class UserService : IUserService
 
     public async Task<UserResult> LoginUserAsync(LoginDto loginDto)
     {
-        var user = await _userManager.FindByNameAsync(loginDto.Username);
+        var user = await _context.Users.Include(p => p.Address).FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
         {
             return new UserResult { Succeeded = false, ErrorMessage = "Unauthorized" };
@@ -68,6 +69,8 @@ public class UserService : IUserService
         var userDto = new UserResultDto
         {
             Email = user.Email,
+            UserName = user.UserName,
+            Address = user.Address,
             Token = await _tokenService.GenerateToken(user),
             Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
         };
@@ -98,11 +101,26 @@ public class UserService : IUserService
         var userDto = new UserResultDto
         {
             Email = user.Email,
+            UserName = user.UserName,
             Token = await _tokenService.GenerateToken(user),
             Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
         };
 
         return new UserResult { Succeeded = true, UserResultDto = userDto };
+    }
+    public UserAddress UpdateAddress(ShippingAddress shippingAddress)
+    {
+        var address = new UserAddress
+        {
+            FullName = shippingAddress.FullName,
+            Address1 = shippingAddress.Address1,
+            Address2 = shippingAddress.Address2,
+            City = shippingAddress.City,
+            State = shippingAddress.State,
+            Zip = shippingAddress.Zip,
+            Country = shippingAddress.Country,
+        };
+        return address;
     }
     public async Task<Basket> RetrieveBasket(string buyerId)
     {

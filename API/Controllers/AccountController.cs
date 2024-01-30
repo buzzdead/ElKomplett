@@ -1,6 +1,8 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using API.Entities.OrderAggregate;
+using ElKomplett.API.DTOs.User;
 using Newtonsoft.Json.Linq;
 
 namespace API.Controllers
@@ -135,14 +137,14 @@ namespace API.Controllers
 
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-             var result = await _userService.LoginUserAsync(loginDto);
+            var result = await _userService.LoginUserAsync(loginDto);
 
-        if (!result.Succeeded)
-        {
-            return Unauthorized(result.ErrorMessage);
-        }
+            if (!result.Succeeded)
+            {
+                return Unauthorized(result.ErrorMessage);
+            }
 
-        return result.UserResultDto;
+            return result.UserResultDto;
         }
 
         [HttpPost("register")]
@@ -150,18 +152,20 @@ namespace API.Controllers
         {
             var result = await _userService.CreateUserAsync(registerDto);
 
-        if (!result.Succeeded)
-        {
-            return HandleError(result.Errors);
-        }
+            if (!result.Succeeded)
+            {
+                return HandleError(result.Errors);
+            }
 
-        return StatusCode(201);
+            return StatusCode(201);
         }
         [Authorize]
         [HttpGet("currentUser")]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var userAddress = _context.Users.Where(x => x.UserName == User.Identity.Name).Select(user => user.Address).FirstOrDefault();
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -171,8 +175,10 @@ namespace API.Controllers
             return new UserDto
             {
                 Email = user.Email,
+                UserName = user.UserName,
                 Token = await _tokenService.GenerateToken(user),
                 Basket = userBasket?.MapBasketToDto(),
+                Address = userAddress,
             };
         }
         [Authorize]
@@ -184,15 +190,71 @@ namespace API.Controllers
                 .Select(user => user.Address)
                 .FirstOrDefaultAsync();
         }
-
-        
-        private ActionResult HandleError(IEnumerable<IdentityError> errors)
-    {
-        foreach (var error in errors)
+        [Authorize]
+        [HttpPost("updateAddress")]
+        public async Task<ActionResult<UserAddress>> UpdateAddress(Address shippingAddress)
         {
-            ModelState.AddModelError(error.Code, error.Description);
+            var user = await _context.Users
+                .Include(a => a.Address)
+                .FirstOrDefaultAsync(x => x.UserName == User.Identity.Name);
+            if (user.Address != null)
+            {
+                user.Address.FullName = shippingAddress.FullName;
+                user.Address.Address1 = shippingAddress.Address1;
+                user.Address.Address2 = shippingAddress.Address2;
+                user.Address.City = shippingAddress.City;
+                user.Address.State = shippingAddress.State;
+                user.Address.Zip = shippingAddress.Zip;
+                user.Address.Country = shippingAddress.Country;
+            }
+            else
+            {
+                var address = new UserAddress
+                {
+                    FullName = shippingAddress.FullName,
+                    Address1 = shippingAddress.Address1,
+                    Address2 = shippingAddress.Address2,
+                    City = shippingAddress.City,
+                    State = shippingAddress.State,
+                    Zip = shippingAddress.Zip,
+                    Country = shippingAddress.Country,
+                };
+                user.Address = address;
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded) return Ok(user.Address);
+            return BadRequest("Problem updating address");
         }
-        return ValidationProblem();
-    }
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
+        public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.Oldpassword, changePasswordDto.Password);
+            if (result.Succeeded) return Ok(new { message = "Password changed successfully", userId = user.Id, ok = true });
+            return BadRequest("Problem changing password");
+        }
+
+        [Authorize]
+        [HttpPost("ChangeUserDetails")]
+        public async Task<ActionResult> ChangeUserDetails(ChangeUserDetailsDto changeUserDetailsDto)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            user.Email = changeUserDetailsDto.Email;
+            user.UserName = changeUserDetailsDto.UserName;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded) return Ok(new { message = "User details changed successfully", userId = user.Id, ok = true });
+            return BadRequest("Problem changing user details");
+        }
+
+        private ActionResult HandleError(IEnumerable<IdentityError> errors)
+        {
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return ValidationProblem();
+        }
     }
 }
