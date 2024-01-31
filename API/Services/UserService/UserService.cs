@@ -21,7 +21,7 @@ public class UserService : IUserService
     public async Task<UserResult> CreateUserAsync(RegisterDto registerDto)
     {
         var user = new User { UserName = registerDto.Username, Email = registerDto.Email };
-        var result = await CreateUser(user);
+        var result = await CreateUser(user, registerDto.Password);
           if (!result.Succeeded)
         {
             return result;

@@ -9,9 +9,14 @@ import { validationSchema } from "features/checkout/checkoutValidation"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
-export const Password = () => {
+interface Props {
+  isGoogle: boolean
+}
+
+export const Password = ({isGoogle}: Props) => {
   const [confirmed, setConfirmed] = useState(false)
   const [isSaved, setIsSaved] = useState(false);
+  const [oldPasswordError , setOldPasswordError] = useState(false)
   const currentValidationSchema = validationSchema[3]
     const formMethods = useForm({resolver: yupResolver(currentValidationSchema),  mode: 'onChange', defaultValues: {password: '', passwordConfirm: '', oldpassword: ''}
       })
@@ -34,20 +39,29 @@ export const Password = () => {
         return (
           <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-          <AppTextInput type="password" autoComplete="new-password"  control={formMethods.control} name='password' label='New Password' />
+          <AppTextInput type="password" disabled={isGoogle} autoComplete="new-password"  control={formMethods.control} name='password' label='New Password' />
           </Grid>
           <Grid item xs={12} sm={6}>
-          <AppTextInput type="password" autoComplete="new-password" control={formMethods.control} name='passwordConfirm' label='Confirm New Password' />
+          <AppTextInput type="password" disabled={isGoogle} autoComplete="new-password" control={formMethods.control} name='passwordConfirm' label='Confirm New Password' />
           </Grid>
           </Grid>
         )
       }
 
       const onSubmit = async (data: any) => {
-        const res = await agent.Account.changePassword(data);
-        setIsSaved(true)
-        setConfirmed(false)
-        formMethods.reset();
+        try {
+          const res = await agent.Account.changePassword(data);
+          setIsSaved(true)
+          setConfirmed(false)
+          setOldPasswordError(false)
+          formMethods.reset();
+        }
+        catch (error) {
+          if(error[0]?.code === 'PasswordMismatch') {
+            setOldPasswordError(true)
+          }
+        }
+        
       }
 
       useEffect(() => {
@@ -55,8 +69,6 @@ export const Password = () => {
           setIsSaved(false);
         }
       }, [formMethods.formState])
-
-      console.log(formMethods.formState.isDirty, hasErrors)
       
     return (
       <FormProvider {...formMethods}>
@@ -72,6 +84,7 @@ export const Password = () => {
         <LoadingButton sx={{display: 'flex', justifyContent: 'flex-start'}} onClick={confirmed ? formMethods.handleSubmit(onSubmit) : () => confirm()} disabled={!formMethods.formState.isDirty || hasErrors}>
               {confirmed ? 'SET NEW PASSWORD' : 'Confirm'}
               {isSaved && <CheckCircleOutline style={{ color: 'green', marginLeft: 7.5 }} />} {/* Render checkmark icon if isSaved is true */}
+              {oldPasswordError && <Typography sx={{color: 'red', marginLeft: 7.5}}>Old password is incorrect</Typography>}
           </LoadingButton>
           </Grid>
         </Box>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { Box, Button, Typography } from '@mui/material';
 import AddressForm from 'features/checkout/AddressForm';
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export const ShippingAddress = ({user, dispatch}: Props) => {
+    const [isSaved, setIsSaved] = useState(false);
     const currentValidationSchema = validationSchema[0]
     const formMethods = useForm({
         defaultValues: user?.address,
@@ -22,9 +23,17 @@ export const ShippingAddress = ({user, dispatch}: Props) => {
       });
     const [minimized, setMinimized] = React.useState(user?.address !== undefined);
 
+    useEffect(() => {
+        if(formMethods.formState.isDirty && isSaved) {
+          setIsSaved(false);
+        }
+      }, [formMethods.formState])
+
     const onSubmit = async (data: FieldValues) => {
         // Handle form submission logic here
         const res = await agent.Account.updateAddress(data);
+        setIsSaved(true);
+        formMethods.reset(data)
         dispatch(fetchCurrentUser())
     };
      const hasErrors = Object.keys(formMethods.formState.errors).length > 0;
@@ -33,7 +42,7 @@ export const ShippingAddress = ({user, dispatch}: Props) => {
         <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
             <Box sx={{display: 'flex', flexDirection: 'column', gap: 2.5}}>
-            <AddressForm alternativeSave minimized={minimized} hasErrors={hasErrors}/>
+            <AddressForm saved={isSaved} alternativeSave minimized={minimized} hasErrors={hasErrors}/>
             <Button onClick={() => setMinimized(!minimized)} variant="contained" color="primary">
                 {minimized ? "Show full address" : "Hide"}
             </Button>

@@ -17,4 +17,5 @@ export interface User {
     basket?: Basket
     roles?: string[]
     address?: Address
+    isGoogle?: boolean
 }

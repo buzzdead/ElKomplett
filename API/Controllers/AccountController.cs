@@ -109,6 +109,7 @@ namespace API.Controllers
             var userDto = new UserDto
             {
                 Email = user.Email,
+                UserName = user.UserName,
                 Token = await _tokenService.GenerateToken(user),
                 Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userBasket?.MapBasketToDto()
             };
@@ -233,7 +234,7 @@ namespace API.Controllers
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.Oldpassword, changePasswordDto.Password);
             if (result.Succeeded) return Ok(new { message = "Password changed successfully", userId = user.Id, ok = true });
-            return BadRequest("Problem changing password");
+            return BadRequest(new {message = "Problem changing password", errors = result.Errors});
         }
 
         [Authorize]

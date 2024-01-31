@@ -19,8 +19,8 @@ const Profile: React.FC = () => {
         <Box display='flex' gap={5} flexDirection={'column'} paddingLeft={5} paddingRight={5}>
         <Typography variant='h3'>Profile</Typography>
         <ShippingAddress user={user} dispatch={dispatch} />
-        <User user={user} dispatch={dispatch} />
-        <Password />
+        <User isGoogle={user?.isGoogle || false} user={user} dispatch={dispatch} />
+        <Password isGoogle={user?.isGoogle || false} />
         </Box>);
 };
 

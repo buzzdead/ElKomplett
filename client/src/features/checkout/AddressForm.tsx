@@ -8,14 +8,16 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CssBaseline } from '@mui/material'
 import Render from 'app/layout/Render'
 import { LoadingButton } from '@mui/lab'
+import { CheckCircleOutline } from '@mui/icons-material'
 
 interface Props {
   minimized?: boolean
   alternativeSave?: boolean
+  saved?: boolean
   hasErrors?: boolean
 }
 
-export default function AddressForm({ minimized, alternativeSave, hasErrors }: Props) {
+export default function AddressForm({ minimized, alternativeSave, hasErrors, saved = false }: Props) {
   const { control, formState } = useFormContext()
   return (
     <>
@@ -40,27 +42,28 @@ export default function AddressForm({ minimized, alternativeSave, hasErrors }: P
               <Grid style={{paddingLeft: 20}} container spacing={3}>
         <Grid item xs={12} sm={6}></Grid>
         <Grid item xs={12}>
-          <AppTextInput control={control} name='address1' label='Address 1' />
+          <AppTextInput disabled={minimized} control={control} name='address1' label='Address 1' />
         </Grid>
         <Grid item xs={12}>
-          <AppTextInput control={control} name='address2' label='Address 2' />
+          <AppTextInput disabled={minimized} control={control} name='address2' label='Address 2' />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AppTextInput control={control} name='city' label='City' />
+          <AppTextInput disabled={minimized} control={control} name='city' label='City' />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AppTextInput control={control} name='state' label='State' />
+          <AppTextInput disabled={minimized} control={control} name='state' label='State' />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AppTextInput control={control} name='zip' label='Zipcode' />
+          <AppTextInput disabled={minimized} control={control} name='zip' label='Zipcode' />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AppTextInput control={control} name='country' label='Country' />
+          <AppTextInput disabled={minimized} control={control} name='country' label='Country' />
         </Grid>
         <Grid item xs={12}>
           <Render condition={alternativeSave}>
             <LoadingButton type='submit' disabled={!formState.isDirty || hasErrors}>
               Save Address
+              {saved && <CheckCircleOutline style={{ color: 'green', marginLeft: 7.5 }} />} {/* Render checkmark icon if isSaved is true */}
             </LoadingButton>
           <AppCheckBox
             name='saveAddress'

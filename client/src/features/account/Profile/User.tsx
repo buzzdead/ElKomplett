@@ -13,10 +13,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 interface Props {
   user: UserType | null
+  isGoogle: boolean
   dispatch: any
 }
 
-export const User = ({ user, dispatch }: Props) => {
+export const User = ({ user, dispatch, isGoogle }: Props) => {
   const currentValidationSchema = validationSchema[4]
   const formMethods = useForm({ defaultValues: { email: user?.email, userName: user?.userName },  resolver:  yupResolver(currentValidationSchema), mode: 'onChange'  } )
   const [isSaved, setIsSaved] = useState(false);
@@ -46,7 +47,7 @@ export const User = ({ user, dispatch }: Props) => {
             </Typography>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
-                <AppTextInput control={formMethods.control} name='email' label='E-mail' />
+                <AppTextInput disabled={isGoogle} control={formMethods.control} name='email' label='E-mail' />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <AppTextInput control={formMethods.control} name='userName' label='Username' />

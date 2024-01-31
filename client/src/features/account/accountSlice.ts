@@ -11,7 +11,7 @@ interface AccountState {
 }
 
 const initialState: AccountState = {
-    user: null
+    user: null,
 }
 
 export const signInUser = createAsyncThunk<User, FieldValues>(
@@ -37,6 +37,7 @@ export const signInUserWithGoogle = createAsyncThunk<User, FieldValues>(
         const userDto = await agent.Account.google({token: data})
         try {
             const { basket, ...user } = userDto
+            user.isGoogle = true
             if (basket) thunkAPI.dispatch(setBasket(basket))
             localStorage.setItem('user', JSON.stringify(user))
             return user
@@ -70,6 +71,8 @@ export const fetchCurrentUser = createAsyncThunk<User>(
         try {
             const userDto = await agent.Account.currentUser()
             const { basket, ...user } = userDto
+            const userFromLocalStorage = JSON.parse(localStorage.getItem('user')!)
+            user.isGoogle = userFromLocalStorage.isGoogle
             if (basket) thunkAPI.dispatch(setBasket(basket))
             localStorage.setItem('user', JSON.stringify(user))
             return user
